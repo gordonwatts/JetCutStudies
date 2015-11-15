@@ -7,6 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using LINQToTTreeLib;
 using LINQToTreeHelpers.FutureUtils;
+using DiVertAnalysis;
+using static LINQToTreeHelpers.PlottingUtils;
+using LinqToTTreeInterfacesLib;
+using ROOTNET.Interface;
+
+using static libDataAccess.PlotSpecifications;
 
 namespace GenericPerformancePlots
 {
@@ -43,6 +49,14 @@ namespace GenericPerformancePlots
                 .SelectMany(events => events.Jets)
                 .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
 
+            // Cal efficiency plots for CalR
+            CalcSignalToBackground(
+                signal.SelectMany(events => events.Jets),
+                background.SelectMany(events => events.Jets),
+                JetCalRPlot,
+                outputHistograms.mkdir("sigrtback"),
+                "CalR");
+
             // Do a simple calc for info reasons which we will type out.
             var status = from nB in background.FutureCount()
                          from nS in signal.FutureCount()
@@ -53,6 +67,39 @@ namespace GenericPerformancePlots
 
             // Let the world know what is up
             Console.WriteLine(status.Value);
+        }
+
+        /// <summary>
+        /// Calculate a set of plots over this list of events
+        /// </summary>
+        /// <param name="signal"></param>
+        /// <param name="background"></param>
+        /// <param name="jetSelectorFunc"></param>
+        /// <param name="dir"></param>
+        private static IFutureValue<NTH1> CalcSignalToBackground(IQueryable<recoTreeJets> signal, IQueryable<recoTreeJets> background,
+            IPlotSpec<recoTreeJets> plotter,
+            FutureTDirectory dir,
+            string name)
+        {
+            // get the histograms for the signal and background
+            var sPlot = signal
+                .FuturePlot(plotter, "eff_back")
+                .Normalize()
+                .AsCumulative()
+                .Rename($"{name}_sigrtback_sig")
+                .Save(dir);
+            var bPlot = background
+                .FuturePlot(plotter, "eff_back")
+                .Normalize()
+                .AsCumulative()
+                .Rename($"{name}_sigrtback_back")
+                .Save(dir)
+                .Sqrt();
+
+            return sPlot
+                .DividedBy(bPlot)
+                .Rename($"{name}_sigrtback")
+                .Save(dir);
         }
     }
 }
