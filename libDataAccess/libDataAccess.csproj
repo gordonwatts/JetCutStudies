@@ -150,10 +150,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <TTreeGroupSpec Include="DiVertAnalysis\recoTreeConfig-000.ntup" />
+    <TTreeGroupSpec Include="DiVertAnalysis\recoTreeConfig-001.ntup" />
   </ItemGroup>
   <ItemGroup>
-    <ROOTFileDataModel Include="DiVertAnalysis\user.gwatts.6923254._000001.hist-output.ntupom">
+    <ROOTFileDataModel Include="DiVertAnalysis\user.gwatts.7001349._000001.hist-output.ntupom">
       <Namespace>DiVertAnalysis</Namespace>
     </ROOTFileDataModel>
   </ItemGroup>

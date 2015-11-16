@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////
 //   This class has been automatically generated 
-//   (at Fri Nov 13 23:19:11 2015 by ROOT version 5.34/34)
+//   (at Sun Nov 15 21:20:09 2015 by ROOT version 5.34/34)
 //   from TTree recoTree/recoTree
-//   found on file: C:\Users\gordo\Documents\GRIDDS\user.gwatts.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.r6765_r6282__EXOT15_v3_EXT0.DiVertAnalysis_v1_242636232_hist\user.gwatts\user.gwatts.6923254._000001.hist-output.root
+//   found on file: E:\GRIDDS\user.gwatts.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2.DiVertAnalysis_v3_1381F1A5_hist\user.gwatts\user.gwatts.7001349._000001.hist-output.root
 /////////////////////////////////////////////////////////////////////////
 
 
@@ -89,6 +89,7 @@ public :
    TStlSimpleProxy<vector<double> >         Jet_time;
    TStlSimpleProxy<vector<bool> >           Jet_isCosmic;
    TStlSimpleProxy<vector<bool> >           Jet_isCRJet;
+   TStlSimpleProxy<vector<int> >            Jet_indexLLP;
    TStlSimpleProxy<vector<double> >         Jet_px;
    TStlSimpleProxy<vector<double> >         Jet_py;
    TStlSimpleProxy<vector<double> >         Jet_pz;
@@ -119,6 +120,7 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_time;
    TStlSimpleProxy<vector<bool> >           CalibJet_isCosmic;
    TStlSimpleProxy<vector<bool> >           CalibJet_isCRJet;
+   TStlSimpleProxy<vector<int> >            CalibJet_indexLLP;
    TStlSimpleProxy<vector<double> >         CalibJet_px;
    TStlSimpleProxy<vector<double> >         CalibJet_py;
    TStlSimpleProxy<vector<double> >         CalibJet_pz;
@@ -168,6 +170,10 @@ public :
    TStlSimpleProxy<vector<double> >         CR_Trig_trigEMF;
    TStlSimpleProxy<vector<double> >         CR_Trig_triglogR;
    TStlSimpleProxy<vector<double> >         CR_Trig_minDR_HLTjet_HLTtracks;
+   TStlSimpleProxy<vector<bool> >           CR_Trig_trigMatchLLP;
+   TStlSimpleProxy<vector<double> >         CR_Trig_trig_LLP_DR;
+   TStlSimpleProxy<vector<double> >         CR_Trig_LLP_Lxy;
+   TStlSimpleProxy<vector<double> >         CR_Trig_LLP_Lz;
    TStlSimpleProxy<vector<double> >         CR_noTrig_eta;
    TStlSimpleProxy<vector<double> >         CR_noTrig_phi;
    TStlSimpleProxy<vector<double> >         CR_noTrig_ET;
@@ -176,6 +182,9 @@ public :
    TStlSimpleProxy<vector<double> >         CR_noTrig_nTrks;
    TStlSimpleProxy<vector<double> >         CR_noTrig_timing;
    TStlSimpleProxy<vector<bool> >           CR_noTrig_passCuts;
+   TStlSimpleProxy<vector<bool> >           CR_noTrig_jetMatchLLP;
+   TStlSimpleProxy<vector<double> >         CR_noTrig_LLP_Lxy;
+   TStlSimpleProxy<vector<double> >         CR_noTrig_LLP_Lz;
    TStlSimpleProxy<vector<double> >         muRoIClus_Trig_eta;
    TStlSimpleProxy<vector<double> >         muRoIClus_Trig_phi;
    TStlSimpleProxy<vector<int> >            muRoIClus_Trig_nRoI;
@@ -221,6 +230,16 @@ public :
    TStlSimpleProxy<vector<int> >            MSVertex_passesTrackIso;
    TStlSimpleProxy<vector<int> >            MSVertex_passesHitThresholds;
    TStlSimpleProxy<vector<int> >            MSVertex_isGood;
+   TStlSimpleProxy<vector<double> >         LLP_E;
+   TStlSimpleProxy<vector<double> >         LLP_pT;
+   TStlSimpleProxy<vector<double> >         LLP_eta;
+   TStlSimpleProxy<vector<double> >         LLP_phi;
+   TStlSimpleProxy<vector<double> >         LLP_beta;
+   TStlSimpleProxy<vector<double> >         LLP_timing;
+   TStlSimpleProxy<vector<double> >         LLP_Lxy;
+   TStlSimpleProxy<vector<double> >         LLP_Lz;
+   TStlSimpleProxy<vector<double> >         LLP_dR_Jet;
+   TStlSimpleProxy<vector<int> >            LLP_nJet_dRlt04;
    TStlSimpleProxy<vector<bool> >           DiLeptonFinder_eventTriggers;
    TDoubleProxy                             DiLeptonFinder_leadingElectron_E;
    TDoubleProxy                             DiLeptonFinder_leadingElectron_pT;
@@ -302,6 +321,7 @@ public :
       Jet_time                                (&fDirector,"Jet_time"),
       Jet_isCosmic                            (&fDirector,"Jet_isCosmic"),
       Jet_isCRJet                             (&fDirector,"Jet_isCRJet"),
+      Jet_indexLLP                            (&fDirector,"Jet_indexLLP"),
       Jet_px                                  (&fDirector,"Jet_px"),
       Jet_py                                  (&fDirector,"Jet_py"),
       Jet_pz                                  (&fDirector,"Jet_pz"),
@@ -332,6 +352,7 @@ public :
       CalibJet_time                           (&fDirector,"CalibJet_time"),
       CalibJet_isCosmic                       (&fDirector,"CalibJet_isCosmic"),
       CalibJet_isCRJet                        (&fDirector,"CalibJet_isCRJet"),
+      CalibJet_indexLLP                       (&fDirector,"CalibJet_indexLLP"),
       CalibJet_px                             (&fDirector,"CalibJet_px"),
       CalibJet_py                             (&fDirector,"CalibJet_py"),
       CalibJet_pz                             (&fDirector,"CalibJet_pz"),
@@ -381,6 +402,10 @@ public :
       CR_Trig_trigEMF                         (&fDirector,"CR_Trig_trigEMF"),
       CR_Trig_triglogR                        (&fDirector,"CR_Trig_triglogR"),
       CR_Trig_minDR_HLTjet_HLTtracks          (&fDirector,"CR_Trig_minDR_HLTjet_HLTtracks"),
+      CR_Trig_trigMatchLLP                    (&fDirector,"CR_Trig_trigMatchLLP"),
+      CR_Trig_trig_LLP_DR                     (&fDirector,"CR_Trig_trig_LLP_DR"),
+      CR_Trig_LLP_Lxy                         (&fDirector,"CR_Trig_LLP_Lxy"),
+      CR_Trig_LLP_Lz                          (&fDirector,"CR_Trig_LLP_Lz"),
       CR_noTrig_eta                           (&fDirector,"CR_noTrig_eta"),
       CR_noTrig_phi                           (&fDirector,"CR_noTrig_phi"),
       CR_noTrig_ET                            (&fDirector,"CR_noTrig_ET"),
@@ -389,6 +414,9 @@ public :
       CR_noTrig_nTrks                         (&fDirector,"CR_noTrig_nTrks"),
       CR_noTrig_timing                        (&fDirector,"CR_noTrig_timing"),
       CR_noTrig_passCuts                      (&fDirector,"CR_noTrig_passCuts"),
+      CR_noTrig_jetMatchLLP                   (&fDirector,"CR_noTrig_jetMatchLLP"),
+      CR_noTrig_LLP_Lxy                       (&fDirector,"CR_noTrig_LLP_Lxy"),
+      CR_noTrig_LLP_Lz                        (&fDirector,"CR_noTrig_LLP_Lz"),
       muRoIClus_Trig_eta                      (&fDirector,"muRoIClus_Trig_eta"),
       muRoIClus_Trig_phi                      (&fDirector,"muRoIClus_Trig_phi"),
       muRoIClus_Trig_nRoI                     (&fDirector,"muRoIClus_Trig_nRoI"),
@@ -434,6 +462,16 @@ public :
       MSVertex_passesTrackIso                 (&fDirector,"MSVertex_passesTrackIso"),
       MSVertex_passesHitThresholds            (&fDirector,"MSVertex_passesHitThresholds"),
       MSVertex_isGood                         (&fDirector,"MSVertex_isGood"),
+      LLP_E                                   (&fDirector,"LLP_E"),
+      LLP_pT                                  (&fDirector,"LLP_pT"),
+      LLP_eta                                 (&fDirector,"LLP_eta"),
+      LLP_phi                                 (&fDirector,"LLP_phi"),
+      LLP_beta                                (&fDirector,"LLP_beta"),
+      LLP_timing                              (&fDirector,"LLP_timing"),
+      LLP_Lxy                                 (&fDirector,"LLP_Lxy"),
+      LLP_Lz                                  (&fDirector,"LLP_Lz"),
+      LLP_dR_Jet                              (&fDirector,"LLP_dR_Jet"),
+      LLP_nJet_dRlt04                         (&fDirector,"LLP_nJet_dRlt04"),
       DiLeptonFinder_eventTriggers            (&fDirector,"DiLeptonFinder_eventTriggers"),
       DiLeptonFinder_leadingElectron_E        (&fDirector,"DiLeptonFinder_leadingElectron_E"),
       DiLeptonFinder_leadingElectron_pT       (&fDirector,"DiLeptonFinder_leadingElectron_pT"),

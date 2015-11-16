@@ -3,73 +3,13 @@
   <Groups>
     <ArrayGroup Name="ungrouped">
       <Variables>
-        <VariableInfo NETName="DiLeptonFinder_eventTriggers" TTreeName="DiLeptonFinder_eventTriggers" />
+        <VariableInfo NETName="LLP_dR_Jet" TTreeName="LLP_dR_Jet" />
         <VariableInfo NETName="Jet_sumpT" TTreeName="Jet_sumpT" />
         <VariableInfo NETName="Jet_sumpT_PV" TTreeName="Jet_sumpT_PV" />
         <VariableInfo NETName="Jet_FMax" TTreeName="Jet_FMax" />
         <VariableInfo NETName="CalibJet_sumpT" TTreeName="CalibJet_sumpT" />
         <VariableInfo NETName="CalibJet_sumpT_PV" TTreeName="CalibJet_sumpT_PV" />
         <VariableInfo NETName="CalibJet_FMax" TTreeName="CalibJet_FMax" />
-        <VariableInfo NETName="CR_Trig_dR" TTreeName="CR_Trig_dR" />
-        <VariableInfo NETName="CR_Trig_eta" TTreeName="CR_Trig_eta" />
-        <VariableInfo NETName="CR_Trig_phi" TTreeName="CR_Trig_phi" />
-        <VariableInfo NETName="CR_Trig_ET" TTreeName="CR_Trig_ET" />
-        <VariableInfo NETName="CR_Trig_pT" TTreeName="CR_Trig_pT" />
-        <VariableInfo NETName="CR_Trig_EMF" TTreeName="CR_Trig_EMF" />
-        <VariableInfo NETName="CR_Trig_logR" TTreeName="CR_Trig_logR" />
-        <VariableInfo NETName="CR_Trig_nTrks" TTreeName="CR_Trig_nTrks" />
-        <VariableInfo NETName="CR_Trig_timing" TTreeName="CR_Trig_timing" />
-        <VariableInfo NETName="CR_Trig_passCuts" TTreeName="CR_Trig_passCuts" />
-        <VariableInfo NETName="CR_Trig_jetMatch" TTreeName="CR_Trig_jetMatch" />
-        <VariableInfo NETName="CR_Trig_isGoodLLP" TTreeName="CR_Trig_isGoodLLP" />
-        <VariableInfo NETName="CR_Trig_trigET" TTreeName="CR_Trig_trigET" />
-        <VariableInfo NETName="CR_Trig_trigpT" TTreeName="CR_Trig_trigpT" />
-        <VariableInfo NETName="CR_Trig_trigEta" TTreeName="CR_Trig_trigEta" />
-        <VariableInfo NETName="CR_Trig_trigPhi" TTreeName="CR_Trig_trigPhi" />
-        <VariableInfo NETName="CR_Trig_trigEMF" TTreeName="CR_Trig_trigEMF" />
-        <VariableInfo NETName="CR_Trig_triglogR" TTreeName="CR_Trig_triglogR" />
-        <VariableInfo NETName="CR_Trig_minDR_HLTjet_HLTtracks" TTreeName="CR_Trig_minDR_HLTjet_HLTtracks" />
-        <VariableInfo NETName="muRoIClus_Trig_eta" TTreeName="muRoIClus_Trig_eta" />
-        <VariableInfo NETName="muRoIClus_Trig_phi" TTreeName="muRoIClus_Trig_phi" />
-        <VariableInfo NETName="muRoIClus_Trig_nRoI" TTreeName="muRoIClus_Trig_nRoI" />
-        <VariableInfo NETName="muRoIClus_Trig_nJet" TTreeName="muRoIClus_Trig_nJet" />
-        <VariableInfo NETName="muRoIClus_Trig_nTrk" TTreeName="muRoIClus_Trig_nTrk" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_Lxy" TTreeName="muRoIClus_Trig_LLP_Lxy" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_Lz" TTreeName="muRoIClus_Trig_LLP_Lz" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_dR" TTreeName="muRoIClus_Trig_LLP_dR" />
-        <VariableInfo NETName="muRoIClus_Trig_trigMatchLLP" TTreeName="muRoIClus_Trig_trigMatchLLP" />
-        <VariableInfo NETName="muRoIClus_Trig_trackdR" TTreeName="muRoIClus_Trig_trackdR" />
-        <VariableInfo NETName="muRoIClus_Trig_trackPt" TTreeName="muRoIClus_Trig_trackPt" />
-        <VariableInfo NETName="muRoIClus_Trig_jetdR" TTreeName="muRoIClus_Trig_jetdR" />
-        <VariableInfo NETName="muRoIClus_Trig_jetET" TTreeName="muRoIClus_Trig_jetET" />
-        <VariableInfo NETName="muRoIClus_Trig_jetLogRatio" TTreeName="muRoIClus_Trig_jetLogRatio" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_eta" TTreeName="muRoIClus_Trig_LLP_eta" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_phi" TTreeName="muRoIClus_Trig_LLP_phi" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_beta" TTreeName="muRoIClus_Trig_LLP_beta" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_pT" TTreeName="muRoIClus_Trig_LLP_pT" />
-        <VariableInfo NETName="MSVertex_LLP_eta" TTreeName="MSVertex_LLP_eta" />
-        <VariableInfo NETName="MSVertex_LLP_phi" TTreeName="MSVertex_LLP_phi" />
-        <VariableInfo NETName="MSVertex_LLP_beta" TTreeName="MSVertex_LLP_beta" />
-        <VariableInfo NETName="MSVertex_LLP_pT" TTreeName="MSVertex_LLP_pT" />
-        <VariableInfo NETName="MSVertex_LLP_Lxy" TTreeName="MSVertex_LLP_Lxy" />
-        <VariableInfo NETName="MSVertex_LLP_Lz" TTreeName="MSVertex_LLP_Lz" />
-        <VariableInfo NETName="MSVertex_LLP_dR" TTreeName="MSVertex_LLP_dR" />
-        <VariableInfo NETName="MSVertex_llpMatch" TTreeName="MSVertex_llpMatch" />
-        <VariableInfo NETName="MSVertex_eta" TTreeName="MSVertex_eta" />
-        <VariableInfo NETName="MSVertex_phi" TTreeName="MSVertex_phi" />
-        <VariableInfo NETName="MSVertex_R" TTreeName="MSVertex_R" />
-        <VariableInfo NETName="MSVertex_z" TTreeName="MSVertex_z" />
-        <VariableInfo NETName="MSVertex_nTrks" TTreeName="MSVertex_nTrks" />
-        <VariableInfo NETName="MSVertex_nMDT" TTreeName="MSVertex_nMDT" />
-        <VariableInfo NETName="MSVertex_nRPC" TTreeName="MSVertex_nRPC" />
-        <VariableInfo NETName="MSVertex_nTGC" TTreeName="MSVertex_nTGC" />
-        <VariableInfo NETName="MSVertex_nJetsInCone" TTreeName="MSVertex_nJetsInCone" />
-        <VariableInfo NETName="MSVertex_nTracksInCone" TTreeName="MSVertex_nTracksInCone" />
-        <VariableInfo NETName="MSVertex_sumPtTracksInCone" TTreeName="MSVertex_sumPtTracksInCone" />
-        <VariableInfo NETName="MSVertex_passesJetIso" TTreeName="MSVertex_passesJetIso" />
-        <VariableInfo NETName="MSVertex_passesTrackIso" TTreeName="MSVertex_passesTrackIso" />
-        <VariableInfo NETName="MSVertex_passesHitThresholds" TTreeName="MSVertex_passesHitThresholds" />
-        <VariableInfo NETName="MSVertex_isGood" TTreeName="MSVertex_isGood" />
         <VariableInfo NETName="DiLeptonFinder_leadingElectron_passTriggers" TTreeName="DiLeptonFinder_leadingElectron_passTriggers" />
         <VariableInfo NETName="DiLeptonFinder_secondLeadingElectron_passTriggers" TTreeName="DiLeptonFinder_secondLeadingElectron_passTriggers" />
         <VariableInfo NETName="DiLeptonFinder_leadingMuon_passTriggers" TTreeName="DiLeptonFinder_leadingMuon_passTriggers" />
@@ -159,6 +99,7 @@
         <VariableInfo NETName="time" TTreeName="Jet_time" />
         <VariableInfo NETName="isCosmic" TTreeName="Jet_isCosmic" />
         <VariableInfo NETName="isCRJet" TTreeName="Jet_isCRJet" />
+        <VariableInfo NETName="indexLLP" TTreeName="Jet_indexLLP" />
         <VariableInfo NETName="px" TTreeName="Jet_px" />
         <VariableInfo NETName="py" TTreeName="Jet_py" />
         <VariableInfo NETName="pz" TTreeName="Jet_pz" />
@@ -186,6 +127,7 @@
         <VariableInfo NETName="CalibJet_time" TTreeName="CalibJet_time" />
         <VariableInfo NETName="CalibJet_isCosmic" TTreeName="CalibJet_isCosmic" />
         <VariableInfo NETName="CalibJet_isCRJet" TTreeName="CalibJet_isCRJet" />
+        <VariableInfo NETName="CalibJet_indexLLP" TTreeName="CalibJet_indexLLP" />
         <VariableInfo NETName="CalibJet_px" TTreeName="CalibJet_px" />
         <VariableInfo NETName="CalibJet_py" TTreeName="CalibJet_py" />
         <VariableInfo NETName="CalibJet_pz" TTreeName="CalibJet_pz" />
@@ -209,7 +151,58 @@
         <VariableInfo NETName="Track_phi" TTreeName="Track_phi" />
       </Variables>
     </ArrayGroup>
-    <ArrayGroup Name="Triggers">
+    <ArrayGroup Name="group3">
+      <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_offline" TTreeName="muRoIClus_Trig_offline" />
+        <VariableInfo NETName="muRoIClus_Trig_offline_noiso" TTreeName="muRoIClus_Trig_offline_noiso" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="LLPs">
+      <Variables>
+        <VariableInfo NETName="LLP_E" TTreeName="LLP_E" />
+        <VariableInfo NETName="LLP_pT" TTreeName="LLP_pT" />
+        <VariableInfo NETName="LLP_eta" TTreeName="LLP_eta" />
+        <VariableInfo NETName="LLP_phi" TTreeName="LLP_phi" />
+        <VariableInfo NETName="LLP_beta" TTreeName="LLP_beta" />
+        <VariableInfo NETName="LLP_timing" TTreeName="LLP_timing" />
+        <VariableInfo NETName="LLP_Lxy" TTreeName="LLP_Lxy" />
+        <VariableInfo NETName="LLP_Lz" TTreeName="LLP_Lz" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group5">
+      <Variables>
+        <VariableInfo NETName="LLP_nJet_dRlt04" TTreeName="LLP_nJet_dRlt04" />
+        <VariableInfo NETName="DiLeptonFinder_eventTriggers" TTreeName="DiLeptonFinder_eventTriggers" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="MSVertexes">
+      <Variables>
+        <VariableInfo NETName="MSVertex_LLP_eta" TTreeName="MSVertex_LLP_eta" />
+        <VariableInfo NETName="MSVertex_LLP_phi" TTreeName="MSVertex_LLP_phi" />
+        <VariableInfo NETName="MSVertex_LLP_beta" TTreeName="MSVertex_LLP_beta" />
+        <VariableInfo NETName="MSVertex_LLP_pT" TTreeName="MSVertex_LLP_pT" />
+        <VariableInfo NETName="MSVertex_LLP_Lxy" TTreeName="MSVertex_LLP_Lxy" />
+        <VariableInfo NETName="MSVertex_LLP_Lz" TTreeName="MSVertex_LLP_Lz" />
+        <VariableInfo NETName="MSVertex_LLP_dR" TTreeName="MSVertex_LLP_dR" />
+        <VariableInfo NETName="MSVertex_llpMatch" TTreeName="MSVertex_llpMatch" />
+        <VariableInfo NETName="MSVertex_eta" TTreeName="MSVertex_eta" />
+        <VariableInfo NETName="MSVertex_phi" TTreeName="MSVertex_phi" />
+        <VariableInfo NETName="MSVertex_R" TTreeName="MSVertex_R" />
+        <VariableInfo NETName="MSVertex_z" TTreeName="MSVertex_z" />
+        <VariableInfo NETName="MSVertex_nTrks" TTreeName="MSVertex_nTrks" />
+        <VariableInfo NETName="MSVertex_nMDT" TTreeName="MSVertex_nMDT" />
+        <VariableInfo NETName="MSVertex_nRPC" TTreeName="MSVertex_nRPC" />
+        <VariableInfo NETName="MSVertex_nTGC" TTreeName="MSVertex_nTGC" />
+        <VariableInfo NETName="MSVertex_nJetsInCone" TTreeName="MSVertex_nJetsInCone" />
+        <VariableInfo NETName="MSVertex_nTracksInCone" TTreeName="MSVertex_nTracksInCone" />
+        <VariableInfo NETName="MSVertex_sumPtTracksInCone" TTreeName="MSVertex_sumPtTracksInCone" />
+        <VariableInfo NETName="MSVertex_passesJetIso" TTreeName="MSVertex_passesJetIso" />
+        <VariableInfo NETName="MSVertex_passesTrackIso" TTreeName="MSVertex_passesTrackIso" />
+        <VariableInfo NETName="MSVertex_passesHitThresholds" TTreeName="MSVertex_passesHitThresholds" />
+        <VariableInfo NETName="MSVertex_isGood" TTreeName="MSVertex_isGood" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="CR_noTrigs">
       <Variables>
         <VariableInfo NETName="CR_noTrig_eta" TTreeName="CR_noTrig_eta" />
         <VariableInfo NETName="CR_noTrig_phi" TTreeName="CR_noTrig_phi" />
@@ -219,8 +212,66 @@
         <VariableInfo NETName="CR_noTrig_nTrks" TTreeName="CR_noTrig_nTrks" />
         <VariableInfo NETName="CR_noTrig_timing" TTreeName="CR_noTrig_timing" />
         <VariableInfo NETName="CR_noTrig_passCuts" TTreeName="CR_noTrig_passCuts" />
-        <VariableInfo NETName="muRoIClus_Trig_offline" TTreeName="muRoIClus_Trig_offline" />
-        <VariableInfo NETName="muRoIClus_Trig_offline_noiso" TTreeName="muRoIClus_Trig_offline_noiso" />
+        <VariableInfo NETName="CR_noTrig_jetMatchLLP" TTreeName="CR_noTrig_jetMatchLLP" />
+        <VariableInfo NETName="CR_noTrig_LLP_Lxy" TTreeName="CR_noTrig_LLP_Lxy" />
+        <VariableInfo NETName="CR_noTrig_LLP_Lz" TTreeName="CR_noTrig_LLP_Lz" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group8">
+      <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_trackdR" TTreeName="muRoIClus_Trig_trackdR" />
+        <VariableInfo NETName="muRoIClus_Trig_trackPt" TTreeName="muRoIClus_Trig_trackPt" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group9">
+      <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_jetdR" TTreeName="muRoIClus_Trig_jetdR" />
+        <VariableInfo NETName="muRoIClus_Trig_jetET" TTreeName="muRoIClus_Trig_jetET" />
+        <VariableInfo NETName="muRoIClus_Trig_jetLogRatio" TTreeName="muRoIClus_Trig_jetLogRatio" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="CR_Trigs">
+      <Variables>
+        <VariableInfo NETName="CR_Trig_dR" TTreeName="CR_Trig_dR" />
+        <VariableInfo NETName="CR_Trig_eta" TTreeName="CR_Trig_eta" />
+        <VariableInfo NETName="CR_Trig_phi" TTreeName="CR_Trig_phi" />
+        <VariableInfo NETName="CR_Trig_ET" TTreeName="CR_Trig_ET" />
+        <VariableInfo NETName="CR_Trig_pT" TTreeName="CR_Trig_pT" />
+        <VariableInfo NETName="CR_Trig_EMF" TTreeName="CR_Trig_EMF" />
+        <VariableInfo NETName="CR_Trig_logR" TTreeName="CR_Trig_logR" />
+        <VariableInfo NETName="CR_Trig_nTrks" TTreeName="CR_Trig_nTrks" />
+        <VariableInfo NETName="CR_Trig_timing" TTreeName="CR_Trig_timing" />
+        <VariableInfo NETName="CR_Trig_passCuts" TTreeName="CR_Trig_passCuts" />
+        <VariableInfo NETName="CR_Trig_jetMatch" TTreeName="CR_Trig_jetMatch" />
+        <VariableInfo NETName="CR_Trig_isGoodLLP" TTreeName="CR_Trig_isGoodLLP" />
+        <VariableInfo NETName="CR_Trig_trigET" TTreeName="CR_Trig_trigET" />
+        <VariableInfo NETName="CR_Trig_trigpT" TTreeName="CR_Trig_trigpT" />
+        <VariableInfo NETName="CR_Trig_trigEta" TTreeName="CR_Trig_trigEta" />
+        <VariableInfo NETName="CR_Trig_trigPhi" TTreeName="CR_Trig_trigPhi" />
+        <VariableInfo NETName="CR_Trig_trigEMF" TTreeName="CR_Trig_trigEMF" />
+        <VariableInfo NETName="CR_Trig_triglogR" TTreeName="CR_Trig_triglogR" />
+        <VariableInfo NETName="CR_Trig_minDR_HLTjet_HLTtracks" TTreeName="CR_Trig_minDR_HLTjet_HLTtracks" />
+        <VariableInfo NETName="CR_Trig_trigMatchLLP" TTreeName="CR_Trig_trigMatchLLP" />
+        <VariableInfo NETName="CR_Trig_trig_LLP_DR" TTreeName="CR_Trig_trig_LLP_DR" />
+        <VariableInfo NETName="CR_Trig_LLP_Lxy" TTreeName="CR_Trig_LLP_Lxy" />
+        <VariableInfo NETName="CR_Trig_LLP_Lz" TTreeName="CR_Trig_LLP_Lz" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group11">
+      <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_eta" TTreeName="muRoIClus_Trig_eta" />
+        <VariableInfo NETName="muRoIClus_Trig_phi" TTreeName="muRoIClus_Trig_phi" />
+        <VariableInfo NETName="muRoIClus_Trig_nRoI" TTreeName="muRoIClus_Trig_nRoI" />
+        <VariableInfo NETName="muRoIClus_Trig_nJet" TTreeName="muRoIClus_Trig_nJet" />
+        <VariableInfo NETName="muRoIClus_Trig_nTrk" TTreeName="muRoIClus_Trig_nTrk" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_Lxy" TTreeName="muRoIClus_Trig_LLP_Lxy" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_Lz" TTreeName="muRoIClus_Trig_LLP_Lz" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_dR" TTreeName="muRoIClus_Trig_LLP_dR" />
+        <VariableInfo NETName="muRoIClus_Trig_trigMatchLLP" TTreeName="muRoIClus_Trig_trigMatchLLP" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_eta" TTreeName="muRoIClus_Trig_LLP_eta" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_phi" TTreeName="muRoIClus_Trig_LLP_phi" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_beta" TTreeName="muRoIClus_Trig_LLP_beta" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_pT" TTreeName="muRoIClus_Trig_LLP_pT" />
       </Variables>
     </ArrayGroup>
   </Groups>
