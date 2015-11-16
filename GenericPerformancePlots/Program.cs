@@ -13,6 +13,7 @@ using LinqToTTreeInterfacesLib;
 using ROOTNET.Interface;
 
 using static libDataAccess.PlotSpecifications;
+using static GenericPerformancePlots.GRIDJobs;
 
 namespace GenericPerformancePlots
 {
@@ -24,19 +25,12 @@ namespace GenericPerformancePlots
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            var backgroundFile = new FileInfo(@"C:\Users\gordo\Documents\GRIDDS\user.gwatts.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.r6765_r6282__EXOT15_v3_EXT0.DiVertAnalysis_v1_242636232_hist\user.gwatts\user.gwatts.6923254._000001.hist-output.root");
-            if (!backgroundFile.Exists)
-            {
-                throw new ArgumentException("Can't open file");
-            }
-            var signalFile = new FileInfo(@"C:\Users\gordo\Documents\GRIDDS\user.gwatts.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2.DiVertAnalysis_v2_264553385_hist\user.gwatts\user.gwatts.6988346._000001.hist-output.root");
-            if (!signalFile.Exists)
-            {
-                throw new ArgumentException("Can't open signal file");
-            }
+            var backgroundFiles = FindJobFiles("DiVertAnalysis", 3, "user.emmat.mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.AOD.e3668_s2576_s2132_r6765_r6282__EXOT15_v3_EXT0", nFiles: 1);
 
-            var background = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFile);
-            var signal = DiVertAnalysis.QueryablerecoTree.CreateQueriable(signalFile);
+            var signalFiles = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2", nFiles: 1);
+
+            var background = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
+            var signal = DiVertAnalysis.QueryablerecoTree.CreateQueriable(signalFiles);
 
             // Output file
             // TODO: Creating a FutureHelper when no file is open causes a funny error message.
