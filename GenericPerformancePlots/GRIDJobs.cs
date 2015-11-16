@@ -44,6 +44,17 @@ namespace GenericPerformancePlots
             {
                 throw new ArgumentException($"There are more than one output container for the panda task {pandaTask.jeditaskid} - can't decide. Need code upgrade!! Thanks for the fish!");
             }
+            if (containers.Length == 0)
+            {
+                if (pandaTask.status != "DONE")
+                {
+                    throw new InvalidOperationException($"The panda task {pandaTask.jeditaskid} has not completed running yet! So no files to run on (status: {pandaTask.status}) for input file {sourceDataset} run by {jobName} v{jobVersion}!");
+                }
+                else
+                {
+                    throw new ArgumentException($"There are no output dataset containers for the panda task {pandaTask.jeditaskid} (for {sourceDataset} - {jobName} v{jobVersion}");
+                }
+            }
 
             // Get the dataset, and then see if we can't access it.
             var dataset = containers.First();
