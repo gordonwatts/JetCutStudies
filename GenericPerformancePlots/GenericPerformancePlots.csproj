@@ -40,12 +40,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AtlasSSH, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.0.0.0\lib\net451\AtlasSSH.dll</HintPath>
+    <Reference Include="AtlasSSH, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.2.1.2.0\lib\net451\AtlasSSH.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AtlasWorkFlows, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.0.0.0\lib\net451\AtlasWorkFlows.dll</HintPath>
+    <Reference Include="AtlasWorkFlows, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.2.1.2.0\lib\net451\AtlasWorkFlows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">

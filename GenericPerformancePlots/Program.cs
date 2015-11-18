@@ -25,9 +25,11 @@ namespace GenericPerformancePlots
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            var backgroundFiles = FindJobFiles("DiVertAnalysis", 3, "user.emmat.mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.AOD.e3668_s2576_s2132_r6765_r6282__EXOT15_v3_EXT0", nFiles: 1);
+            var backgroundFiles = FindJobFiles("DiVertAnalysis", 3, "user.emmat.mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.AOD.e3668_s2576_s2132_r6765_r6282__EXOT15_v3_EXT0",
+                nFiles: 1, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
 
-            var signalFiles = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2", nFiles: 1);
+            var signalFiles = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2",
+                nFiles: 1, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
 
             var background = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             var signal = DiVertAnalysis.QueryablerecoTree.CreateQueriable(signalFiles);
