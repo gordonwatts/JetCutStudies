@@ -99,7 +99,7 @@
         <VariableInfo NETName="time" TTreeName="Jet_time" />
         <VariableInfo NETName="isCosmic" TTreeName="Jet_isCosmic" />
         <VariableInfo NETName="isCRJet" TTreeName="Jet_isCRJet" />
-        <VariableInfo NETName="indexLLP" TTreeName="Jet_indexLLP" />
+        <VariableInfo NETName="LLP" TTreeName="Jet_indexLLP" IndexToGroup="LLPs"/>
         <VariableInfo NETName="px" TTreeName="Jet_px" />
         <VariableInfo NETName="py" TTreeName="Jet_py" />
         <VariableInfo NETName="pz" TTreeName="Jet_pz" />
@@ -159,14 +159,14 @@
     </ArrayGroup>
     <ArrayGroup Name="LLPs">
       <Variables>
-        <VariableInfo NETName="LLP_E" TTreeName="LLP_E" />
-        <VariableInfo NETName="LLP_pT" TTreeName="LLP_pT" />
-        <VariableInfo NETName="LLP_eta" TTreeName="LLP_eta" />
-        <VariableInfo NETName="LLP_phi" TTreeName="LLP_phi" />
-        <VariableInfo NETName="LLP_beta" TTreeName="LLP_beta" />
-        <VariableInfo NETName="LLP_timing" TTreeName="LLP_timing" />
-        <VariableInfo NETName="LLP_Lxy" TTreeName="LLP_Lxy" />
-        <VariableInfo NETName="LLP_Lz" TTreeName="LLP_Lz" />
+        <VariableInfo NETName="E" TTreeName="LLP_E" />
+        <VariableInfo NETName="pT" TTreeName="LLP_pT" />
+        <VariableInfo NETName="eta" TTreeName="LLP_eta" />
+        <VariableInfo NETName="phi" TTreeName="LLP_phi" />
+        <VariableInfo NETName="beta" TTreeName="LLP_beta" />
+        <VariableInfo NETName="timing" TTreeName="LLP_timing" />
+        <VariableInfo NETName="Lxy" TTreeName="LLP_Lxy" />
+        <VariableInfo NETName="Lz" TTreeName="LLP_Lz" />
       </Variables>
     </ArrayGroup>
     <ArrayGroup Name="group5">
