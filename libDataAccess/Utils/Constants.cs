@@ -12,12 +12,14 @@ namespace libDataAccess.Utils
         /// <summary>
         /// The inner radius of the calorimeter EM wall (meters)
         /// </summary>
-        public static double RadiusOfInnerEMWall = 1.5;
+        /// <remarks>The proper setting of this can be seen by looking at the Lxy for JetMatched LLPs - it dies right at 4.0</remarks>
+        public static double RadiusOfInnerEMWall = 1.8;
 
         /// <summary>
         /// The outter radius of the calorimeter HAD Wall. (meters)
         /// </summary>
-        public static double RadiusOfOutterHADWall = 1.8;
+        /// <remarks>The proper setting for this cut can be seen by looking at the CalR vs Lxy plot</remarks>
+        public static double RadiusOfOutterHADWall = 4.0;
 
         /// <summary>
         /// Return an expression to test for something decaying in the calorimeter

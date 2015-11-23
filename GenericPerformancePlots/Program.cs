@@ -26,6 +26,9 @@ namespace GenericPerformancePlots
         /// Make generic plots of the signal or background
         /// </summary>
         /// <param name="args"></param>
+        /// <remarks>
+        /// TODO: Would studies of efficiencies here be better served by splitting into forward and central eta regions?
+        /// </remarks>
         static void Main(string[] args)
         {
             Console.WriteLine("Finding the files");
@@ -52,7 +55,7 @@ namespace GenericPerformancePlots
                     .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
 
                 // Some basic info about the LLP's
-                LLPBasicInfo(signal.Select(s => s.LLPs).SelectMany(llps => llps), outputHistograms.mkdir("signalLLP"));
+                LLPBasicInfo(signal.SelectMany(s => s.LLPs), signal.SelectMany(s => s.Jets), outputHistograms.mkdir("signalLLP"));
 
                 // Cal efficiency plots for CalR
                 CalcSignalToBackgroundSeries(
@@ -76,19 +79,43 @@ namespace GenericPerformancePlots
         }
 
         /// <summary>
-        /// Some very basic LLP plots
+        /// Some very basic LLP plots. Good LLPs are < 1.7 in eta?? For forward it is 1.7 to 2.5.
         /// </summary>
         /// <param name="LLPsToPlot"></param>
         /// <param name="dir"></param>
-        private static void LLPBasicInfo(IQueryable<recoTreeLLPs> LLPsToPlot, FutureTDirectory dir)
+        private static void LLPBasicInfo(IQueryable<recoTreeLLPs> LLPsToPlot, IQueryable<recoTreeJets> jets, FutureTDirectory dir)
         {
+            // LLP's and LLP's assocated with a jet
             LLPsToPlot
-                .FuturePlot(PlotSpecifications.LLPLxyPlot, "all")
+                .FuturePlot(LLPLxyPlot, "all")
                 .Save(dir);
 
             LLPsToPlot
+                .FuturePlot(LLPEtaPlot, "all")
+                .Save(dir);
+
+            var jetsWithLLPS = jets
+                .Where(j => j.LLP.IsGoodIndex());
+
+            jetsWithLLPS
+                .Select(j => j.LLP)
+                .FuturePlot(LLPLxyPlot, "JetMatched")
+                .Save(dir);
+
+            jetsWithLLPS
+                .Select(j => j.LLP)
+                .FuturePlot(LLPEtaPlot, "JetMatched")
+                .Save(dir);
+
+            // And look at the EMF as a function of the jet decay length so we can see exactly where the Calorimeter is.
+            jetsWithLLPS
+                .FuturePlot(JetCalRVsLXYPlot, "JetsWithLLPs")
+                .Save(dir);
+
+            // Check out what things look like for our cut region.
+            LLPsToPlot
                 .Where(llp => Constants.InCalorimeter.Invoke(llp.Lxy/1000))
-                .FuturePlot(PlotSpecifications.LLPLxyPlot, "In CAL Range")
+                .FuturePlot(LLPLxyPlot, "In Cut CAL Range")
                 .Save(dir);
         }
 

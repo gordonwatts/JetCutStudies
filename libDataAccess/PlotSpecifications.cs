@@ -1,10 +1,5 @@
 ﻿using DiVertAnalysis;
-using LINQToTreeHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LINQToTTreeLib;
 
 using static LINQToTreeHelpers.PlottingUtils;
 
@@ -44,9 +39,26 @@ namespace libDataAccess
                 "CalR{0}", "Log Ratio of {0} jets; logR");
 
         /// <summary>
+        /// Plot CalRatio vs Lxy for jets
+        /// </summary>
+        public static IPlotSpec<recoTreeJets> JetCalRVsLXYPlot =
+            MakePlotterSpec<recoTreeJets>(25, -3.0, 4.0, j =>
+                j.logRatio > 4 ? 3.99
+                : j.logRatio < -3.0 ? -2.99
+                : j.logRatio, 30, 0.0, 10.0, j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000 : 0.0,
+                titleFormat: "CalRatio vs Lxy for {0}", nameFormat:"CalRvsLxy{0}"
+            );
+
+        /// <summary>
         /// The 1D plot of the decay length for LLP's
         /// </summary>
         public static IPlotSpec<recoTreeLLPs> LLPLxyPlot =
             MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lxy / 1000, "LLPLxy{0}", "LLP Lxy for {0}; Lxy (m)");
+
+        /// <summary>
+        /// 1D plot of the eta for LLP's
+        /// </summary>
+        public static IPlotSpec<recoTreeLLPs> LLPEtaPlot =
+            MakePlotterSpec<recoTreeLLPs>(50, -5.0, 5.0, llp => llp.eta, "LLPEta{0}", "LLP eta for {0}; eta");
     }
 }
