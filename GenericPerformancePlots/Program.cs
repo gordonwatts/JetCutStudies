@@ -28,6 +28,7 @@ namespace GenericPerformancePlots
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            Console.WriteLine("Finding the files");
             var backgroundFiles = FindJobFiles("DiVertAnalysis", 3, "user.emmat.mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.AOD.e3668_s2576_s2132_r6765_r6282__EXOT15_v3_EXT0",
                 nFiles: 1, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
 
@@ -39,33 +40,36 @@ namespace GenericPerformancePlots
 
             // Output file
             // TODO: Creating a FutureHelper when no file is open causes a funny error message.
-            var outputHistograms = new FutureTFile("GenericPerformancePlots.root");
+            Console.WriteLine("Opening outupt file");
+            using (var outputHistograms = new FutureTFile("GenericPerformancePlots.root"))
+            {
 
-            background
-                .SelectMany(events => events.Jets)
-                .PlotBasicDataPlots(outputHistograms.mkdir("background"), "all");
-            signal
-                .SelectMany(events => events.Jets)
-                .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
+                background
+                    .SelectMany(events => events.Jets)
+                    .PlotBasicDataPlots(outputHistograms.mkdir("background"), "all");
+                signal
+                    .SelectMany(events => events.Jets)
+                    .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
 
-            // Cal efficiency plots for CalR
-            CalcSignalToBackgroundSeries(
-                signal.SelectMany(events => events.Jets),
-                background.SelectMany(events => events.Jets),
-                JetCalRPlot,
-                outputHistograms.mkdir("sigrtback"),
-                "CalR");
+                // Cal efficiency plots for CalR
+                CalcSignalToBackgroundSeries(
+                    signal.SelectMany(events => events.Jets),
+                    background.SelectMany(events => events.Jets),
+                    JetCalRPlot,
+                    outputHistograms.mkdir("sigrtback"),
+                    "CalR");
 
-            // Do a simple calc for info reasons which we will type out.
-            var status = from nB in background.FutureCount()
-                         from nS in signal.FutureCount()
-                         select string.Format("Signal events: {0} Background events: {1}", nB, nS);
+                // Do a simple calc for info reasons which we will type out.
+                var status = from nB in background.FutureCount()
+                             from nS in signal.FutureCount()
+                             select string.Format("Signal events: {0} Background events: {1}", nB, nS);
 
-            // Run everything
-            outputHistograms.Write();
+                // Run everything
+                outputHistograms.Write();
 
-            // Let the world know what is up
-            Console.WriteLine(status.Value);
+                // Let the world know what is up
+                Console.WriteLine(status.Value);
+            }
         }
 
         /// <summary>
@@ -84,11 +88,11 @@ namespace GenericPerformancePlots
             CalcSignalToBackground(signal, background, plotter, dir, nameStub);
             // Do LLP that have LLPs
             // TODO: understand how the LLP association is made, and make sure it is good enough.
-            CalcSignalToBackground(signal.Where(sj => sj.isGoodLLP), background, plotter, dir, $"{nameStub}LLPJ");
+            CalcSignalToBackground(signal.Where(sj => sj.LLP.IsGoodIndex()), background, plotter, dir, $"{nameStub}LLPJ");
             // Has an LLP in the calorimeter.
             // TODO: understand how the LLP association is made, and make sure it is good enough.
             // TODO: Understand what isCRJet is defined to be.
-            CalcSignalToBackground(signal.Where(sj => sj.isCRJet), background, plotter, dir, $"{nameStub}LLPJCal");
+            CalcSignalToBackground(signal.Where(sj => sj.LLP.IsGoodIndex() && Constants.InCalorimeter.Invoke(sj.LLP.Lxy/1000)), background, plotter, dir, $"{nameStub}LLPJCal");
         }
 
         /// <summary>
@@ -122,8 +126,6 @@ namespace GenericPerformancePlots
 
             // As a bonus, calc the effeciency graf. Get the x and y for that.
             // TODO: there doesn't seem to be a get accessor for Content on NTH1 - is that really right?
-            // TODO: missing some sort of selectmany statement on IFuture that would allow a let statement as
-            // seen here:
             //var r = from s in sPlot
             //        let sContent = Enumerable.Range(1, s.NbinsX).Select(idx => s.GetBinContent(idx)).ToArray()
             //        from b in bPlot
