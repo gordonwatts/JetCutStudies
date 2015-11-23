@@ -42,5 +42,11 @@ namespace libDataAccess
             : j.logRatio < -3.0 ? -2.99
             : j.logRatio, 
                 "CalR{0}", "Log Ratio of {0} jets; logR");
+
+        /// <summary>
+        /// The 1D plot of the decay length for LLP's
+        /// </summary>
+        public static IPlotSpec<recoTreeLLPs> LLPLxyPlot =
+            MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lxy / 1000, "LLPLxy{0}", "LLP Lxy for {0}; Lxy (m)");
     }
 }

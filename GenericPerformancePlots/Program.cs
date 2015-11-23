@@ -51,6 +51,9 @@ namespace GenericPerformancePlots
                     .SelectMany(events => events.Jets)
                     .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
 
+                // Some basic info about the LLP's
+                LLPBasicInfo(signal.Select(s => s.LLPs).SelectMany(llps => llps), outputHistograms.mkdir("signalLLP"));
+
                 // Cal efficiency plots for CalR
                 CalcSignalToBackgroundSeries(
                     signal.SelectMany(events => events.Jets),
@@ -70,6 +73,23 @@ namespace GenericPerformancePlots
                 // Let the world know what is up
                 Console.WriteLine(status.Value);
             }
+        }
+
+        /// <summary>
+        /// Some very basic LLP plots
+        /// </summary>
+        /// <param name="LLPsToPlot"></param>
+        /// <param name="dir"></param>
+        private static void LLPBasicInfo(IQueryable<recoTreeLLPs> LLPsToPlot, FutureTDirectory dir)
+        {
+            LLPsToPlot
+                .FuturePlot(PlotSpecifications.LLPLxyPlot, "all")
+                .Save(dir);
+
+            LLPsToPlot
+                .Where(llp => Constants.InCalorimeter.Invoke(llp.Lxy/1000))
+                .FuturePlot(PlotSpecifications.LLPLxyPlot, "In CAL Range")
+                .Save(dir);
         }
 
         /// <summary>
