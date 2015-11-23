@@ -65,6 +65,17 @@ namespace GenericPerformancePlots
                     outputHistograms.mkdir("sigrtback"),
                     "CalR");
 
+                // Next, as a function of pT
+                foreach (var ptRegion in Constants.PtRegions)
+                {
+                    CalcSignalToBackgroundSeries(
+                        signal.SelectMany(events => events.Jets).Where(j => j.pT>= ptRegion.Item1 && j.pT < ptRegion.Item2),
+                        background.SelectMany(events => events.Jets).Where(j => j.pT >= ptRegion.Item1 && j.pT < ptRegion.Item2),
+                        JetCalRPlot,
+                        outputHistograms.mkdir($"sigrtback_{ptRegion.Item1}_{ptRegion.Item2}"),
+                        "CalR");
+                }
+
                 // Do a simple calc for info reasons which we will type out.
                 var status = from nB in background.FutureCount()
                              from nS in signal.FutureCount()
@@ -200,6 +211,8 @@ namespace GenericPerformancePlots
             string name, string title)
         {
             var tg = new ROOTNET.NTGraph(xAxisHist.NbinsX, xAxisHist.Data(), yAxisHist.Data());
+            tg.Xaxis.Title = "Fractional Signal Efficiency";
+            tg.Yaxis.Title = "Fractional Background Efficiency";
 
             tg.Title = title;
             tg.Name = name;

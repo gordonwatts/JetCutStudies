@@ -31,5 +31,18 @@ namespace libDataAccess.Utils
                 return r => r >= RadiusOfInnerEMWall && r <= RadiusOfOutterHADWall;
             }
         }
+
+        /// <summary>
+        /// Regions of pT when we are splitting things up
+        /// </summary>
+        public static Tuple<double, double>[] PtRegions
+            = new Tuple<double, double>[] {
+                Tuple.Create(0.0, 25.0),
+                Tuple.Create(25.0, 40.0),
+                Tuple.Create(40.0, 60.0),
+                Tuple.Create(60.0, 120.0),
+                Tuple.Create(120.0, 200.0),
+                Tuple.Create(200.0, 1000.0)
+            };
     }
 }
