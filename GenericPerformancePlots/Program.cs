@@ -25,6 +25,11 @@ namespace GenericPerformancePlots
         /// <param name="args"></param>
         /// <remarks>
         /// TODO: Would studies of efficiencies here be better served by splitting into forward and central eta regions?
+        /// TODO: What is going on with the jetPT?
+        /// TODO: What is eta distribution of the jets that make it through, in particular with NTrack = 0?
+        ///       It could be those are far forward and thus have no tracks.
+        /// TODO: How often does a single v-pion decay to two jets?
+        /// TODO: Should any of these plots look at stuff in the way that Heather has (2D heat maps for cuts)?
         /// </remarks>
         static void Main(string[] args)
         {
