@@ -132,7 +132,7 @@ namespace GenericPerformancePlots
                 "Ntrk");
 
             // Next, as a function of pT
-            var backValues = new double[] { 0.001, 0.01, 0.05, 0.1 };
+            var backRejValues = new double[] { 0.999, 0.99, 0.95, 0.9 };
             var sigValues = new double[] { 0.1, 0.2, 0.3, 0.4, 0.5 };
             var result = new List<IFutureValue<string>>();
             foreach (var ptRegion in Constants.PtRegions)
@@ -159,12 +159,12 @@ namespace GenericPerformancePlots
                     dir,
                     "Ntrk");
 
-                var requiredBackValues = from bv in backValues
+                var requiredBackValues = from bv in backRejValues
                                          select from bHist in sigBackCalR.Item2
                                                 from sHist in sigBackCalR.Item1
                                                 let backCut = CalcEffValue(bHist, bv)
                                                 let effValue = LookupEffAtCut(sHist, backCut)
-                                                select $"{ptRegion.Item1}: Cut for Back Eff of {bv} is {backCut} (sig eff is {effValue})";
+                                                select $"{ptRegion.Item1}: Cut for Back Rejection of {bv} is {backCut} (sig eff is {effValue})";
                 result.AddRange(requiredBackValues);
 
                 var requiredSigValues = from sv in sigValues
