@@ -1,0 +1,40 @@
+#
+# Look at how the smaple evolves by pT.
+#
+
+f = file ("C:\Users\gordo\Documents\Code\calratio2015\JetCutStudies\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
+
+samples = ["125-15", "125-40", "600-100"];
+
+Legend("all" => {Color => 1, Title => "All Jets"});
+Legend("near" => {Color => 2, Title => "Near LLP"});
+Legend("cal" => {Color => 3, Title => "LLP Cal Decay"});
+
+for (sample, samples) {
+	hall  = f.Get("{sample}/sigrtback/pTCalR_sig").tag("all");
+	hNearLJ  = f.Get("{sample}/sigrtback/pTCalRLLPJ_sig").tag("near");
+	hCalLJ  = f.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag("cal");
+
+	[hall, hNearLJ, hCalLJ]
+		.plot()
+		.title("p_{T} of Jets in Sample {sample}")
+		.yaxis("Number of Jets")
+		.logy()
+		.LegendOptions("drawbox" => "false");
+};
+
+Legend("125-15" => {Color => 1, Title => "125-15"});
+Legend("125-40" => {Color => 2, Title => "125-40"});
+Legend("600-100" => {Color => 3, Title => "600-100"});
+
+plots = map(sample, samples) {
+	f.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag(sample).normalize();
+};
+background = f.Get("125-15/sigrtback/pTCalR_back").tag("background").normalize();
+
+plots
+	.plot()
+	.title("p_{T} of Jets with Cal decay in all samples")
+	.yaxis("Jets")
+	.logy()
+	.LegendOptions("drawbox" => "false");

@@ -1,0 +1,23 @@
+#
+# Common stuff
+#
+
+# File we are looking at...
+f = file ("C:\Users\gordo\Documents\Code\calratio2015\JetCutStudies\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
+
+# The samples that are hidden in the file
+samples = ["125-15", "125-40", "600-100"];
+
+# Some legend stuff to help out
+Legend("125-15" => {Color => 1, Title => "125-15"});
+Legend("125-40" => {Color => 2, Title => "125-40"});
+Legend("600-100" => {Color => 3, Title => "600-100"});
+
+# Pt ranges
+ptBins = ["0_25", "25_40", "40_60", "60_120", "120_200", "200_1000"];
+Legend("0_25" => {Color => 1, Title => "0 < p_{T} < 25"});
+Legend("25_40" => {Color => 2, Title => "25 < p_{T} < 40"});
+Legend("40_60" => {Color => 3, Title => "40 < p_{T} < 60"});
+Legend("60_120" => {Color => 4, Title => "60 < p_{T} < 120"});
+Legend("120_200" => {Color => 5, Title => "120 < p_{T} < 200"});
+Legend("200_1000" => {Color => 6, Title => "200 < p_{T} < 1000"});
