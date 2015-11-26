@@ -22,6 +22,16 @@ namespace libDataAccess.Utils
         public static double RadiusOfOutterHADWall = 4.0;
 
         /// <summary>
+        /// Default DR for track association, squared.
+        /// </summary>
+        public static double TrackJetAssociationDR2 = 0.2 * 0.2;
+
+        /// <summary>
+        /// Default pT cut for tracks
+        /// </summary>
+        public static double TrackJetAssociationMinPt = 1.0;
+
+        /// <summary>
         /// Return an expression to test for something decaying in the calorimeter
         /// </summary>
         public static Expression<Func<double, bool>> InCalorimeter

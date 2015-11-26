@@ -1,4 +1,5 @@
-﻿using LINQToTreeHelpers;
+﻿using libDataAccess;
+using LINQToTreeHelpers;
 using LINQToTreeHelpers.FutureUtils;
 using System;
 using System.Collections.Generic;
@@ -21,18 +22,26 @@ namespace GenericPerformancePlots
         /// <param name="jets">Source of jets</param>
         /// <param name="saveDir">Future directory where we will save these plots</param>
         /// <param name="nameAddition">Text to give to name and title of all plots we are making</param>
-        public static IQueryable<DiVertAnalysis.recoTreeJets> PlotBasicDataPlots (this IQueryable<DiVertAnalysis.recoTreeJets> jets, FutureTDirectory saveDir, string nameAddition)
+        public static IQueryable<JetInfoExtra> PlotBasicDataPlots (this IQueryable<JetInfoExtra> jets, FutureTDirectory saveDir, string nameAddition)
         {
             jets
-                .FuturePlot(JetPtPlot, nameAddition)
+                .FuturePlot(JetExtraPtPlot, nameAddition)
                 .Save(saveDir);
 
             jets
-                .FuturePlot(JetEtaPlot, nameAddition)
+                .FuturePlot(JetExtraEtaPlot, nameAddition)
                 .Save(saveDir);
 
             jets
-                .FuturePlot(JetCalRPlot, nameAddition)
+                .FuturePlot(JetExtraCalRPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(NTrackExtraPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(TrackPtExtraPlot, nameAddition)
                 .Save(saveDir);
 
             return jets;

@@ -1,6 +1,7 @@
 ﻿using DiVertAnalysis;
 using LINQToTTreeLib;
-
+using System.Linq;
+using System.Collections.Generic;
 using static LINQToTreeHelpers.PlottingUtils;
 
 namespace libDataAccess
@@ -23,10 +24,43 @@ namespace libDataAccess
             MakePlotterSpec<recoTreeJets>(50, 0.0, 300.0, j => j.pT, "pT{0}", "pT of {0} jets; pT [GeV]");
 
         /// <summary>
+        /// 1D plot of jet PT.
+        /// </summary>
+        /// <remarks>Initalized below</remarks>
+        public static IPlotSpec<JetInfoExtra> JetExtraPtPlot;
+
+        /// <summary>
         /// 1D plot of jet eta
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetEtaPlot =
             MakePlotterSpec<recoTreeJets>(50, -5.0, 5.0, j => j.eta, "eta{0}", "eta of {0} jets; eta");
+
+        /// <summary>
+        /// Plot the number of tracks
+        /// </summary>
+        public static IPlotSpec<IEnumerable<recoTreeTracks>> NTrackPlot =
+            MakePlotterSpec<IEnumerable<recoTreeTracks>> (20, 0.0, 20.0, tks => tks.Count(), "ntracks{0}", "Number of tracks with {0}; N_tracks");
+
+        /// <summary>
+        /// A pT plot of tracks associated with jets
+        /// </summary>
+        public static IPlotSpec<recoTreeTracks> TrackPtPlot =
+            MakePlotterSpec<recoTreeTracks>(200, 0.0, 20.0, t => t.pT, "trkPt{0}", "Track pT for {0} tracks; pT");
+
+        /// <summary>
+        /// A pT plot of tracks associated with jets
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> TrackPtExtraPlot;
+
+        /// <summary>
+        /// Plot the number of tracks.
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> NTrackExtraPlot;
+
+        /// <summary>
+        /// 1D plot of jet eta
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraEtaPlot;
 
         /// <summary>
         /// 1D plot of cal ratio jets
@@ -37,6 +71,11 @@ namespace libDataAccess
             : j.logRatio < -3.0 ? -2.99
             : j.logRatio, 
                 "CalR{0}", "Log Ratio of {0} jets; logR");
+
+        /// <summary>
+        /// 1D plot of cal ratio jets
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraCalRPlot;
 
         /// <summary>
         /// Plot CalRatio vs Lxy for jets
@@ -60,5 +99,18 @@ namespace libDataAccess
         /// </summary>
         public static IPlotSpec<recoTreeLLPs> LLPEtaPlot =
             MakePlotterSpec<recoTreeLLPs>(50, -5.0, 5.0, llp => llp.eta, "LLPEta{0}", "LLP eta for {0}; eta");
+
+        /// <summary>
+        /// Get the dependencies right
+        /// </summary>
+        static PlotSpecifications()
+        {
+            JetExtraPtPlot = JetPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
+            JetExtraEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
+            JetExtraCalRPlot = JetCalRPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
+            NTrackExtraPlot = NTrackPlot.FromType<IEnumerable<recoTreeTracks>, JetInfoExtra>(jinfo => jinfo.Tracks);
+            TrackPtExtraPlot = TrackPtPlot.FromManyOfType((JetInfoExtra j) => j.Tracks);
+        }
+
     }
 }

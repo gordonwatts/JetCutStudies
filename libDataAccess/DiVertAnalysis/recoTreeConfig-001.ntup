@@ -146,9 +146,9 @@
     </ArrayGroup>
     <ArrayGroup Name="Tracks">
       <Variables>
-        <VariableInfo NETName="Track_pT" TTreeName="Track_pT" />
-        <VariableInfo NETName="Track_eta" TTreeName="Track_eta" />
-        <VariableInfo NETName="Track_phi" TTreeName="Track_phi" />
+        <VariableInfo NETName="pT" TTreeName="Track_pT" />
+        <VariableInfo NETName="eta" TTreeName="Track_eta" />
+        <VariableInfo NETName="phi" TTreeName="Track_phi" />
       </Variables>
     </ArrayGroup>
     <ArrayGroup Name="group3">

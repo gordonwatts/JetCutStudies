@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using LINQToTreeHelpers;
-using System.Text;
-using System.Threading.Tasks;
-using LINQToTTreeLib;
-using LINQToTreeHelpers.FutureUtils;
-using DiVertAnalysis;
-using static LINQToTreeHelpers.PlottingUtils;
-using LinqToTTreeInterfacesLib;
-using ROOTNET.Interface;
+﻿using DiVertAnalysis;
 using libDataAccess;
-
-using static libDataAccess.PlotSpecifications;
-using static GenericPerformancePlots.GRIDJobs;
-using static System.Linq.Enumerable;
 using libDataAccess.Utils;
+using LINQToTreeHelpers;
+using LINQToTreeHelpers.FutureUtils;
+using LinqToTTreeInterfacesLib;
+using LINQToTTreeLib;
+using ROOTNET.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using static GenericPerformancePlots.GRIDJobs;
+using static libDataAccess.JetInfoExtraHelpers;
+using static libDataAccess.PlotSpecifications;
+using static LINQToTreeHelpers.PlottingUtils;
+using static System.Linq.Enumerable;
 
 namespace GenericPerformancePlots
 {
@@ -32,17 +29,18 @@ namespace GenericPerformancePlots
         static void Main(string[] args)
         {
             Console.WriteLine("Finding the files");
+            int nFiles = 0;
             var backgroundFiles = FindJobFiles("DiVertAnalysis", 3, "user.emmat.mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.AOD.e3668_s2576_s2132_r6765_r6282__EXOT15_v3_EXT0",
-                nFiles: 0, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
+                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
 
             var signalHV125pi15 = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2",
-                nFiles: 0, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
+                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
 
             var signalHV125pi40 = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301298.HSS_mH125mS40.reco_20k.s2698_r7144_v03_EXT2",
-                nFiles: 0, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
+                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
 
             var signalHV600pi100 = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301301.HSS_mH600mS100.reco_20k.s2698_r7144_v03_EXT2",
-                nFiles: 0, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
+                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
 
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             //backgroundEvents.IgnoreQueryCache = true;
@@ -97,7 +95,6 @@ namespace GenericPerformancePlots
             }
         }
 
-
         /// <summary>
         /// Allow for studying multiple samples
         /// </summary>
@@ -107,11 +104,12 @@ namespace GenericPerformancePlots
         /// <returns></returns>
         private static List<IFutureValue<string>> PerSampleStudies(IQueryable<recoTree> background, IQueryable<recoTree> signal, FutureTDirectory outputHistograms)
         {
-            background
-                .SelectMany(events => events.Jets)
+            var backgroundJets = BuildSuperJetInfo(background);
+            var signalJets = BuildSuperJetInfo(signal);
+
+            backgroundJets
                 .PlotBasicDataPlots(outputHistograms.mkdir("background"), "all");
-            signal
-                .SelectMany(events => events.Jets)
+            signalJets
                 .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
 
             // Some basic info about the LLP's
@@ -119,11 +117,19 @@ namespace GenericPerformancePlots
 
             // Cal efficiency plots for CalR
             CalcSignalToBackgroundSeries(
-                signal.SelectMany(events => events.Jets),
-                background.SelectMany(events => events.Jets),
-                JetCalRPlot,
-                outputHistograms.mkdir("sigrtback"),
+                signalJets,
+                backgroundJets,
+                JetExtraCalRPlot,
+                outputHistograms.mkdir("sigrtbackCalR"),
                 "CalR");
+
+            // Cal efficiency plots for CalR
+            CalcSignalToBackgroundSeries(
+                signalJets,
+                backgroundJets,
+                NTrackExtraPlot,
+                outputHistograms.mkdir("sigrtbackNTrk"),
+                "Ntrk");
 
             // Next, as a function of pT
             var backValues = new double[] { 0.001, 0.01, 0.05, 0.1 };
@@ -133,26 +139,31 @@ namespace GenericPerformancePlots
             {
                 var dir = outputHistograms.mkdir($"sigrtback_{ptRegion.Item1}_{ptRegion.Item2}");
 
-                var signalGoodJets = signal
-                    .SelectMany(events => events.Jets)
-                    .Where(j => j.pT >= ptRegion.Item1 && j.pT < ptRegion.Item2);
+                var signalGoodJets = signalJets
+                    .Where(j => j.Jet.pT >= ptRegion.Item1 && j.Jet.pT < ptRegion.Item2);
 
-                var backgroundGoodJets = background
-                    .SelectMany(events => events.Jets)
-                    .Where(j => j.pT >= ptRegion.Item1 && j.pT < ptRegion.Item2);
+                var backgroundGoodJets = backgroundJets
+                    .Where(j => j.Jet.pT >= ptRegion.Item1 && j.Jet.pT < ptRegion.Item2);
 
-                var sigBack = CalcSignalToBackgroundSeries(
+                var sigBackCalR = CalcSignalToBackgroundSeries(
                     signalGoodJets,
                     backgroundGoodJets,
-                    JetCalRPlot,
+                    JetExtraCalRPlot,
                     dir,
                     "CalR");
 
+                var sigBackNtrk = CalcSignalToBackgroundSeries(
+                    signalGoodJets,
+                    backgroundGoodJets,
+                    NTrackExtraPlot,
+                    dir,
+                    "Ntrk");
+
                 var requiredBackValues = backValues
-                    .Select(bv => from r in sigBack.Item2 select $"{ptRegion.Item1}: Cut for Back Eff of {bv} is {CalcEffValue(r, bv)}");
+                    .Select(bv => from r in sigBackCalR.Item2 select $"{ptRegion.Item1}: Cut for Back Eff of {bv} is {CalcEffValue(r, bv)}");
                 result.AddRange(requiredBackValues);
                 var requiredSigValues = sigValues
-                    .Select(sv => from r in sigBack.Item1 select $"{ptRegion.Item1}: Cut for Sig eff of {sv} is {CalcEffValue(r, sv, false)}");
+                    .Select(sv => from r in sigBackCalR.Item1 select $"{ptRegion.Item1}: Cut for Sig eff of {sv} is {CalcEffValue(r, sv, false)}");
                 result.AddRange(requiredSigValues);
             }
 
@@ -228,19 +239,19 @@ namespace GenericPerformancePlots
         /// <param name="plotter"></param>
         /// <param name="dir"></param>
         /// <param name="nameStub"></param>
-        private static Tuple<IFutureValue<NTH1>, IFutureValue<NTH1>> CalcSignalToBackgroundSeries(IQueryable<recoTreeJets> signal, IQueryable<recoTreeJets> background,
-            IPlotSpec<recoTreeJets> plotter,
+        private static Tuple<IFutureValue<NTH1>, IFutureValue<NTH1>> CalcSignalToBackgroundSeries(IQueryable<JetInfoExtra> signal, IQueryable<JetInfoExtra> background,
+            IPlotSpec<JetInfoExtra> plotter,
             FutureTDirectory dir, string nameStub)
         {
             // Do them all.
             CalcSignalToBackground(signal, background, plotter, dir, nameStub);
             // Do LLP that have LLPs
             // TODO: understand how the LLP association is made, and make sure it is good enough.
-            CalcSignalToBackground(signal.Where(sj => sj.LLP.IsGoodIndex()), background, plotter, dir, $"{nameStub}LLPJ");
+            CalcSignalToBackground(signal.Where(sj => sj.Jet.LLP.IsGoodIndex()), background, plotter, dir, $"{nameStub}LLPJ");
             // Has an LLP in the calorimeter.
             // TODO: understand how the LLP association is made, and make sure it is good enough.
             // TODO: Understand what isCRJet is defined to be.
-            return CalcSignalToBackground(signal.Where(sj => sj.LLP.IsGoodIndex() && Constants.InCalorimeter.Invoke(sj.LLP.Lxy/1000)), background, plotter, dir, $"{nameStub}LLPJCal");
+            return CalcSignalToBackground(signal.Where(sj => sj.Jet.LLP.IsGoodIndex() && Constants.InCalorimeter.Invoke(sj.Jet.LLP.Lxy/1000)), background, plotter, dir, $"{nameStub}LLPJCal");
         }
 
         /// <summary>
@@ -250,24 +261,24 @@ namespace GenericPerformancePlots
         /// <param name="background"></param>
         /// <param name="jetSelectorFunc"></param>
         /// <param name="dir"></param>
-        private static Tuple<IFutureValue<NTH1>, IFutureValue<NTH1>> CalcSignalToBackground(IQueryable<recoTreeJets> signal, IQueryable<recoTreeJets> background,
-            IPlotSpec<recoTreeJets> plotter,
+        private static Tuple<IFutureValue<NTH1>, IFutureValue<NTH1>> CalcSignalToBackground(IQueryable<JetInfoExtra> signal, IQueryable<JetInfoExtra> background,
+            IPlotSpec<JetInfoExtra> plotter,
             FutureTDirectory dir,
             string name)
         {
             // Some generic plots
             signal
-                .FuturePlot(JetPtPlot, $"{name}_sig")
+                .FuturePlot(JetExtraPtPlot, $"{name}_sig")
                 .Save(dir);
             background
-                .FuturePlot(JetPtPlot, $"{name}_back")
+                .FuturePlot(JetExtraPtPlot, $"{name}_back")
                 .Save(dir);
 
             signal
-                .FuturePlot(JetEtaPlot, $"{name}_sig")
+                .FuturePlot(JetExtraEtaPlot, $"{name}_sig")
                 .Save(dir);
             background
-                .FuturePlot(JetEtaPlot, $"{name}_back")
+                .FuturePlot(JetExtraEtaPlot, $"{name}_back")
                 .Save(dir);
 
             // get the histograms for the signal and background
