@@ -123,7 +123,7 @@ namespace GenericPerformancePlots
                 outputHistograms.mkdir("sigrtbackCalR"),
                 "CalR");
 
-            // Cal efficiency plots for CalR
+            // Cal efficiency plots for NTrack
             CalcSignalToBackgroundSeries(
                 signalJets,
                 backgroundJets,
@@ -159,11 +159,20 @@ namespace GenericPerformancePlots
                     dir,
                     "Ntrk");
 
-                var requiredBackValues = backValues
-                    .Select(bv => from r in sigBackCalR.Item2 select $"{ptRegion.Item1}: Cut for Back Eff of {bv} is {CalcEffValue(r, bv)}");
+                var requiredBackValues = from bv in backValues
+                                         select from bHist in sigBackCalR.Item2
+                                                from sHist in sigBackCalR.Item1
+                                                let backCut = CalcEffValue(bHist, bv)
+                                                let effValue = LookupEffAtCut(sHist, backCut)
+                                                select $"{ptRegion.Item1}: Cut for Back Eff of {bv} is {backCut} (sig eff is {effValue})";
                 result.AddRange(requiredBackValues);
-                var requiredSigValues = sigValues
-                    .Select(sv => from r in sigBackCalR.Item1 select $"{ptRegion.Item1}: Cut for Sig eff of {sv} is {CalcEffValue(r, sv, false)}");
+
+                var requiredSigValues = from sv in sigValues
+                                        select from bHist in sigBackCalR.Item2
+                                               from sHist in sigBackCalR.Item1
+                                               let sigCut = CalcEffValue(sHist, sv, false)
+                                               let backRejection = LookupEffAtCut(bHist, sigCut)
+                                               select $"{ptRegion.Item1}: Cut for Sig Eff of {sv} is {sigCut} (back rej is {backRejection})";
                 result.AddRange(requiredSigValues);
             }
 
@@ -173,6 +182,18 @@ namespace GenericPerformancePlots
                          select string.Format("Signal events: {0} Background events: {1}", nB, nS);
             result.Add(status);
             return result;
+        }
+
+        /// <summary>
+        /// Given a cut value (x axis value), return the value of the histo at that point.
+        /// </summary>
+        /// <param name="hist"></param>
+        /// <param name="xAxisValue"></param>
+        /// <returns></returns>
+        private static double LookupEffAtCut(NTH1 hist, double xAxisValue)
+        {
+            var bin = hist.Xaxis.FindBin(xAxisValue);
+            return hist.GetBinContent(bin);
         }
 
         /// <summary>
