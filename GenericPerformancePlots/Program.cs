@@ -9,7 +9,7 @@ using ROOTNET.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static GenericPerformancePlots.GRIDJobs;
+using static libDataAccess.GRIDJobs;
 using static libDataAccess.JetInfoExtraHelpers;
 using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
@@ -28,37 +28,15 @@ namespace GenericPerformancePlots
         /// TODO: What is going on with the jetPT?
         /// TODO: What is eta distribution of the jets that make it through, in particular with NTrack = 0?
         ///       It could be those are far forward and thus have no tracks.
-        /// TODO: How often does a single v-pion decay to two jets?
         /// TODO: Should any of these plots look at stuff in the way that Heather has (2D heat maps for cuts)?
         /// </remarks>
         static void Main(string[] args)
         {
             Console.WriteLine("Finding the files");
-            int nFiles = 0;
-            var backgroundFiles = FindJobFiles("DiVertAnalysis", 3, "user.emmat.mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.AOD.e3668_s2576_s2132_r6765_r6282__EXOT15_v3_EXT0",
-                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
-
-            var signalHV125pi15 = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2",
-                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
-
-            var signalHV125pi40 = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301298.HSS_mH125mS40.reco_20k.s2698_r7144_v03_EXT2",
-                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
-
-            var signalHV600pi100 = FindJobFiles("DiVertAnalysis", 3, "user.hrussell.mc15_13TeV.301301.HSS_mH600mS100.reco_20k.s2698_r7144_v03_EXT2",
-                nFiles: nFiles, statusUpdate: l => Console.WriteLine(" -> " + l), intelligentLocal: true);
-
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
-            //backgroundEvents.IgnoreQueryCache = true;
-            backgroundEvents.UseStatementOptimizer = false;
-            var signalHV125pi15Events = DiVertAnalysis.QueryablerecoTree.CreateQueriable(signalHV125pi15);
-            //signalHV125pi15Events.IgnoreQueryCache = true;
-            signalHV125pi15Events.UseStatementOptimizer = false;
-            var signalHV125pi40Events = DiVertAnalysis.QueryablerecoTree.CreateQueriable(signalHV125pi40);
-            //signalHV125pi40Events.IgnoreQueryCache = true;
-            signalHV125pi40Events.UseStatementOptimizer = false;
-            var signalHV600pi100Events = DiVertAnalysis.QueryablerecoTree.CreateQueriable(signalHV600pi100);
-            //signalHV600pi100Events.IgnoreQueryCache = true;
-            signalHV600pi100Events.UseStatementOptimizer = false;
+            var backgroundEvents = Files.GetJ2Z();
+            var signalHV125pi15Events = Files.Get125pi15();
+            var signalHV125pi40Events = Files.Get125pi40();
+            var signalHV600pi100Events = Files.Get600pi100();
 
             // Output file
             Console.WriteLine("Opening outupt file");
