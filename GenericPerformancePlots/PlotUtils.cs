@@ -107,30 +107,39 @@ namespace GenericPerformancePlots
         }
 
         /// <summary>
-        /// Given the current distribution, make it a cumulative one, respecting errors
-        /// and also underflow and overflow bins, and taking into acount the bin width.
+        /// Given the current distribution, make it a cumulative one, respecting
+        /// the underflow and overflow bins.
+        /// 
+        /// Can start from zero or one and move to the other.
+        /// 
+        /// Errors are tracked using a simple sum-in-quad method (it should be binomial, but only if this is counts).
         /// </summary>
-        /// <param name="val"></param>
+        /// <param name="hist">The histogram to turn into a cumulative plot</param>
+        /// <param name="startWithZeroEff">If true, will start from zero and increase to one. Otherwise starts from one and decreases to zero.</param>
         /// <returns></returns>
-        public static IFutureValue<NTH1> AsCumulative(this IFutureValue<NTH1> val)
+        public static IFutureValue<NTH1> AsCumulative(this IFutureValue<NTH1> hist, bool startWithZeroEff = true)
         {
-            return val.Select(h =>
+            return hist.Select(h =>
             {
                 var hcum = h.Clone($"{h.Name}_cumulative") as NTH1;
                 var integral = hcum.Integral();
                 hcum.NormFactor = 0.0;
 
                 double runningError2 = 0;
-                double runningSum = 0;
+                double runningSum = startWithZeroEff ? 0 : 1;
                 foreach (var ibin in Enumerable.Range(0, hcum.NbinsX+1))
                 {
                     var v = hcum.GetBinContent(ibin);
                     var e = hcum.GetBinError(ibin);
-                    //var width = hcum.GetBinWidth(ibin);
 
-                    runningSum += v/integral;
-                    runningError2 += e*e/integral/integral;
-
+                    if (startWithZeroEff)
+                    {
+                        runningSum += v / integral;
+                    } else
+                    {
+                        runningSum -= v / integral;
+                    }
+                    runningError2 += e * e / integral / integral;
                     hcum.SetBinContent(ibin, runningSum);
                     hcum.SetBinError(ibin, Math.Sqrt(runningError2));
                 }
