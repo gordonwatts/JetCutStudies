@@ -65,6 +65,11 @@ namespace LLPInvestigations
                 .FuturePlot("DeltaRLLP", "The DeltaR between two LLP in the event", 20, 0.0, 3.0)
                 .Save(dir);
 
+            sharedLLPs
+                .Select(l => DeltaPhi(l.Item1.phi, l.Item2.phi))
+                .FuturePlot("DeltaPhiLLP", "The DeltaPhi between two LLP in the event", 60, 0.0, PI)
+                .Save(dir);
+
             // How many LLPs are within 0.4 of a jet?
             Expression<Func<recoTreeJets, recoTreeLLPs, double>> DR2 = (l, j) => DeltaR2(l.eta, l.phi, j.eta, j.phi);
             double openingAngle = 0.4;
@@ -72,8 +77,14 @@ namespace LLPInvestigations
                                   select from j in ev.Jets
                                          select from lp in ev.LLPs
                                             let dr = DR2.Invoke(j, lp)
-                                            let dphi = DeltaPhi(j.phi, lp.phi)
+                                            let dphi = Abs(DeltaPhi(j.phi, lp.phi))
                                             select Tuple.Create(j, lp, dr, dphi);
+
+            llpsCloseToJets
+                .SelectMany(jets => jets)
+                .Select(jets => jets.Count())
+                .FuturePlot("nLLPsPerJetCount", "Number of LLPs in each event with a jet", 5, 0.0, 5.0)
+                .Save(dir);
 
             llpsCloseToJets
                 .SelectMany(jets => jets)
@@ -98,7 +109,35 @@ namespace LLPInvestigations
                 .SelectMany(jets => jets)
                 .Where(j => j.First().Item1.logRatio > 1.2)
                 .FuturePlot("maxDPhiForLLPsInCRJets", "Max DPhi between each CR Jet (logR>1.2) and all LLPs in event",
-                    60, 0, PI, jets => Sqrt(jets.Max(v => v.Item4)))
+                    60, 0, PI, jets => jets.Max(v => v.Item4))
+                .Save(dir);
+
+            llpsCloseToJets
+                .SelectMany(jets => jets)
+                .FuturePlot("maxDPhiForLLPs", "Max DPhi between each jet and all LLPs in event",
+                    60, 0, PI, jets => jets.Max(v => v.Item4))
+                .Save(dir);
+
+            llpsCloseToJets
+                .SelectMany(jets => jets)
+                .FuturePlot("maxDPhiForLLPsZoom", "Max DPhi between each jet and all LLPs in event",
+                    60, 0, 0.4, jets => jets.Max(v => v.Item4))
+                .Save(dir);
+
+            llpsCloseToJets
+                .SelectMany(jets => jets)
+                .Select(jets => jets.OrderByDescending(j => j.Item4).First())
+                .FuturePlot("maxDPhiVsDEtaZoom", "Max DPhi between each jet and all LLPs in event vs DEta; Delta Phi; Delta eta",
+                    60, 0, 0.4, jet => jet.Item4,
+                    60, -0.5, 0.5, jet => jet.Item1.eta - jet.Item2.eta)
+                .Save(dir);
+
+            llpsCloseToJets
+                .SelectMany(jets => jets)
+                .Select(jets => jets.OrderByDescending(j => j.Item4).First())
+                .FuturePlot("maxDPhiVsDRZoom", "Max DPhi between each jet and all LLPs in event vs DR; Delta Phi; Delta R",
+                    60, 0, 0.4, jet => jet.Item4,
+                    60, -0.5, 0.5, jet => Sqrt(jet.Item3))
                 .Save(dir);
 
             var jetsCloseToLLPs = from ev in llp
