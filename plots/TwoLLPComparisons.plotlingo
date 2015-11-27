@@ -1,0 +1,73 @@
+#
+# What does CalR look like?
+#
+
+include ("common.plotlingo");
+
+#
+# Plots of CalR as a function of sample
+#
+
+# DeltaR between two LLP's
+
+plots = map(sample, samples) {
+  f_llp.Get("{sample}/DeltaRLLP").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("DetaR between the two LLPs in each event")
+	.logy()
+	.LegendOptions({"drawbox" => "false"});
+
+# And how many are less than 0.4?
+
+plots = map(sample, samples) {
+  f_llp.Get("{sample}/nLLPsCloseToJet").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("Number of LLPs within 0.4 of all jets")
+	.logy()
+	.LegendOptions({"drawbox" => "false"});
+
+# and the max LLPs
+
+plots = map(sample, samples) {
+  f_llp.Get("{sample}/maxDRForLLPs").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("Max DR between LLPs and each jet")
+	.logy()
+	.LegendOptions({"drawbox" => "false", "placement" => "LowerRight", "ymarg" => 0.2});
+
+plots = map(sample, samples) {
+  f_llp.Get("{sample}/maxDRForLLPsInCRJets").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("Max DR between LLPs and each jet passing a LogR>1.2 cut")
+	.logy()
+	.LegendOptions({"drawbox" => "false", "placement" => "LowerRight", "ymarg" => 0.2});
+
+# And with DPhi
+
+plots = map(sample, samples) {
+  f_llp.Get("{sample}/maxDPhiForLLPsInCRJets").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("Max DPhi between LLPs and each jet passing a LogR>1.2 cut")
+	.logy()
+	.LegendOptions({"drawbox" => "false", "placement" => "LowerRight", "ymarg" => 0.2});
+
+# The max Jet distance
+
+plots = map(sample, samples) {
+  f_llp.Get("{sample}/maxDRForJets").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("Max DR between Jets and each LLP")
+	.logy()
+	.LegendOptions({"drawbox" => "false", "placement" => "LowerRight", "ymarg" => 0.2});

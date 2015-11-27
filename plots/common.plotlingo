@@ -4,6 +4,7 @@
 
 # File we are looking at...
 f = file ("C:\Users\gordo\Documents\Code\calratio2015\JetCutStudies\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
+f_llp = file ("C:\Users\gordo\Documents\Code\calratio2015\JetCutStudies\LLPInvestigations\bin\x86\Debug\LLPInvestigations.root");
 
 # The samples that are hidden in the file
 samples = ["125-15", "125-40", "600-100"];

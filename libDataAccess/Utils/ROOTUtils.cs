@@ -25,5 +25,17 @@ namespace libDataAccess.Utils
             return deta * deta + deltaphi * deltaphi;
 #endif
         }
+
+        [CPPCode(IncludeFiles = new[] {"TVector2.h" },
+            Code = new[] {
+                "DeltaPhi = TVector2::Phi_mpi_pi(phi1 - phi2);",
+            })]
+        public static double DeltaPhi(double phi1, double phi2)
+        {
+            throw new NotImplementedException("this should never get called");
+#if false
+            return ROOTNET.NTVector2.Phi_mpi_pi(phi1 - phi2);
+#endif
+        }
     }
 }
