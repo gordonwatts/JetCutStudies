@@ -33,23 +33,12 @@ namespace LLPInvestigations
 
         private static void ProcessSample(QueriableTTree<DiVertAnalysis.recoTree> llp, FutureTDirectory dir)
         {
-#if false
-                var sharedJets = from ev in llp
-                                  from j1 in ev.Jets
-                                          from j2 in ev.Jets
-                                          where j1.LLP.IsGoodIndex() && j2.LLP.IsGoodIndex()
-                                          where j1 != j2
-                                          where j1.LLP == j2.LLP
-                                          select Tuple.Create(j1, j2);
-#endif
-
-            // Look for two LLP's "touching" each other.
             var sharedJets = from ev in llp
                              from j1 in ev.Jets
                              from j2 in ev.Jets
                              where j1.LLP.IsGoodIndex() && j2.LLP.IsGoodIndex()
                              where j1 != j2
-                             where j1.LLP.Lxy == j2.LLP.Lxy
+                             where j1.LLP == j2.LLP
                              select Tuple.Create(j1, j2);
 
             var count = sharedJets.FutureCount();
@@ -76,9 +65,9 @@ namespace LLPInvestigations
             var llpsCloseToJets = from ev in llp
                                   select from j in ev.Jets
                                          select from lp in ev.LLPs
-                                            let dr = DR2.Invoke(j, lp)
-                                            let dphi = Abs(DeltaPhi(j.phi, lp.phi))
-                                            select Tuple.Create(j, lp, dr, dphi);
+                                                let dr = DR2.Invoke(j, lp)
+                                                let dphi = Abs(DeltaPhi(j.phi, lp.phi))
+                                                select Tuple.Create(j, lp, dr, dphi);
 
             llpsCloseToJets
                 .SelectMany(jets => jets)
