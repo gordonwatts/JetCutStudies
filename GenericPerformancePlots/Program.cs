@@ -37,9 +37,9 @@ namespace GenericPerformancePlots
             var signalHV125pi15Events = Files.Get125pi15();
             var signalHV125pi40Events = Files.Get125pi40();
             var signalHV600pi100Events = Files.Get600pi100();
-            signalHV600pi100Events.CleanupQuery = false;
-            signalHV600pi100Events.IgnoreQueryCache = true;
-            signalHV600pi100Events.UseStatementOptimizer = true;
+            signalHV125pi15Events.CleanupQuery = false;
+            signalHV125pi15Events.IgnoreQueryCache = true;
+            signalHV125pi15Events.UseStatementOptimizer = true;
 
             // Output file
             Console.WriteLine("Opening outupt file");
