@@ -13,28 +13,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLPInvestigations", "LLPInv
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
-		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Debug|x86.ActiveCfg = Debug|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Debug|x86.Build.0 = Debug|x86
-		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Release|Any CPU.ActiveCfg = Release|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Release|x86.ActiveCfg = Release|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Release|x86.Build.0 = Release|x86
-		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Debug|x86.ActiveCfg = Debug|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Debug|x86.Build.0 = Debug|x86
-		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Release|Any CPU.ActiveCfg = Release|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Release|x86.ActiveCfg = Release|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Release|x86.Build.0 = Release|x86
-		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Debug|x86.ActiveCfg = Debug|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Debug|x86.Build.0 = Debug|x86
-		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Release|Any CPU.ActiveCfg = Release|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Release|x86.ActiveCfg = Release|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
