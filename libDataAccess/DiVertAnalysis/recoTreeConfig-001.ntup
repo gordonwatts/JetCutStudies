@@ -123,7 +123,7 @@
         <VariableInfo NETName="phi" TTreeName="CalibJet_phi" />
         <VariableInfo NETName="width" TTreeName="CalibJet_width" />
         <VariableInfo NETName="logRatio" TTreeName="CalibJet_logRatio" />
-        <VariableInfo NETName="CalibJet_nTrk" TTreeName="CalibJet_nTrk" />
+        <VariableInfo NETName="nTrk" TTreeName="CalibJet_nTrk" />
         <VariableInfo NETName="CalibJet_time" TTreeName="CalibJet_time" />
         <VariableInfo NETName="CalibJet_isCosmic" TTreeName="CalibJet_isCosmic" />
         <VariableInfo NETName="CalibJet_isCRJet" TTreeName="CalibJet_isCRJet" />
