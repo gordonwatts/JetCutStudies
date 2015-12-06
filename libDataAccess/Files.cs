@@ -30,7 +30,7 @@ namespace libDataAccess
                 3,
                 dsname,
                 nFiles: NFiles,
-                statusUpdate: l => Console.WriteLine(" -> " + l),
+                statusUpdate: l => Console.WriteLine(l),
                 intelligentLocal: true);
         }
 

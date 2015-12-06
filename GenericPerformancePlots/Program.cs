@@ -38,28 +38,20 @@ namespace GenericPerformancePlots
             var signalHV600pi100Events = Files.Get600pi100();
 
             // Output file
-            Console.WriteLine("Opening outupt file");
+            Console.WriteLine("Opening output file");
             using (var outputHistograms = new FutureTFile("GenericPerformancePlots.root"))
             {
                 var status125pi15  = PerSampleStudies(backgroundEvents, signalHV125pi15Events, outputHistograms.mkdir("125-15"));
                 var status125pi40  = PerSampleStudies(backgroundEvents, signalHV125pi40Events, outputHistograms.mkdir("125-40"));
                 var status600pi100 = PerSampleStudies(backgroundEvents, signalHV600pi100Events, outputHistograms.mkdir("600-100"));
 
-                var sigAll = signalHV125pi15Events
-                    .Concat(signalHV125pi40Events)
-                    .Concat(signalHV600pi100Events);
-
-                //var statusAll = PerSampleStudies(backgroundEvents, sigAll, outputHistograms.mkdir("all"));
-
-                // Run everything
+                // Write out the histograms
                 outputHistograms.Write();
 
-                // Let the world know what is up
-                DumpResults("125-15:", status125pi15);
-                DumpResults("125-40:", status125pi40);
-                DumpResults("600-100:", status600pi100);
-                //Console.WriteLine($"all:      {statusAll.Value}");
-
+                // And dump everything.
+                DumpResults("Sample 125-15:", status125pi15);
+                DumpResults("Sample 125-40:", status125pi40);
+                DumpResults("Sample 600-100:", status600pi100);
             }
         }
 
@@ -95,28 +87,15 @@ namespace GenericPerformancePlots
                 .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
 
             // Some basic info about the LLP's
-            LLPBasicInfo(signal.SelectMany(s => s.LLPs), signal.SelectMany(s => s.Jets), outputHistograms.mkdir("signalLLP"));
+            // TODO: make sure this is part of the LLPInvestigations guy.
+            // LLPBasicInfo(signal.SelectMany(s => s.LLPs), signal.SelectMany(s => s.Jets), outputHistograms.mkdir("signalLLP"));
 
-            // Cal efficiency plots for CalR
-            CalcSignalToBackgroundSeries(
-                signalJets,
-                backgroundJets,
-                JetExtraCalRPlot,
-                outputHistograms.mkdir("sigrtbackCalR"),
-                "CalR");
-
-            // Cal efficiency plots for NTrack
-            CalcSignalToBackgroundSeries(
-                signalJets,
-                backgroundJets,
-                NTrackExtraPlot,
-                outputHistograms.mkdir("sigrtbackNTrk"),
-                "Ntrk");
+            // Do the CalR and NTrk plots
+            var result = new List<IFutureValue<string>>();
+            var rtot = CalSigAndBackgroundSeries(signalJets, backgroundJets, "all", outputHistograms.mkdir("allJets"));
+            result.AddRange(result);
 
             // Next, as a function of pT
-            var backRejValues = new double[] { 0.999, 0.99, 0.95, 0.9 };
-            var sigValues = new double[] { 0.1, 0.2, 0.3, 0.4, 0.5 };
-            var result = new List<IFutureValue<string>>();
             foreach (var ptRegion in Constants.PtRegions)
             {
                 var dir = outputHistograms.mkdir($"sigrtback_{ptRegion.Item1}_{ptRegion.Item2}");
@@ -127,42 +106,68 @@ namespace GenericPerformancePlots
                 var backgroundGoodJets = backgroundJets
                     .Where(j => j.Jet.pT >= ptRegion.Item1 && j.Jet.pT < ptRegion.Item2);
 
-                var sigBackCalR = CalcSignalToBackgroundSeries(
-                    signalGoodJets,
-                    backgroundGoodJets,
-                    JetExtraCalRPlot,
-                    dir,
-                    "CalR");
+                var regionInfo = $"{ptRegion.Item1}-{ptRegion.Item2}";
 
-                var sigBackNtrk = CalcSignalToBackgroundSeries(
-                    signalGoodJets,
-                    backgroundGoodJets,
-                    NTrackExtraPlot,
-                    dir,
-                    "Ntrk");
+                var r = CalSigAndBackgroundSeries(signalGoodJets, backgroundGoodJets, regionInfo, dir);
 
-                var requiredBackValues = from bv in backRejValues
-                                         select from bHist in sigBackCalR.Item2
-                                                from sHist in sigBackCalR.Item1
-                                                let backCut = CalcEffValue(bHist, bv)
-                                                let effValue = LookupEffAtCut(sHist, backCut)
-                                                select $"{ptRegion.Item1}: Cut for Back Rejection of {bv} is {backCut} (sig eff is {effValue})";
-                result.AddRange(requiredBackValues);
-
-                var requiredSigValues = from sv in sigValues
-                                        select from bHist in sigBackCalR.Item2
-                                               from sHist in sigBackCalR.Item1
-                                               let sigCut = CalcEffValue(sHist, sv, false)
-                                               let backRejection = LookupEffAtCut(bHist, sigCut)
-                                               select $"{ptRegion.Item1}: Cut for Sig Eff of {sv} is {sigCut} (back rej is {backRejection})";
-                result.AddRange(requiredSigValues);
+                result.AddRange(r);
             }
 
-            // Do a simple calc for info reasons which we will type out.
+            // Dump out the number of events so everyone can see.
             var status = from nB in background.FutureCount()
                          from nS in signal.FutureCount()
                          select string.Format("Signal events: {0} Background events: {1}", nB, nS);
             result.Add(status);
+            return result;
+        }
+
+        /// <summary>
+        /// For a set of signal and background nets, do the calc for ntrk, cal ratio, etc.
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="signalGoodJets"></param>
+        /// <param name="backgroundGoodJets"></param>
+        /// <param name="regionInfo"></param>
+        /// <returns></returns>
+        private static List<IFutureValue<string>> CalSigAndBackgroundSeries(IQueryable<JetInfoExtra> signalGoodJets, IQueryable<JetInfoExtra> backgroundGoodJets, string regionInfo, FutureTDirectory dir)
+        {
+            var sigBackCalR = CalcSignalToBackgroundSeries(
+                signalGoodJets,
+                backgroundGoodJets,
+                JetExtraCalRPlot,
+                dir,
+                "CalR");
+
+            var sigBackNtrk = CalcSignalToBackgroundSeries(
+                signalGoodJets,
+                backgroundGoodJets,
+                NTrackExtraPlot,
+                dir,
+                "Ntrk");
+
+            var result = new List<IFutureValue<string>>();
+#if false
+            // This was interesting - but not yet sure how to use it.
+            var backRejValues = new double[] { 0.999, 0.99, 0.95, 0.9 };
+            var sigValues = new double[] { 0.1, 0.2, 0.3, 0.4, 0.5 };
+
+            var requiredBackValues = from bv in backRejValues
+                                     select from bHist in sigBackCalR.Item2
+                                            from sHist in sigBackCalR.Item1
+                                            let backCut = CalcEffValue(bHist, bv)
+                                            let effValue = LookupEffAtCut(sHist, backCut)
+                                            select $"{regionInfo}: Cut for Back Rejection of {bv} is {backCut} (sig eff is {effValue})";
+            result.AddRange(requiredBackValues);
+
+            var requiredSigValues = from sv in sigValues
+                                    select from bHist in sigBackCalR.Item2
+                                           from sHist in sigBackCalR.Item1
+                                           let sigCut = CalcEffValue(sHist, sv, false)
+                                           let backRejection = LookupEffAtCut(bHist, sigCut)
+                                           select $"{regionInfo}: Cut for Sig Eff of {sv} is {sigCut} (back rej is {backRejection})";
+            result.AddRange(requiredSigValues);
+#endif
+
             return result;
         }
 
@@ -179,7 +184,7 @@ namespace GenericPerformancePlots
         }
 
         /// <summary>
-        /// Return the x-axis value for a partiuclar efficiency.
+        /// Return the x-axis value for a particular efficiency.
         /// </summary>
         /// <param name="r"></param>
         /// <param name="bv"></param>
@@ -200,7 +205,7 @@ namespace GenericPerformancePlots
         /// <param name="dir"></param>
         private static void LLPBasicInfo(IQueryable<recoTreeLLPs> LLPsToPlot, IQueryable<recoTreeJets> jets, FutureTDirectory dir)
         {
-            // LLP's and LLP's assocated with a jet
+            // LLP's and LLP's associated with a jet
             LLPsToPlot
                 .FuturePlot(LLPLxyPlot, "all")
                 .Save(dir);
