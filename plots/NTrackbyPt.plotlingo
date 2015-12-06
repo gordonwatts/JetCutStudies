@@ -9,7 +9,7 @@ include ("common.plotlingo");
 #
 
 plots = map(sample, samples) {
-  f.Get("{sample}/sigrtbackNTrk/NtrkLLPJCal_sig").tag(sample).normalize();
+  f.Get("{sample}/sigrtback/NtrkLLPJCal_sig").tag(sample).normalize();
 };
 
 plots.plot()

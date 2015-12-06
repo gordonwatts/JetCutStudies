@@ -2,7 +2,7 @@
 # Look at how the smaple evolves by pT.
 #
 
-f = file ("C:\Users\gordo\Documents\Code\calratio2015\JetCutStudies\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
+include ("common.plotlingo");
 
 samples = ["125-15", "125-40", "600-100"];
 
