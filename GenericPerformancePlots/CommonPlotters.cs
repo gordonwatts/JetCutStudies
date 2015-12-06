@@ -48,6 +48,14 @@ namespace GenericPerformancePlots
                 .FuturePlot(JetExtraCalRVsPtPlot, nameAddition)
                 .Save(saveDir);
 
+            //jets
+            //    .FuturePlot(JetExtraNTrackVsPtPlot, nameAddition)
+            //    .Save(saveDir);
+
+            //jets
+            //    .FuturePlot(JetExtraCalRVsNTrackPlot, nameAddition)
+            //    .Save(saveDir);
+
             return jets;
         }
     }

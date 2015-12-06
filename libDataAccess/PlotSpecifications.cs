@@ -110,6 +110,28 @@ namespace libDataAccess
         public static IPlotSpec<JetInfoExtra> JetExtraCalRVsPtPlot;
 
         /// <summary>
+        /// Plot of CalR vs Ntrack
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraNTrackVsPtPlot =
+            MakePlotterSpec<JetInfoExtra>(
+                10, 0, 10, j => j.Tracks.Count(),
+                30, 25.0, 1000.0, j => j.Jet.pT,
+                titleFormat: "NTracks vs Jet pT for {0}", nameFormat: "CalRvspT{0}"
+            );
+
+        /// <summary>
+        /// Plot of CalR vs NTrack
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraCalRVsNTrackPlot =
+            MakePlotterSpec<JetInfoExtra>(25, -3.0, 4.0, j =>
+                j.Jet.logRatio > 4 ? 3.99
+                : j.Jet.logRatio < -3.0 ? -2.99
+                : j.Jet.logRatio,
+                10, 0, 10.0, j => j.Tracks.Count(),
+                titleFormat: "CalRatio vs Jet pT for {0}", nameFormat: "CalRvspT{0}"
+            );
+
+        /// <summary>
         /// The 1D plot of the decay length for LLP's
         /// </summary>
         public static IPlotSpec<recoTreeLLPs> LLPLxyPlot =
