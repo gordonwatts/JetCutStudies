@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DiVertAnalysis;
+using LINQToTTreeLib;
+using System;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace libDataAccess.Utils
 {
@@ -39,6 +37,17 @@ namespace libDataAccess.Utils
             get
             {
                 return r => r >= RadiusOfInnerEMWall && r <= RadiusOfOutterHADWall;
+            }
+        }
+
+        /// <summary>
+        /// Return an expression to test for an LLP to be decaying in the calorimeter.
+        /// </summary>
+        public static Expression<Func<recoTreeLLPs, bool>> LLPInCalorimeter
+        {
+            get
+            {
+                return llp => InCalorimeter.Invoke(llp.Lxy / 1000);
             }
         }
 

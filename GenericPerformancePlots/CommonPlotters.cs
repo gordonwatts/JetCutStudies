@@ -44,6 +44,10 @@ namespace GenericPerformancePlots
                 .FuturePlot(TrackPtExtraPlot, nameAddition)
                 .Save(saveDir);
 
+            jets
+                .FuturePlot(JetExtraCalRVsPtPlot, nameAddition)
+                .Save(saveDir);
+
             return jets;
         }
     }

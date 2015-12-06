@@ -8,9 +8,10 @@ namespace libDataAccess
 {
     // TODO: PlotStyle stuff needs comments so we can guess what it is doing.
     // TODO: MakePlotterSpec should have an example format string in the arguments
-    // TODO: shoudl we be using the calib or the non-calib values?
     // TODO: Add a logR text replacement
     // TOOD: What are all the low logR values in the all jets collection (they are less than -3 only in signal).
+
+    // NOTE: The ntuple should be setup to use the Calibration Jet values only!
 
     /// <summary>
     /// Things to help with uniform binning of plots, etc.
@@ -26,7 +27,7 @@ namespace libDataAccess
         /// <summary>
         /// 1D plot of jet PT.
         /// </summary>
-        /// <remarks>Initalized below</remarks>
+        /// <remarks>Initialized below</remarks>
         public static IPlotSpec<JetInfoExtra> JetExtraPtPlot;
 
         /// <summary>
@@ -89,6 +90,26 @@ namespace libDataAccess
             );
 
         /// <summary>
+        /// Plot of CalR vs Jet Pt
+        /// </summary>
+        public static IPlotSpec<recoTreeJets> JetCalRVsPtPlot =
+            MakePlotterSpec<recoTreeJets>(25, -3.0, 4.0, j =>
+                j.logRatio > 4 ? 3.99
+                : j.logRatio < -3.0 ? -2.99
+                : j.logRatio,
+                30, 25.0, 1000.0, j => j.pT,
+                titleFormat: "CalRatio vs Jet pT for {0}", nameFormat: "CalRvspT{0}"
+            );
+
+        /// <summary>
+        /// Plot of CalR vs Jet Pt
+        /// </summary>
+        /// <remarks>
+        /// Initialized below.
+        /// </remarks>
+        public static IPlotSpec<JetInfoExtra> JetExtraCalRVsPtPlot;
+
+        /// <summary>
         /// The 1D plot of the decay length for LLP's
         /// </summary>
         public static IPlotSpec<recoTreeLLPs> LLPLxyPlot =
@@ -110,6 +131,7 @@ namespace libDataAccess
             JetExtraCalRPlot = JetCalRPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             NTrackExtraPlot = NTrackPlot.FromType<IEnumerable<recoTreeTracks>, JetInfoExtra>(jinfo => jinfo.Tracks);
             TrackPtExtraPlot = TrackPtPlot.FromManyOfType((JetInfoExtra j) => j.Tracks);
+            JetExtraCalRVsPtPlot = JetCalRVsPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
         }
 
     }

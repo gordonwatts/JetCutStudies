@@ -13,6 +13,7 @@ using static libDataAccess.JetInfoExtraHelpers;
 using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
 using static System.Linq.Enumerable;
+using static libDataAccess.Utils.Constants;
 
 namespace GenericPerformancePlots
 {
@@ -83,8 +84,18 @@ namespace GenericPerformancePlots
 
             backgroundJets
                 .PlotBasicDataPlots(outputHistograms.mkdir("background"), "all");
+
+            var sigdir = outputHistograms.mkdir("signal");
             signalJets
-                .PlotBasicDataPlots(outputHistograms.mkdir("signal"), "all");
+                .PlotBasicDataPlots(sigdir, "all");
+            signalJets
+                .Where(j => j.Jet.LLP.IsGoodIndex())
+                .PlotBasicDataPlots(sigdir, "withLLP");
+            signalJets
+                .Where(j => j.Jet.LLP.IsGoodIndex())
+                .Where(j => LLPInCalorimeter.Invoke(j.Jet.LLP))
+                .PlotBasicDataPlots(sigdir, "withLLPInCal");
+
 
             // Some basic info about the LLP's
             // TODO: make sure this is part of the LLPInvestigations guy.
@@ -92,7 +103,7 @@ namespace GenericPerformancePlots
 
             // Do the CalR and NTrk plots
             var result = new List<IFutureValue<string>>();
-            var rtot = CalSigAndBackgroundSeries(signalJets, backgroundJets, "all", outputHistograms.mkdir("allJets"));
+            var rtot = CalSigAndBackgroundSeries(signalJets, backgroundJets, "all", outputHistograms.mkdir("sigrtback"));
             result.AddRange(result);
 
             // Next, as a function of pT
@@ -145,6 +156,7 @@ namespace GenericPerformancePlots
                 dir,
                 "Ntrk");
 
+            // Look to see what it would take to get constant efficiency
             var result = new List<IFutureValue<string>>();
 #if false
             // This was interesting - but not yet sure how to use it.
