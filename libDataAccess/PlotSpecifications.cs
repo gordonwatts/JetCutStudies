@@ -49,6 +49,12 @@ namespace libDataAccess
             MakePlotterSpec<recoTreeTracks>(200, 0.0, 20.0, t => t.pT, "trkPt{0}", "Track pT for {0} tracks; pT");
 
         /// <summary>
+        /// Sum pT of all tracks
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> SumTrackPtPlot =
+            MakePlotterSpec<JetInfoExtra>(40, 0.0, 20.0, j => j.Tracks.Sum(t => t.pT), "sumTrkPt{0}", "Sum pT of tracks for {0}; Sum pT [GeV]");
+
+        /// <summary>
         /// A pT plot of tracks associated with jets
         /// </summary>
         public static IPlotSpec<JetInfoExtra> TrackPtExtraPlot;
