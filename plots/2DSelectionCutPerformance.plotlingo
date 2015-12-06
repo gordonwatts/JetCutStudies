@@ -1,0 +1,30 @@
+#
+# What does NTrack look like?
+#
+
+include ("common.plotlingo");
+
+#
+# These are 2D plots, so we really don't want stats boxes.
+#
+TurnOffStatBoxes();
+
+#
+# Plots of CalR vs pT per sample for the signal.
+#
+
+for (sample, samples) {
+  f.Get("{sample}/signal/CalRvspTwithLLPInCal")
+	.asEfficiency()
+	.plot()
+	.addDrawOption("COLZ")
+	.title("CalRation vs Jet pT for Sample {sample}");
+};
+
+# Same for the background.
+
+f.Get("125-15/background/CalRvspTall")
+	.asEfficiency()
+	.plot()
+	.addDrawOption("COLZ")
+	.title("CalRation vs Jet pT for QCD");
