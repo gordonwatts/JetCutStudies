@@ -122,7 +122,7 @@ namespace libDataAccess
             MakePlotterSpec<JetInfoExtra>(
                 10, 0, 10, j => j.Tracks.Count(),
                 30, 25.0, 1000.0, j => j.Jet.pT,
-                titleFormat: "NTracks vs Jet pT for {0}", nameFormat: "CalRvspT{0}"
+                titleFormat: "NTracks vs Jet pT for {0}", nameFormat: "NTrkvspT{0}"
             );
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace libDataAccess
                 : j.Jet.logRatio < -3.0 ? -2.99
                 : j.Jet.logRatio,
                 10, 0, 10.0, j => j.Tracks.Count(),
-                titleFormat: "CalRatio vs Jet pT for {0}", nameFormat: "CalRvspT{0}"
+                titleFormat: "CalRatio vs Jet pT for {0}", nameFormat: "CalRvsNTrk{0}"
             );
 
         /// <summary>
