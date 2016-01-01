@@ -10,21 +10,32 @@ include ("common.plotlingo");
 TurnOffStatBoxes();
 
 #
-# Plots of CalR vs pT per sample for the signal.
+# All the types of plots
 #
 
-for (sample, samples) {
-  f.Get("{sample}/signal/CalRvspTwithLLPInCal")
-	.asEfficiency()
-	.plot()
-	.addDrawOption("COLZ")
-	.title("CalRation vs Jet pT for Sample {sample}");
+plottypes = [
+	{title => "CalRatio vs Jet pT", name => "CalRvspT", xcut=>true, ycut=>true},
+	{title => "NTrack vs Jet pT", name => "NTrkvspT", xcut=>false, ycut=>true},
+	{title => "CalRatio vs NTrk", name => "CalRvsNTrk", xcut=>true, ycut=>false}
+];
+
+#
+# Plots of CalR vs pT per sample for the signal.
+#
+for (plottypes) {
+	for (sample, samples) {
+	  f.Get("{sample}/signal/{name}withLLPInCal")
+		.asEfficiency(xcut, ycut)
+		.plot()
+		.addDrawOption("COLZ")
+		.title("{title} for Sample {sample}");
+	};
+
+	# Same for the background.
+
+	f.Get("125-15/background/{name}all")
+		.asEfficiency(xcut, ycut)
+		.plot()
+		.addDrawOption("COLZ")
+		.title("{title} for QCD");
 };
-
-# Same for the background.
-
-f.Get("125-15/background/CalRvspTall")
-	.asEfficiency()
-	.plot()
-	.addDrawOption("COLZ")
-	.title("CalRation vs Jet pT for QCD");
