@@ -9,10 +9,14 @@
 #foreach($f in $IncludeFiles)
 \#include "$f"
 #end
+
 \#include <TFile.h>
 
 \#include <string>
 \#include <stdexcept>
+#foreach($f in $SystemIncludeFiles)
+\#include $f
+#end
 
 using std::string;
 
@@ -40,6 +44,10 @@ public:
 		/// Init the variables that we are going to be carrying along with us.
 #foreach($v in $ResultVariables)
 		$v.VariableName = $v.InitialValue;
+#end
+
+#foreach($s in $InitStatements)
+		$s
 #end
 	}
 
