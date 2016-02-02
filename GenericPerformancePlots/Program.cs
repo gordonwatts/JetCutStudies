@@ -203,7 +203,7 @@ namespace GenericPerformancePlots
         /// <returns></returns>
         private static double CalcEffValue(NTH1 r, double bv, bool greater = true)
         {
-            var firstValue = Enumerable.Range(0, r.NbinsX)
+            var firstValue = Range(0, r.NbinsX)
                 .Where(bin => greater ? r.GetBinContent(bin) > bv : r.GetBinContent(bin) < bv)
                 .FirstOrDefault();
 
