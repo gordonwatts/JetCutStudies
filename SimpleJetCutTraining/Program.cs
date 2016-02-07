@@ -4,6 +4,7 @@ using LINQToTTreeLib.Files;
 using System.IO;
 using System.Linq;
 using LINQToTTreeLib;
+using TMVAUtilities;
 using static System.Console;
 
 namespace SimpleJetCutTraining
@@ -26,10 +27,18 @@ namespace SimpleJetCutTraining
             // Generate the output files.
             //
 
+            var t = TrainingIQueriable(signalHV600pi100Events, true)
+                .AsSignal()
+                .Background(TrainingIQueriable(backgroundEvents, false))
+                .BookMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kCuts, "SimpleCuts")
+                .Train("VerySimpleTraining");
+
+#if false
             WriteTrainingROOTFile(backgroundEvents, false, new FileInfo("J2Z.training.root"));
             WriteTrainingROOTFile(signalHV600pi100Events, true, new FileInfo("HV600pi100.training.root"));
 
             WriteLine($"Number of signalHV600pi100Events events: {signalHV600pi100Events.Count()}.");
+#endif
         }
 
         /// <summary>
@@ -38,6 +47,15 @@ namespace SimpleJetCutTraining
         /// <param name="events">List of events we should watch over</param>
         /// <param name="outputFile">Where to create an output ROOT file.</param>
         private static FileInfo WriteTrainingROOTFile(IQueryable<recoTree> events, bool isSignal, FileInfo outputFile)
+        {
+            IQueryable<TrainingData> trainingDataSet = TrainingIQueriable(events, isSignal);
+
+            trainingDataSet.AsTTree(outputFile);
+
+            return outputFile;
+        }
+
+        private static IQueryable<TrainingData> TrainingIQueriable(IQueryable<recoTree> events, bool isSignal)
         {
             var trainingDataSetJets = events
                 .SelectMany(e => e.Jets);
@@ -54,10 +72,7 @@ namespace SimpleJetCutTraining
                     logR = j.logRatio,
                     nTracks = (int)j.nTrk
                 });
-
-            trainingDataSet.AsTTree(outputFile);
-
-            return outputFile;
+            return trainingDataSet;
         }
     }
 }
