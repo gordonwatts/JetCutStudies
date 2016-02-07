@@ -29,6 +29,7 @@ namespace TMVAUtilities
         public static NTTree ToTTree<T>(this IQueryable<T> source)
         {
             var f = source.AsTTree(new FileInfo($"{_f_index}.training.root"));
+            _f_index++;
             var input = NTFile.Open(f.FullName, "READ");
             var tree = input.Get("mytree") as NTTree;
             return tree;

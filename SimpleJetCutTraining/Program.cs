@@ -24,53 +24,43 @@ namespace SimpleJetCutTraining
             var signalHV600pi100Events = Files.Get600pi100();
 
             //
-            // Generate the output files.
+            // Do a simple cut training here
             //
 
             var t = TrainingIQueriable(signalHV600pi100Events, true)
                 .AsSignal()
                 .Background(TrainingIQueriable(backgroundEvents, false))
-                .BookMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kCuts, "SimpleCuts")
+                .BookMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kCuts, "SimpleCuts", "V")
                 .Train("VerySimpleTraining");
-
-#if false
-            WriteTrainingROOTFile(backgroundEvents, false, new FileInfo("J2Z.training.root"));
-            WriteTrainingROOTFile(signalHV600pi100Events, true, new FileInfo("HV600pi100.training.root"));
-
-            WriteLine($"Number of signalHV600pi100Events events: {signalHV600pi100Events.Count()}.");
-#endif
         }
 
         /// <summary>
-        /// Generate training ROOT file output
+        /// Filter the events correctly for signal or background and build the
+        /// training data.
         /// </summary>
-        /// <param name="events">List of events we should watch over</param>
-        /// <param name="outputFile">Where to create an output ROOT file.</param>
-        private static FileInfo WriteTrainingROOTFile(IQueryable<recoTree> events, bool isSignal, FileInfo outputFile)
-        {
-            IQueryable<TrainingData> trainingDataSet = TrainingIQueriable(events, isSignal);
-
-            trainingDataSet.AsTTree(outputFile);
-
-            return outputFile;
-        }
-
+        /// <param name="events"></param>
+        /// <param name="isSignal"></param>
+        /// <returns></returns>
         private static IQueryable<TrainingData> TrainingIQueriable(IQueryable<recoTree> events, bool isSignal)
         {
+            // Look at all jets
             var trainingDataSetJets = events
                 .SelectMany(e => e.Jets);
 
+            // If this is to be treated as signal, then look for the LLP to have
+            // decayed in the right way.
             if (isSignal)
             {
                 trainingDataSetJets = trainingDataSetJets
                     .Where(j => j.LLP.IsGoodIndex());
             }
 
+            // Fill our training data that will eventually be turned into the training tree.
             var trainingDataSet = trainingDataSetJets
                 .Select(j => new TrainingData()
                 {
                     logR = j.logRatio,
-                    nTracks = (int)j.nTrk
+                    nTracks = (int)j.nTrk,
                 });
             return trainingDataSet;
         }
