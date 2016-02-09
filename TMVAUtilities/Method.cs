@@ -98,6 +98,11 @@ namespace TMVAUtilities
             foreach (var o in _parameter_options)
             {
                 var idx = parameterNames.IndexOf(o.Item1);
+                if (idx < 0)
+                {
+                    // If it is a variable we don't care about...
+                    continue;
+                }
                 if (b.Length > 0)
                 {
                     b.Append(":");

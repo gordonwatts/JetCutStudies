@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,6 +33,41 @@ namespace TMVAUtilities
 
         private List<SampleInfo> _signals = new List<SampleInfo>();
         private List<SampleInfo> _backgrounds = new List<SampleInfo>();
+
+        private List<string> _ignore_variables = new List<string>();
+        private List<string> _use_variables = new List<string>();
+
+        /// <summary>
+        /// List the variables to be used for the training. Only these will be used.
+        /// If this isn't called, then everything will be used (minus the ignored).
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="vars"></param>
+        /// <returns></returns>
+        public Training<T> UseVariables<U>(params Expression<Func<T,U>>[] vars)
+        {
+            foreach (var v in vars)
+            {
+                _use_variables.Add(v.ExtractField());
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Ignore the variables listed. Overrides the UseVariables call.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="vars"></param>
+        /// <returns></returns>
+        public Training<T> IgnoreVariables<U>(params Expression<Func<T,U>>[] vars)
+        {
+            foreach (var v in vars)
+            {
+                _ignore_variables.Add(v.ExtractField());
+            }
+            return this;
+        }
+
 
         /// <summary>
         /// Add a background to our list of sources.
@@ -97,11 +133,19 @@ namespace TMVAUtilities
                 }
 
                 // Do the variables by looking through each item in object T.
+                // Use the windowing requests from the user.
                 var parameters_names = new List<string>();
                 foreach (var field in typeof(T).GetFields())
                 {
-                    f.AddVariable(field.Name.AsTS());
-                    parameters_names.Add(field.Name);
+                    var name = field.Name;
+                    if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
+                    {
+                        if (!_ignore_variables.Contains(name))
+                        {
+                            f.AddVariable(name.AsTS());
+                            parameters_names.Add(name);
+                        }
+                    }
                 }
 
                 // Now book all the methods that were requested

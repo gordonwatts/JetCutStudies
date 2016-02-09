@@ -29,7 +29,8 @@ namespace SimpleJetCutTraining
 
             var t = TrainingIQueriable(signalHV600pi100Events, true)
                 .AsSignal("HV600pi100")
-                .Background(TrainingIQueriable(backgroundEvents, false), "J2Z");
+                .Background(TrainingIQueriable(backgroundEvents, false), "J2Z")
+                .IgnoreVariables(p => p.nTracks);
 
             var mCuts = t.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kCuts, "SimpleCuts")
                 .Option("!H:V:FitMethod=MC:EffSel:SampleSize=20000:VarTransform=Decorrelate")
@@ -86,7 +87,7 @@ namespace SimpleJetCutTraining
                                   select new TrainingData()
                                   {
                                       logR = j.Jet.logRatio,
-                                      //nTracks = (int)j.Jet.nTrk,
+                                      nTracks = (int)j.Jet.nTrk,
                                       lowestPtTrack = trkList.First().pT,
                                   };
             return trainingDataSet;

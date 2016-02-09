@@ -19,7 +19,7 @@ namespace SimpleJetCutTraining
         /// <summary>
         /// The number of tracks.
         /// </summary>
-        //public int nTracks;
+        public int nTracks;
 
         /// <summary>
         /// The pt of the lowest pT track
