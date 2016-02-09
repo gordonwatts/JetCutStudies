@@ -35,6 +35,7 @@ namespace SimpleJetCutTraining
             var mCuts = t.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kCuts, "SimpleCuts")
                 .Option("!H:V:FitMethod=MC:EffSel:SampleSize=20000:VarTransform=Decorrelate")
                 .ParameterOption(p => p.logR, "VarProp", "FSmart")
+                .ParameterOption(p => p.nTracks, "VarProp", "FSmart")
                 .ParameterOption(p => p.lowestPtTrack, "VarProp", "FSmart");
 
             t.Train("VerySimpleTraining");

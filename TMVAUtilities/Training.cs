@@ -109,18 +109,87 @@ namespace TMVAUtilities
         }
 
         /// <summary>
+        /// Global tmva options for factory creation.
+        /// </summary>
+        private string _tmva_options = "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification";
+
+        /// <summary>
         /// Run the training
         /// </summary>
         /// <param name="jobName"></param>
         /// <returns></returns>
         public Training<T> Train(string jobName)
         {
+            // First task is to get the dates of all the files so we can see if there
+            // have been updates since the last time the training ran.
+            var outputFile = new FileInfo($"{jobName}.training.root");
+            var hashFileName = outputFile.FullName.Replace(".root", ".hash.txt");
+            var hashFile = new FileInfo(hashFileName);
+
+            var signals = _signals.Select(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
+            var backgrounds = _backgrounds.Select(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
+
+            var oldestInput = signals.Concat(backgrounds).Select(i => i.Item2.LastWriteTime).Max();
+            bool rerun = false;
+            rerun = oldestInput > outputFile.LastWriteTime;
+
+            // We need the list of parameters for the next step
+            var parameters_names = new List<string>();
+            foreach (var field in typeof(T).GetFields())
+            {
+                var name = field.Name;
+                if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
+                {
+                    if (!_ignore_variables.Contains(name))
+                    {
+                        parameters_names.Add(name);
+                    }
+                }
+            }
+
+            // Did the options change?
+            int hash = 0;
+            if (!rerun)
+            {
+                var bld = new StringBuilder();
+                bld.Append(_tmva_options);
+                foreach (var item in _ignore_variables.Concat(_use_variables))
+                {
+                    bld.Append(item);
+                }
+                foreach (var m in _methods)
+                {
+                    bld.Append(m.Name);
+                    bld.Append(m.What.ToString());
+                    bld.Append(m.BuildArgumentList(parameters_names));
+                }
+
+                hash = bld.ToString().GetHashCode();
+                rerun = true;
+                if (hashFile.Exists)
+                {
+                    using (var rdr = hashFile.OpenText())
+                    {
+                        var s = rdr.ReadLine();
+                        if (s == hash.ToString())
+                        {
+                            rerun = false;
+                        }
+                    }
+                }
+            }
+
+            if (!rerun)
+            {
+                return this;
+            }
+
             // THis is the file where most of the basic results from the training will be written.
-            var output = NTFile.Open($"{jobName}.training.root", "RECREATE");
+            var output = NTFile.Open(outputFile.FullName, "RECREATE");
             try {
 
                 // Create the factory.
-                var f = new ROOTNET.NTMVA.NFactory(jobName.AsTS(), output, "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification".AsTS());
+                var f = new ROOTNET.NTMVA.NFactory(jobName.AsTS(), output, _tmva_options.AsTS());
 
                 // Add signal and background. Each one has to be written out.
                 foreach (var sample in _signals.Select(s => s._sample.ToTTree(s._title)))
@@ -134,18 +203,9 @@ namespace TMVAUtilities
 
                 // Do the variables by looking through each item in object T.
                 // Use the windowing requests from the user.
-                var parameters_names = new List<string>();
-                foreach (var field in typeof(T).GetFields())
+                foreach (var n in parameters_names)
                 {
-                    var name = field.Name;
-                    if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
-                    {
-                        if (!_ignore_variables.Contains(name))
-                        {
-                            f.AddVariable(name.AsTS());
-                            parameters_names.Add(name);
-                        }
-                    }
+                    f.AddVariable(n.AsTS());
                 }
 
                 // Now book all the methods that were requested
@@ -160,6 +220,12 @@ namespace TMVAUtilities
                 // And do the evaluation, etc.
                 f.TestAllMethods();
                 f.EvaluateAllMethods();
+
+                // Write out the hash value
+                using (var wr = hashFile.CreateText())
+                {
+                    wr.WriteLine(hash);
+                }
 
                 return this;
             } finally

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Tuple;
 
 namespace TMVAUtilities
 {
@@ -18,6 +19,24 @@ namespace TMVAUtilities
         /// Keep track of how many files we've written.
         /// </summary>
         private static int _f_index = 0;
+
+        public static Tuple<NTTree, FileInfo> ToTTreeAndFile<T> (this IQueryable<T> source, string sampleTitle = "")
+        {
+            // Get the default directory. Look for a cxproj file, and if we don't find it
+            // just use where we are now.
+            var d = FindDirectoryWithFileMatching("*.csproj");
+            if (d == null)
+            {
+                d = new DirectoryInfo(".");
+            }
+            var fname = new FileInfo(Path.Combine(d.FullName, string.IsNullOrWhiteSpace(sampleTitle) ? $"{_f_index}.training.root" : $"{sampleTitle}.training.root"));
+            var f = source.AsTTree(fname);
+            _f_index++;
+            var input = NTFile.Open(f.FullName, "READ");
+            var tree = input.Get("mytree") as NTTree;
+            _saver.Add(Tuple.Create(input, tree));
+            return Create(tree, fname);
+        }
 
         /// <summary>
         /// Writes a querable out to a root file, and gets the tree.

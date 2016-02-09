@@ -19,12 +19,18 @@ namespace TMVAUtilities
         /// <summary>
         /// The algorithm of this method
         /// </summary>
-        private ROOTNET.Interface.NTMVA.NTypes.EMVA _what;
+        public ROOTNET.Interface.NTMVA.NTypes.EMVA What
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// The title for this run.
         /// </summary>
-        private string _methodTitle;
+        public string Name
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Can only be created as part of a training, so this is hidden
@@ -32,8 +38,8 @@ namespace TMVAUtilities
         /// </summary>
         internal Method(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions)
         {
-            this._what = what;
-            this._methodTitle = methodTitle;
+            this.What = what;
+            this.Name = methodTitle;
 
             if (!string.IsNullOrWhiteSpace(methodOptions))
             {
@@ -83,6 +89,16 @@ namespace TMVAUtilities
         /// <param name="f"></param>
         internal void Book(ROOTNET.NTMVA.NFactory f, List<string> parameterNames)
         {
+            f.BookMethod(What, Name.AsTS(), BuildArgumentList(parameterNames).AsTS());
+        }
+        
+        /// <summary>
+        /// What are the arguments
+        /// </summary>
+        /// <param name="parameterNames"></param>
+        /// <returns></returns>
+        public string BuildArgumentList(List<string> parameterNames)
+        {
             // Build the options
             var b = new StringBuilder();
             foreach (var o in _regular_options)
@@ -110,8 +126,7 @@ namespace TMVAUtilities
                 b.Append($"{o.Item2}[{idx}]={o.Item3}");
             }
 
-            // And do the booking
-            f.BookMethod(_what, _methodTitle.AsTS(), b.ToString().AsTS());
+            return b.ToString();
         }
     }
 }
