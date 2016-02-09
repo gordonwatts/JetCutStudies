@@ -29,9 +29,14 @@ namespace SimpleJetCutTraining
 
             var t = TrainingIQueriable(signalHV600pi100Events, true)
                 .AsSignal("HV600pi100")
-                .Background(TrainingIQueriable(backgroundEvents, false), "J2Z")
-                .BookMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kCuts, "SimpleCuts", "!H:V:FitMethod=MC:EffSel:SampleSize=20000:VarProp[0]=FSmart:VarProp[1]=FSmart:VarTransform=Decorrelate")
-                .Train("VerySimpleTraining");
+                .Background(TrainingIQueriable(backgroundEvents, false), "J2Z");
+
+            var mCuts = t.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kCuts, "SimpleCuts")
+                .Option("!H:V:FitMethod=MC:EffSel:SampleSize=20000:VarTransform=Decorrelate")
+                .ParameterOption(p => p.logR, "VarProp", "FSmart")
+                .ParameterOption(p => p.lowestPtTrack, "VarProp", "FSmart");
+
+            t.Train("VerySimpleTraining");
         }
 
         /// <summary>

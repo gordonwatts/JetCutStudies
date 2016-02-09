@@ -54,16 +54,9 @@ namespace TMVAUtilities
         }
 
         /// <summary>
-        /// Info on a training method
+        /// List of methods we are going to train agains.
         /// </summary>
-        private class TrainingMethodInfo
-        {
-            public ROOTNET.Interface.NTMVA.NTypes.EMVA _what;
-            public string _title;
-            public string _options;
-        }
-
-        private List<TrainingMethodInfo> _methods = new List<TrainingMethodInfo>();
+        private List<Method<T>> _methods = new List<Method<T>>();
 
         /// <summary>
         /// Setup a training method.
@@ -72,17 +65,18 @@ namespace TMVAUtilities
         /// <param name="methodTitle"></param>
         /// <param name="methodOptions"></param>
         /// <returns></returns>
-        public Training<T> BookMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions = "")
+        public Method<T> AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions = "")
         {
-            _methods.Add(new TrainingMethodInfo()
-            {
-                _options = methodOptions,
-                _what = what,
-                _title = methodTitle
-            });
-            return this;
+            var m = new Method<T>(what, methodTitle, methodOptions);
+            _methods.Add(m);
+            return m;
         }
 
+        /// <summary>
+        /// Run the training
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <returns></returns>
         public Training<T> Train(string jobName)
         {
             // THis is the file where most of the basic results from the training will be written.
@@ -103,15 +97,17 @@ namespace TMVAUtilities
                 }
 
                 // Do the variables by looking through each item in object T.
+                var parameters_names = new List<string>();
                 foreach (var field in typeof(T).GetFields())
                 {
                     f.AddVariable(field.Name.AsTS());
+                    parameters_names.Add(field.Name);
                 }
 
                 // Now book all the methods that were requested
                 foreach (var m in _methods)
                 {
-                    f.BookMethod(m._what, m._title.AsTS(), m._options.AsTS());
+                    m.Book(f, parameters_names);
                 }
 
                 // Finally, do the training.

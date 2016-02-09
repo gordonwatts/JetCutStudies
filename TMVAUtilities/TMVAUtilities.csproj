@@ -327,7 +327,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExpressionUtilities.cs" />
     <Compile Include="IQuerableUtils.cs" />
+    <Compile Include="Method.cs" />
     <Compile Include="NTStringUtils.cs" />
     <Compile Include="Training.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
