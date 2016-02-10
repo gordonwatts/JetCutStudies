@@ -352,6 +352,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TMVAReaders.cs" />
     <Compile Include="TrainingData.cs" />
   </ItemGroup>
   <ItemGroup>

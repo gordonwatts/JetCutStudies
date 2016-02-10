@@ -73,5 +73,14 @@ namespace libDataAccess
             //sigEvents.UseStatementOptimizer = false;
             return sigEvents;
         }
+
+        public static QueriableTTree<recoTree> Get200pi25lt5m()
+        {
+            var sig = GetFileList("mc15_13TeV:mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
+            //sigEvents.IgnoreQueryCache = true;
+            //sigEvents.UseStatementOptimizer = false;
+            return sigEvents;
+        }
     }
 }

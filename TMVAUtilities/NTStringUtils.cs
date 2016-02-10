@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TMVAUtilities
 {
-    static class NTStringUtils
+    public static class NTStringUtils
     {
         /// <summary>
         /// Convert a string to a TString class.

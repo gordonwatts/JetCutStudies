@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Tuple;
+using static TMVAUtilities.FileInfoUtilities;
 
 namespace TMVAUtilities
 {
@@ -66,30 +67,5 @@ namespace TMVAUtilities
         /// Make sure they don't get deleted while we are running!
         /// </summary>
         private static List<Tuple<ROOTNET.Interface.NTFile, NTTree>> _saver = new List<Tuple<ROOTNET.Interface.NTFile, NTTree>>();
-
-        /// <summary>
-        /// Find a directory that contains a pattern.
-        /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
-        private static DirectoryInfo FindDirectoryWithFileMatching(string v, DirectoryInfo startDir = null)
-        {
-            var dir = startDir;
-            if (dir == null)
-            {
-                dir = new DirectoryInfo(".");
-            }
-
-            while (dir != null)
-            {
-                if (dir.EnumerateFiles(v).Any())
-                {
-                    return dir;
-                }
-                dir = dir.Parent;
-            }
-
-            return null;
-        }
     }
 }
