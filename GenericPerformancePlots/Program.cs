@@ -34,25 +34,26 @@ namespace GenericPerformancePlots
         {
             Console.WriteLine("Finding the files");
             var backgroundEvents = Files.GetJ2Z();
-            var signalHV125pi15Events = Files.Get125pi15();
-            var signalHV125pi40Events = Files.Get125pi40();
-            var signalHV600pi100Events = Files.Get600pi100();
+
+            // All the signal we are going to make plots of.
+            var signalSamples = new Tuple<IQueryable<recoTree>, string>[]
+            {
+                new Tuple<IQueryable<recoTree>, string>(Files.Get200pi25lt5m(), "200-25"),
+            };
 
             // Output file
             Console.WriteLine("Opening output file");
             using (var outputHistograms = new FutureTFile("GenericPerformancePlots.root"))
             {
-                var status125pi15  = PerSampleStudies(backgroundEvents, signalHV125pi15Events, outputHistograms.mkdir("125-15"));
-                var status125pi40  = PerSampleStudies(backgroundEvents, signalHV125pi40Events, outputHistograms.mkdir("125-40"));
-                var status600pi100 = PerSampleStudies(backgroundEvents, signalHV600pi100Events, outputHistograms.mkdir("600-100"));
+                // Generate for each sample.
+                foreach (var sample in signalSamples)
+                {
+                    var status = PerSampleStudies(backgroundEvents, sample.Item1, outputHistograms.mkdir(sample.Item2));
+                    DumpResults($"Sample {sample.Item2}:", status);
+                }
 
                 // Write out the histograms
                 outputHistograms.Write();
-
-                // And dump everything.
-                DumpResults("Sample 125-15:", status125pi15);
-                DumpResults("Sample 125-40:", status125pi40);
-                DumpResults("Sample 600-100:", status600pi100);
             }
         }
 
@@ -127,7 +128,7 @@ namespace GenericPerformancePlots
             // Dump out the number of events so everyone can see.
             var status = from nB in background.FutureCount()
                          from nS in signal.FutureCount()
-                         select string.Format("Signal events: {0} Background events: {1}", nB, nS);
+                         select string.Format("Signal events: {0} Background events: {1}", nS, nB);
             result.Add(status);
             return result;
         }

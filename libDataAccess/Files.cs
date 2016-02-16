@@ -27,7 +27,7 @@ namespace libDataAccess
         private static FileInfo[] GetFileList(string dsname)
         {
             return GRIDJobs.FindJobFiles("DiVertAnalysis",
-                3,
+                4,
                 dsname,
                 nFiles: NFiles,
                 statusUpdate: l => Console.WriteLine(l),
