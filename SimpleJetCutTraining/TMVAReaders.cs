@@ -13,19 +13,18 @@ namespace SimpleJetCutTraining
     [CPPHelperClass]
     public static class TMVAReaders
     {
-#if false
         [CPPCode(IncludeFiles = new[] { "tmva/Reader.h"},
             Code = new[] {
                 "vector<double> dataUnique;",
                 "dataUnique.push_back(a1);",
                 "dataUnique.push_back(a2);",
-                "TMVASelectorSimpleCuts = reader->EvaluateMVA(dataUnique, \"SimpleCuts\", aux) > 0 ? true : false;"
+                "TMVASelectorSimpleCuts = reader->EvaluateMVA(dataUnique, \"SimpleCuts\", aux);"
             })]
-        public static bool TMVASelectorSimpleCuts (ROOTNET.NTMVA.NReader reader, double a1, double a2, double aux)
+        public static double TMVASelectorSimpleCutsTest (ROOTNET.NTMVA.NReader reader, double a1, double a2, double aux)
         {
             throw new NotImplementedException("THis should never get called!");
         }
-#endif
+
         [CPPCode(IncludeFiles = new[] { "tmva/Reader.h" },
             Code = new[] {
                 "static bool initUnique = false;",

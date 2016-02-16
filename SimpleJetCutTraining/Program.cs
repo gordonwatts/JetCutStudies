@@ -29,6 +29,7 @@ namespace SimpleJetCutTraining
             //var signalHV125pi15Events = Files.Get125pi15();
             //var signalHV125pi40Events = Files.Get125pi40();
             var signalHV600pi100Events = Files.Get600pi100();
+            //var signalGet200pi25lt5mEvents = Files.Get200pi25lt5m();
 
             //
             // Do a simple cut training here
@@ -64,9 +65,10 @@ namespace SimpleJetCutTraining
             r.AddVariable("logR".AsTS(), logR);
             r.AddVariable("nTracks".AsTS(), nTracks);
             r.BookMVA("SimpleCuts".AsTS(), s.FullName.AsTS());
-            Expression<Func<TrainingData, bool>> simpleCutsReader = tv => TMVAReaders.TMVASelectorSimpleCuts(r, tv.logR, tv.lowestPtTrack, stdCutVale.Value);
+            Expression<Func<TrainingData, double>> simpleCutsReader = tv => TMVAReaders.TMVASelectorSimpleCutsTest(r, tv.logR, tv.lowestPtTrack, stdCutVale.Value);
+#else
+            Expression<Func<TrainingData, double>> simpleCutsReader = tv => TMVAReaders.TMVASelectorSimpleCuts(tv.logR, tv.nTracks, 0.72);
 #endif
-            Expression<Func<TrainingData, double>> simpleCutsReader = tv => TMVAReaders.TMVASelectorSimpleCuts(tv.logR, tv.nTracks, 0.21);
             var simpleCutValue = CalcEff(effResults.mkdir("SimpleCuts"), simpleCutsReader, 0.5, TrainingIQueriable(backgroundEvents, false), TrainingIQueriable(signalHV600pi100Events, true));
 
             // Next, we need to get the MVA and figure out the efficiency.
