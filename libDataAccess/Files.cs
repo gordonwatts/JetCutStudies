@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace libDataAccess
 {
     /// <summary>
-    /// Centralize the files we are accessing so multiple programs don't have to keep re-writting stuff.
+    /// Centralize the files we are accessing so multiple programs don't have to keep re-writing stuff.
     /// </summary>
     public static class Files
     {
         /// <summary>
-        /// Default setting for # of files to fetch when we run. 0 means we are running on the full datasample.
+        /// Default setting for # of files to fetch when we run. 0 means we are running on the full data sample.
         /// </summary>
-        public static int NFiles = 0;
+        public static int NFiles = 1;
 
         /// <summary>
         /// Return a dataset list given the name of the dataset.

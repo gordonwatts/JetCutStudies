@@ -32,6 +32,8 @@ namespace GenericPerformancePlots
         /// </remarks>
         static void Main(string[] args)
         {
+            CommandLineUtils.Parse(args);
+
             Console.WriteLine("Finding the files");
             var backgroundEvents = Files.GetJ2Z();
 
