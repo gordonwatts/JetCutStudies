@@ -28,7 +28,7 @@ namespace SimpleJetCutTraining
             var backgroundEvents = Files.GetJ2Z();
             //var signalHV125pi15Events = Files.Get125pi15();
             //var signalHV125pi40Events = Files.Get125pi40();
-            var signalHV600pi100Events = Files.Get600pi100();
+            var signalHV600pi100Events = Files.Get600pi150lt9m();
             //var signalGet200pi25lt5mEvents = Files.Get200pi25lt5m();
 
             //

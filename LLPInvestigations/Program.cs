@@ -17,6 +17,7 @@ namespace LLPInvestigations
         {
             Console.WriteLine("Finding the files");
 
+#if false
             var llp125_15 = Files.Get125pi15();
             var llp125_40 = Files.Get125pi40();
             var llp600_100 = Files.Get600pi100();
@@ -29,6 +30,7 @@ namespace LLPInvestigations
                 ProcessSample(llp125_40, outputHistograms.mkdir("125-40"));
                 ProcessSample(llp600_100, outputHistograms.mkdir("600-100"));
             }
+#endif
         }
 
         private static void ProcessSample(QueriableTTree<DiVertAnalysis.recoTree> llp, FutureTDirectory dir)
