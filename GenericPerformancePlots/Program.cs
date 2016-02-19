@@ -41,6 +41,8 @@ namespace GenericPerformancePlots
             var signalSamples = new Tuple<IQueryable<recoTree>, string>[]
             {
                 new Tuple<IQueryable<recoTree>, string>(Files.Get200pi25lt5m(), "200-25"),
+                new Tuple<IQueryable<recoTree>, string>(Files.Get400pi100lt9m(), "400-100"),
+                new Tuple<IQueryable<recoTree>, string>(Files.Get600pi150lt9m(), "600-150"),
             };
 
             // Output file

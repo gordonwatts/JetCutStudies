@@ -2,6 +2,7 @@
 using LINQToTTreeLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,18 +21,39 @@ namespace libDataAccess
         public static int NFiles = 1;
 
         /// <summary>
+        /// Set to true to get a complete dump of what is going on during grid file access.
+        /// </summary>
+        public static bool VerboseFileFetch = false;
+
+        /// <summary>
         /// Return a dataset list given the name of the dataset.
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
         private static FileInfo[] GetFileList(string dsname)
         {
-            return GRIDJobs.FindJobFiles("DiVertAnalysis",
-                4,
-                dsname,
-                nFiles: NFiles,
-                statusUpdate: l => Console.WriteLine(l),
-                intelligentLocal: true);
+            TraceListener listener = null;
+
+            if (VerboseFileFetch)
+            {
+                listener = new TextWriterTraceListener(Console.Out);
+                Trace.Listeners.Add(listener);
+            }
+
+            try {
+                return GRIDJobs.FindJobFiles("DiVertAnalysis",
+                    4,
+                    dsname,
+                    nFiles: NFiles,
+                    statusUpdate: l => Console.WriteLine(l),
+                    intelligentLocal: true);
+            } finally
+            {
+                if (listener != null)
+                {
+                    Trace.Listeners.Remove(listener);
+                }
+            }
         }
 
         /// <summary>
@@ -74,6 +96,7 @@ namespace libDataAccess
             return backgroundEvents;
         }
 
+#if false
         public static QueriableTTree<recoTree> Get125pi15()
         {
             var sig = GetFileList("user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2");
@@ -100,10 +123,28 @@ namespace libDataAccess
             //sigEvents.UseStatementOptimizer = false;
             return sigEvents;
         }
-
+#endif
         public static QueriableTTree<recoTree> Get200pi25lt5m()
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
+            //sigEvents.IgnoreQueryCache = true;
+            //sigEvents.UseStatementOptimizer = false;
+            return sigEvents;
+        }
+
+        public static QueriableTTree<recoTree> Get400pi100lt9m()
+        {
+            var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
+            //sigEvents.IgnoreQueryCache = true;
+            //sigEvents.UseStatementOptimizer = false;
+            return sigEvents;
+        }
+
+        public static QueriableTTree<recoTree> Get600pi150lt9m()
+        {
+            var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
             //sigEvents.IgnoreQueryCache = true;
             //sigEvents.UseStatementOptimizer = false;

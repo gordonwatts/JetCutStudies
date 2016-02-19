@@ -16,6 +16,9 @@ namespace libDataAccess.Utils
         {
             [Option("UseFullDataset", Default = false, HelpText = "Use full dataset rather than test dataset size.")]
             public bool UseFullDataset { get; set; }
+
+            [Option("VerboseFileFetch", Default = false, HelpText = "Dump out details during file GRID access.")]
+            public bool VerboseFileFetch { get; set; }
         }
 
         /// <summary>
@@ -28,13 +31,8 @@ namespace libDataAccess.Utils
 
             result.MapResult(
                 options => {
-                    if (options.UseFullDataset)
-                    {
-                        Files.NFiles = 0;
-                    } else
-                    {
-                        Files.NFiles = 1;
-                    }
+                    Files.NFiles = options.UseFullDataset ? 0 : 1;
+                    Files.VerboseFileFetch = options.VerboseFileFetch;
                     return 0;
                 },
                 errors => {
