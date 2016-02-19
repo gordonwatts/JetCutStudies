@@ -14,5 +14,10 @@ $samples = ("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD
 		   )
 
 foreach ($s in $samples) {
-	Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion $s
+	$jinfo = Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion $s
+	$h = @{DataSet = $jinfo.Name
+			Task = $jinfo.ID
+			Status = Get-GRIDJobInfo -JobStatus $jinfo.ID
+			}
+	New-Object PSObject -Property $h
 }
