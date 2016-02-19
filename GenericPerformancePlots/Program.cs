@@ -35,6 +35,15 @@ namespace GenericPerformancePlots
             CommandLineUtils.Parse(args);
 
             Console.WriteLine("Finding the files");
+
+            // All the background samples have to be done first.
+            var backgroundSamples = new Tuple<IQueryable<recoTree>, string>[]
+            {
+                new Tuple<IQueryable<recoTree>, string>(Files.GetJ2Z(), "J2Z"),
+                new Tuple<IQueryable<recoTree>, string>(Files.GetJ3Z(), "J3Z"),
+                new Tuple<IQueryable<recoTree>, string>(Files.GetJ4Z(), "J4Z"),
+            };
+
             var backgroundEvents = Files.GetJ2Z();
 
             // All the signal we are going to make plots of.
@@ -49,7 +58,16 @@ namespace GenericPerformancePlots
             Console.WriteLine("Opening output file");
             using (var outputHistograms = new FutureTFile("GenericPerformancePlots.root"))
             {
-                // Generate for each sample.
+                // First, lets do a small individual thing for each individual background sample.
+                var bkgDir = outputHistograms.mkdir("background");
+                foreach (var background in backgroundSamples)
+                {
+                    BuildSuperJetInfo(background.Item1)
+                        .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
+                }
+
+                // Do a quick study for each signal sample, using all the backgrounds at once to make
+                // performance plots.
                 foreach (var sample in signalSamples)
                 {
                     var status = PerSampleStudies(backgroundEvents, sample.Item1, outputHistograms.mkdir(sample.Item2));
