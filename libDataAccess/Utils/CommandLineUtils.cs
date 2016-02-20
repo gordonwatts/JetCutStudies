@@ -33,6 +33,7 @@ namespace libDataAccess.Utils
                 options => {
                     Files.NFiles = options.UseFullDataset ? 0 : 1;
                     Files.VerboseFileFetch = options.VerboseFileFetch;
+                    Console.WriteLine($"NFiles flag set {Files.NFiles}");
                     return 0;
                 },
                 errors => {
