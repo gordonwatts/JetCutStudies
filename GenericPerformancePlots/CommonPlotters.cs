@@ -51,6 +51,10 @@ namespace GenericPerformancePlots
                 .Save(saveDir);
 
             jets
+                .FuturePlot(MaxTrackPtPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
                 .FuturePlot(JetExtraCalRVsPtPlot, nameAddition)
                 .Save(saveDir);
 
@@ -61,6 +65,23 @@ namespace GenericPerformancePlots
             jets
                 .FuturePlot(JetExtraCalRVsNTrackPlot, nameAddition)
                 .Save(saveDir);
+
+            jets
+                .FuturePlot(JetExtraCalRVsMaxPtPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(JetExtraCalRVsSumPtPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(JetSumPtVsPtPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(JetMaxPtVsPtPlot, nameAddition)
+                .Save(saveDir);
+
 
             return jets;
         }

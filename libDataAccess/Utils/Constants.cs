@@ -30,6 +30,11 @@ namespace libDataAccess.Utils
         public static double TrackJetAssociationMinPt = 1.0;
 
         /// <summary>
+        /// Default for assocaiting all tracks - like lots of them.
+        /// </summary>
+        public static double TrackJetAssociationAllMinPt = 0.200;
+
+        /// <summary>
         /// Return an expression to test for something decaying in the calorimeter
         /// </summary>
         public static Expression<Func<double, bool>> InCalorimeter

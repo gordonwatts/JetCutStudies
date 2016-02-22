@@ -12,6 +12,7 @@ namespace libDataAccess
     {
         public recoTreeJets Jet;
         public IEnumerable<recoTreeTracks> Tracks;
+        public IEnumerable<recoTreeTracks> AllTracks;
     }
 
     public static class JetInfoExtraHelpers
@@ -31,7 +32,8 @@ namespace libDataAccess
                    select new JetInfoExtra()
                    {
                        Jet = j,
-                       Tracks = ev.Tracks.Where(t => t.pT >= Constants.TrackJetAssociationMinPt && ROOTUtils.DeltaR2(j.eta, j.phi, t.eta, t.phi) < Constants.TrackJetAssociationDR2)
+                       Tracks = ev.Tracks.Where(t => t.pT >= Constants.TrackJetAssociationMinPt && ROOTUtils.DeltaR2(j.eta, j.phi, t.eta, t.phi) < Constants.TrackJetAssociationDR2),
+                       AllTracks = ev.Tracks.Where(t => t.pT >= Constants.TrackJetAssociationAllMinPt && ROOTUtils.DeltaR2(j.eta, j.phi, t.eta, t.phi) < Constants.TrackJetAssociationDR2),
                    };
         }
 

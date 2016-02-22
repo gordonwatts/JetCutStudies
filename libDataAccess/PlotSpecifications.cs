@@ -52,13 +52,13 @@ namespace libDataAccess
         /// Sum pT of all tracks
         /// </summary>
         public static IPlotSpec<JetInfoExtra> SumTrackPtPlot =
-            MakePlotterSpec<JetInfoExtra>(16, 0.0, 4.0, j => j.Tracks.Sum(t => t.pT), "sumTrkPt{0}", "Sum pT of tracks for {0}; Sum pT [GeV]");
+            MakePlotterSpec<JetInfoExtra>(16, 0.0, 4.0, j => j.AllTracks.Sum(t => t.pT), "sumTrkPt{0}", "Sum pT of tracks for {0}; Sum pT [GeV]");
 
         /// <summary>
         /// Sum pT of all tracks
         /// </summary>
         public static IPlotSpec<JetInfoExtra> MaxTrackPtPlot =
-            MakePlotterSpec<JetInfoExtra>(16, 0.0, 4.0, j => j.Tracks.Count() > 0 ? j.Tracks.OrderByDescending(t => t.pT).First().pT : 0.0, "MaxTrkPt{0}", "Max pT of tracks for {0}; Max pT [GeV]");
+            MakePlotterSpec<JetInfoExtra>(16, 0.0, 4.0, j => j.AllTracks.Count() > 0 ? j.AllTracks.OrderByDescending(t => t.pT).First().pT : 0.0, "MaxTrkPt{0}", "Max pT of tracks for {0}; Max pT [GeV]");
 
         /// <summary>
         /// A pT plot of tracks associated with jets
@@ -129,6 +129,48 @@ namespace libDataAccess
                 10, 0, 10, j => j.Tracks.Count(),
                 30, 25.0, 1000.0, j => j.Jet.pT,
                 titleFormat: "NTracks vs Jet pT for {0}", nameFormat: "NTrkvspT{0}"
+            );
+
+        /// <summary>
+        /// Plot of Sum PT vs Jet Pt
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetSumPtVsPtPlot =
+            MakePlotterSpec<JetInfoExtra>(16, 0.0, 4.0, j => j.AllTracks.Sum(t => t.pT),
+                30, 25.0, 1000.0, j => j.Jet.pT,
+                titleFormat: "Track Sum Pt vs Jet pT for {0}", nameFormat: "SumPtvspT{0}"
+            );
+
+        /// <summary>
+        /// Plot of SumPT vs CalR
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraCalRVsSumPtPlot =
+            MakePlotterSpec<JetInfoExtra>(25, -3.0, 4.0, j =>
+                j.Jet.logRatio > 4 ? 3.99
+                : j.Jet.logRatio < -3.0 ? -2.99
+                : j.Jet.logRatio,
+                16, 0, 4.0, j => j.AllTracks.Sum(t => t.pT),
+                titleFormat: "CalRatio vs Track Sum pT for {0}", nameFormat: "CalRvsSumPt{0}"
+            );
+
+        /// <summary>
+        /// Plot of MaxPT vs CalR
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraCalRVsMaxPtPlot =
+            MakePlotterSpec<JetInfoExtra>(25, -3.0, 4.0, j =>
+                j.Jet.logRatio > 4 ? 3.99
+                : j.Jet.logRatio < -3.0 ? -2.99
+                : j.Jet.logRatio,
+                16, 0, 4.0, j => j.AllTracks.Count() > 0 ? j.AllTracks.OrderByDescending(t => t.pT).First().pT : 0.0,
+                titleFormat: "CalRatio vs Max Track pT for {0}", nameFormat: "CalRvsMaxTrk{0}"
+            );
+
+        /// <summary>
+        /// Plot of Sum PT vs Jet Pt
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetMaxPtVsPtPlot =
+            MakePlotterSpec<JetInfoExtra>(16, 0, 4.0, j => j.AllTracks.Count() > 0 ? j.AllTracks.OrderByDescending(t => t.pT).First().pT : 0.0,
+                30, 25.0, 1000.0, j => j.Jet.pT,
+                titleFormat: "Track Max Pt vs Jet pT for {0}", nameFormat: "MaxPtvspT{0}"
             );
 
         /// <summary>
