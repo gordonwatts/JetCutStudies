@@ -60,6 +60,7 @@ namespace GenericPerformancePlots
             {
                 // First, lets do a small individual thing for each individual background sample.
                 var bkgDir = outputHistograms.mkdir("background");
+                Console.WriteLine("Making background plots.");
                 foreach (var background in backgroundSamples)
                 {
                     BuildSuperJetInfo(background.Item1)
@@ -68,6 +69,7 @@ namespace GenericPerformancePlots
 
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots.
+                Console.WriteLine("Making the signal/background plots.");
                 foreach (var sample in signalSamples)
                 {
                     var status = PerSampleStudies(backgroundEvents, sample.Item1, outputHistograms.mkdir(sample.Item2));
@@ -178,6 +180,20 @@ namespace GenericPerformancePlots
                 NTrackExtraPlot,
                 dir,
                 "Ntrk");
+
+            var sigBackSumPt = CalcSignalToBackgroundSeries(
+                signalGoodJets,
+                backgroundGoodJets,
+                SumTrackPtPlot,
+                dir,
+                "SumPt");
+
+            var sigBackMaxPt = CalcSignalToBackgroundSeries(
+                signalGoodJets,
+                backgroundGoodJets,
+                MaxTrackPtPlot,
+                dir,
+                "MaxPt");
 
             // Look to see what it would take to get constant efficiency
             var result = new List<IFutureValue<string>>();

@@ -52,7 +52,13 @@ namespace libDataAccess
         /// Sum pT of all tracks
         /// </summary>
         public static IPlotSpec<JetInfoExtra> SumTrackPtPlot =
-            MakePlotterSpec<JetInfoExtra>(40, 0.0, 20.0, j => j.Tracks.Sum(t => t.pT), "sumTrkPt{0}", "Sum pT of tracks for {0}; Sum pT [GeV]");
+            MakePlotterSpec<JetInfoExtra>(16, 0.0, 4.0, j => j.Tracks.Sum(t => t.pT), "sumTrkPt{0}", "Sum pT of tracks for {0}; Sum pT [GeV]");
+
+        /// <summary>
+        /// Sum pT of all tracks
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> MaxTrackPtPlot =
+            MakePlotterSpec<JetInfoExtra>(16, 0.0, 4.0, j => j.Tracks.Count() > 0 ? j.Tracks.OrderByDescending(t => t.pT).First().pT : 0.0, "MaxTrkPt{0}", "Max pT of tracks for {0}; Max pT [GeV]");
 
         /// <summary>
         /// A pT plot of tracks associated with jets
