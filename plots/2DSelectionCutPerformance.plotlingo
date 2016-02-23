@@ -15,13 +15,13 @@ UseSmoothGradient();
 #
 
 plottypes = [
-	{title => "CalRatio vs Jet pT", name => "CalRvspT", xcut=>true, ycut=>true},
-	{title => "NTrack vs Jet pT", name => "NTrkvspT", xcut=>false, ycut=>true},
-	{title => "SumPT vs Jet pT", name => "SumPtvspT", xcut=>false, ycut=>true},
-	{title => "MaxPT vs Jet pT", name => "MaxPtvspT", xcut=>false, ycut=>true},
-	{title => "CalRatio vs NTrk", name => "CalRvsNTrk", xcut=>true, ycut=>false},
-	{title => "CalRatio vs SumPt", name => "CalRvsSumPt", xcut=>true, ycut=>false},
-	{title => "CalRatio vs MaxPt", name => "CalRvsMaxTrk", xcut=>true, ycut=>false}
+	{title => "CalRatio vs Jet pT", xaxis => "CalRatio", yaxis => "Jet p_{T} [GeV]", name => "CalRvspT", xcut=>true, ycut=>true},
+	{title => "NTrack vs Jet pT", xaxis => "NTrack", yaxis => "Jet p_{T} [GeV]", name => "NTrkvspT", xcut=>false, ycut=>true},
+	{title => "SumPT vs Jet pT", xaxis => "Sum _{T} [GeV]", yaxis => "Jet p_{T} [GeV]", name => "SumPtvspT", xcut=>false, ycut=>true},
+	{title => "MaxPT vs Jet pT", xaxis => "Max _{T} [GeV]", yaxis => "Jet p_{T} [GeV]", name => "MaxPtvspT", xcut=>false, ycut=>true},
+	{title => "CalRatio vs NTrk", xaxis => "CalRatio", yaxis => "NTrack", name => "CalRvsNTrk", xcut=>true, ycut=>false},
+	{title => "CalRatio vs SumPt", xaxis => "CalRatio", yaxis => "Sum p_{T} [GeV]", name => "CalRvsSumPt", xcut=>true, ycut=>false},
+	{title => "CalRatio vs MaxPt", xaxis => "CalRatio", yaxis => "Max p_{T} [GeV]", name => "CalRvsMaxTrk", xcut=>true, ycut=>false}
 ];
 
 #
@@ -32,6 +32,8 @@ for (plottypes) {
 	  f.Get("{sample}/signal/{name}withLLPInCal")
 		.asEfficiency(xcut, ycut)
 		.plot()
+		.xaxis(xaxis)
+		.yaxis(yaxis)
 		.size(1200, 800)
 		.addDrawOption("COLZ")
 		.title("{title} for Sample {sample}");
@@ -42,6 +44,8 @@ for (plottypes) {
 	f.Get("200-25/background/{name}all")
 		.asEfficiency(xcut, ycut)
 		.plot()
+		.xaxis(xaxis)
+		.yaxis(yaxis)
 		.size(1200, 800)
 		.addDrawOption("COLZ")
 		.title("{title} for QCD");
