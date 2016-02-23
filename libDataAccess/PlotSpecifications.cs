@@ -40,7 +40,7 @@ namespace libDataAccess
         /// Plot the number of tracks
         /// </summary>
         public static IPlotSpec<IEnumerable<recoTreeTracks>> NTrackPlot =
-            MakePlotterSpec<IEnumerable<recoTreeTracks>> (20, 0.0, 20.0, tks => tks.Count(), "ntracks{0}", "Number of tracks with {0}; N_tracks");
+            MakePlotterSpec<IEnumerable<recoTreeTracks>> (21, -0.5, 20.5, tks => tks.Count(), "ntracks{0}", "Number of tracks with {0}; N_tracks");
 
         /// <summary>
         /// A pT plot of tracks associated with jets
@@ -126,7 +126,7 @@ namespace libDataAccess
         /// </summary>
         public static IPlotSpec<JetInfoExtra> JetExtraNTrackVsPtPlot =
             MakePlotterSpec<JetInfoExtra>(
-                10, 0, 10, j => j.Tracks.Count(),
+                21, -0.5, 20.5, j => j.Tracks.Count(),
                 30, 25.0, 1000.0, j => j.Jet.pT,
                 titleFormat: "NTracks vs Jet pT for {0}", nameFormat: "NTrkvspT{0}"
             );
@@ -181,7 +181,7 @@ namespace libDataAccess
                 j.Jet.logRatio > 4 ? 3.99
                 : j.Jet.logRatio < -3.0 ? -2.99
                 : j.Jet.logRatio,
-                10, 0, 10.0, j => j.Tracks.Count(),
+                21, -0.5, 20.5, j => j.Tracks.Count(),
                 titleFormat: "CalRatio vs Jet pT for {0}", nameFormat: "CalRvsNTrk{0}"
             );
 
