@@ -8,6 +8,7 @@ include ("common.plotlingo");
 # These are 2D plots, so we really don't want stats boxes.
 #
 TurnOffStatBoxes();
+UseSmoothGradient();
 
 #
 # All the types of plots
@@ -16,7 +17,11 @@ TurnOffStatBoxes();
 plottypes = [
 	{title => "CalRatio vs Jet pT", name => "CalRvspT", xcut=>true, ycut=>true},
 	{title => "NTrack vs Jet pT", name => "NTrkvspT", xcut=>false, ycut=>true},
-	{title => "CalRatio vs NTrk", name => "CalRvsNTrk", xcut=>true, ycut=>false}
+	{title => "SumPT vs Jet pT", name => "SumPtvspT", xcut=>false, ycut=>true},
+	{title => "MaxPT vs Jet pT", name => "MaxPtvspT", xcut=>false, ycut=>true},
+	{title => "CalRatio vs NTrk", name => "CalRvsNTrk", xcut=>true, ycut=>false},
+	{title => "CalRatio vs SumPt", name => "CalRvsSumPt", xcut=>true, ycut=>false},
+	{title => "CalRatio vs MaxPt", name => "CalRvsMaxTrk", xcut=>true, ycut=>false}
 ];
 
 #
@@ -27,15 +32,17 @@ for (plottypes) {
 	  f.Get("{sample}/signal/{name}withLLPInCal")
 		.asEfficiency(xcut, ycut)
 		.plot()
+		.size(1200, 800)
 		.addDrawOption("COLZ")
 		.title("{title} for Sample {sample}");
 	};
 
 	# Same for the background.
 
-	f.Get("125-15/background/{name}all")
+	f.Get("200-25/background/{name}all")
 		.asEfficiency(xcut, ycut)
 		.plot()
+		.size(1200, 800)
 		.addDrawOption("COLZ")
 		.title("{title} for QCD");
 };

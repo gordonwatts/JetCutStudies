@@ -3,16 +3,17 @@
 #
 
 # File we are looking at...
-f = file ("..\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
-f_llp = file ("..\LLPInvestigations\bin\x86\Debug\LLPInvestigations.root");
+f = file ("GenericPerformancePlots.root");
+//f = file ("..\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
+//f_llp = file ("..\LLPInvestigations\bin\x86\Debug\LLPInvestigations.root");
 
 # The samples that are hidden in the file
-samples = ["125-15", "125-40", "600-100"];
+samples = ["200-25", "400-100", "600-150"];
 
 # Some legend stuff to help out
-Legend("125-15" => {Color => 1, Title => "125-15"});
-Legend("125-40" => {Color => 2, Title => "125-40"});
-Legend("600-100" => {Color => 3, Title => "600-100"});
+Legend("200-25" => {Color => 1, Title => "200-25"});
+Legend("400-100" => {Color => 2, Title => "400-100"});
+Legend("600-150" => {Color => 3, Title => "600-150"});
 
 # Pt ranges
 ptBins = ["0_25", "25_40", "40_60", "60_120", "120_200", "200_1000"];
