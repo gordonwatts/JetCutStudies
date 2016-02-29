@@ -1,4 +1,5 @@
-﻿using System;
+﻿using libDataAccess;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +17,16 @@ namespace JetMVATraining
         static void Main(string[] args)
         {
             // Our data sources
+            var background = Files.GetAllJetSamples()
+                .AsGoodJetStream();
+
+            var signal = Files.Get600pi150lt9m().GenerateStream(1.0)
+                .AsGoodJetStream();
 
             // We want to be flat w.r.t. pT, so reweight.
+            var backgroundRewighted = background
+                .PtSpectra()
+                .WeightToMakeFlat(background, j => j.Jet.pT);
 
             // Finally, write out a tree for training everything.
 

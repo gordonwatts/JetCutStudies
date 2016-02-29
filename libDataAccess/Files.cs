@@ -96,6 +96,39 @@ namespace libDataAccess
             return backgroundEvents;
         }
 
+        /// <summary>
+        /// Metadata we hold for each sample
+        /// </summary>
+        public class MetaData
+        {
+            public recoTree Data;
+            public double xSectionWeight;
+        }
+
+        /// <summary>
+        /// Gets properly weighted background sample as one.
+        /// </summary>
+        /// <returns></returns>
+        public static IQueryable<MetaData> GetAllJetSamples()
+        {
+            return
+                GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)
+                //.Concat(GenerateStream(libDataAccess.Files.GetJ3Z(), 0.5))
+                //.Concat(GenerateStream(libDataAccess.Files.GetJ4Z(), 0.25))
+                ;
+        }
+
+        /// <summary>
+        /// Return a metadata stream version of the event sequence.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="xSecWeight"></param>
+        /// <returns></returns>
+        public static IQueryable<MetaData> GenerateStream(this IQueryable<recoTree> source, double xSecWeight)
+        {
+            return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight });
+        }
+
 #if false
         public static QueriableTTree<recoTree> Get125pi15()
         {
