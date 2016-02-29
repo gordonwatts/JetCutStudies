@@ -1,4 +1,5 @@
 ﻿using libDataAccess;
+using LINQToTreeHelpers.FutureUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,16 +24,21 @@ namespace JetMVATraining
             var signal = Files.Get600pi150lt9m().GenerateStream(1.0)
                 .AsGoodJetStream();
 
-            // We want to be flat w.r.t. pT, so reweight.
-            var backgroundRewighted = background
-                .PtSpectra()
-                .WeightToMakeFlat(background, j => j.Jet.pT);
+            using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
+            {
+                // Plot the pt spectra before flattening.
+                background = background
+                    .FlattenPtSpectra(outputHistograms, "background");
+                signal = signal
+                    .FlattenPtSpectra(outputHistograms, "signal");
 
-            // Finally, write out a tree for training everything.
+                // Finally, write out a tree for training everything.
 
-            // Now, do the training.
+                // Now, do the training.
 
-            // And, finally, the testing.
+                // And, finally, the testing.
+            }
+
         }
     }
 }

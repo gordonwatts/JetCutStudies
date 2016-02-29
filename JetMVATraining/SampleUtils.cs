@@ -1,9 +1,11 @@
-﻿using System;
+﻿using DiVertAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static libDataAccess.Files;
+using static System.Math;
 
 namespace JetMVATraining
 {
@@ -14,7 +16,7 @@ namespace JetMVATraining
         /// </summary>
         public class JetStream
         {
-            public recoJet Jet;
+            public recoTreeJets Jet;
             public double Weight;
         }
 
@@ -26,7 +28,7 @@ namespace JetMVATraining
         {
             return source
                 .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { Jet = j, Weight = e.xSectionWeight }))
-                .Where(j => j.Jet.pT > 40.0 && Abs(j.Jet.Eta) < 2.4);
+                .Where(j => j.Jet.pT > 40.0 && Abs(j.Jet.eta) < 2.4);
         }
     }
 }

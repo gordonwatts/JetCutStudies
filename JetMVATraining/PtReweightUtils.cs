@@ -1,44 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DiVertAnalysis;
+using LINQToTreeHelpers;
+using LINQToTreeHelpers.FutureUtils;
+using LINQToTTreeLib;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using static JetMVATraining.SampleUtils;
-using static libDataAccess.Files;
 using static libDataAccess.PlotSpecifications;
+using static LINQToTreeHelpers.PlottingUtils;
 
 namespace JetMVATraining
 {
     static class PtReweightUtils
     {
         /// <summary>
-        /// Generate the pT spectra of teh sample.
+        /// Return a stream that is flattened in pT. Produce some before and after plots.
         /// </summary>
         /// <param name="source"></param>
+        /// <param name="output"></param>
         /// <returns></returns>
-        public IFutureValue<TH1F> PtSpectra (this IQueryable<JetStream> source)
+        public static IQueryable<JetStream> FlattenPtSpectra (this IQueryable<JetStream> source, FutureTDirectory output, string samplePrefix)
         {
-            return source
-                .FuturePlot(JetPtPlot, "totalPlotSpectra");
+            // Make a before plot of the pT spectra.
+            source
+                .Select(j => Tuple.Create(j.Jet, j.Weight))
+                .FuturePlot<recoTreeJets>(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlot, samplePrefix)
+                .Save(output);
+
+            var r = source
+                .ReweightToFlat(JetPtPlot, t => t.Jet, t => t.Weight, (t, w) => new JetStream() { Jet = t.Jet, Weight = w });
+
+            r
+                .Select(j => Tuple.Create(j.Jet, j.Weight))
+                .FuturePlot(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlot, $"{samplePrefix}flat")
+                .Save(output);
+
+            return r;
+
         }
 
         /// <summary>
-        /// Given a sequence, and its distribution, calculate a weight so it is flat.
+        /// Will make a sequence flat in some plotting parameter.
+        /// It should work for a 2D distribution as well as a 1D one, but it hasn't been tested yet.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="distribution"></param>
-        /// <param name=""></param>
+        /// <typeparam name="T">The type of the sequence to be re-weighted</typeparam>
+        /// <typeparam name="U">The type of the sequence to be plotted</typeparam>
+        /// <param name="source">The sequence to be re-weighted</param>
+        /// <param name="plotter">The plot spec that will generate the re-weighting plot</param>
+        /// <param name="converter">Convert the incoming sequence to a type the plotter can deal with</param>
+        /// <param name="weight">Convert the incoming sequence to a weight</param>
+        /// <param name="builder">rebuild the incoming sequence, with a new over all weight</param>
+        /// <param name="normalization">The normalization of the final sequence (defaults to one)</param>
         /// <returns></returns>
-        public IQueryable<T> WeightToMakeFlat<T> (this IQueryable<T> source, ROOTNET.Interface.ITH1F distribution, Expression<Func<T,double> valueGetter, double desiredWeight = 1.0)
+        public static IQueryable<T> ReweightToFlat<T,U>(this IQueryable<T> source, IPlotSpec<U> plotter, Expression<Func<T,U>> converter, Expression<Func<T,double>> weight, Expression<Func<T, double, T>> builder, double normalization = 1.0)
         {
-            // First, invert the distribution to reweight.
-            foreach (var bin in Enumerable.Range(0, distribution.NbinsX+1))
+            // First, get the spectra. We will process that into a re-weighting.
+            var ptSpecra = source
+                .Select(t => Tuple.Create(converter.Invoke(t), weight.Invoke(t)))
+                .FuturePlot("bogus_name", "bogus_title", plotter);
+
+            // Reweight
+            var reweightSpectr = ptSpecra.Value;
+            foreach (var b in Enumerable.Range(0, reweightSpectr.NbinsX + 1))
             {
-                distribution.SetBinContent(bin, 1.0 / distribution.GetBinContent(bin));
-                distribution.SetBinError(bin, 0.0);
+                var v = reweightSpectr.GetBinContent(b);
+                var newV = v == 0 ? 0 : normalization / reweightSpectr.GetBinContent(b);
+                reweightSpectr.SetBinContent(b, newV);
+                reweightSpectr.SetBinError(b, 0.0);
             }
+
+            // Now, generate an updated sequence that properly does the re-weighting.
+            return source
+                .Select(t => builder.Invoke(t, weight.Invoke(t) * reweightSpectr.GetBinContent(plotter.Bin.Invoke(converter.Invoke(t), reweightSpectr))));
         }
     }
 }
