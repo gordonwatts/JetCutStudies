@@ -1,7 +1,9 @@
 ﻿using libDataAccess;
 using LINQToTreeHelpers.FutureUtils;
+using LINQToTTreeLib.Files;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,8 +23,10 @@ namespace JetMVATraining
             var background = Files.GetAllJetSamples()
                 .AsGoodJetStream();
 
-            var signal = Files.Get600pi150lt9m().GenerateStream(1.0)
-                .AsGoodJetStream();
+            var signal = (Files.Get600pi150lt9m())
+                .GenerateStream(1.0)
+                .AsGoodJetStream()
+                .FilterSignal();
 
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
             {
@@ -33,6 +37,13 @@ namespace JetMVATraining
                     .FlattenPtSpectra(outputHistograms, "signal");
 
                 // Finally, write out a tree for training everything.
+                var backgroundTrainingData = background
+                    .AsTrainingTree()
+                    .AsTTree(new FileInfo("backgroundTraining.root"));
+
+                var signalTrainingData = signal
+                    .AsTrainingTree()
+                    .AsTTree(new FileInfo("signalTraining.root"));
 
                 // Now, do the training.
 

@@ -167,6 +167,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CutConstants.cs" />
     <Compile Include="Files.cs" />
     <Compile Include="GRIDJobs.cs" />
     <Compile Include="JetInfoExtra.cs" />
