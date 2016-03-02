@@ -50,13 +50,27 @@ namespace libDataAccess
         public static IPlotSpec<recoTreeJets> JetEtaPlot;
 
         /// <summary>
+        /// Plot the number of tracks.
+        /// </summary>
+        public static IPlotSpec<double> NTrackPlotRaw =
+            MakePlotterSpec<double>(21, -0.5, 20.5, tks => tks, "ntracks{0}", "Number of tracks with {0}; N_tracks");
+
+        /// <summary>
         /// Plot the number of tracks
         /// </summary>
         public static IPlotSpec<IEnumerable<recoTreeTracks>> NTrackPlot =
             MakePlotterSpec<IEnumerable<recoTreeTracks>> (21, -0.5, 20.5, tks => tks.Count(), "ntracks{0}", "Number of tracks with {0}; N_tracks");
 
+        /// <summary>
+        /// Plot the number of tracks.
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> NTrackExtraPlot;
+
+        /// <summary>
+        /// Plot the event weights
+        /// </summary>
         public static IPlotSpec<double> TrainingEventWeight =
-            MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
+            MakePlotterSpec<double>(100, 1.0, -1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
 
         /// <summary>
         /// A pT plot of tracks associated with jets
@@ -67,24 +81,36 @@ namespace libDataAccess
         /// <summary>
         /// Sum pT of all tracks
         /// </summary>
+        public static IPlotSpec<double> SumTrackPtPlotRaw =
+            MakePlotterSpec<double>(40, 0.0, 40.0, j => j, "sumTrkPt{0}", "Sum pT of tracks for {0}; Sum pT [GeV]");
+
+        /// <summary>
+        /// Sum pT of all tracks
+        /// </summary>
         public static IPlotSpec<JetInfoExtra> SumTrackPtPlot =
             MakePlotterSpec<JetInfoExtra>(40, 0.0, 40.0, j => j.AllTracks.Sum(t => t.pT), "sumTrkPt{0}", "Sum pT of tracks for {0}; Sum pT [GeV]");
 
         /// <summary>
         /// Sum pT of all tracks
         /// </summary>
+        public static IPlotSpec<double> MaxTrackPtPlotRaw =
+            MakePlotterSpec<double>(40, 0.0, 20.0, j => j, "MaxTrkPt{0}", "Max pT of tracks for {0}; Max pT [GeV]");
+
+        /// <summary>
+        /// Calc the max pT of a collection of tracks
+        /// </summary>
+        public static Expression<Func<IEnumerable<recoTreeTracks>, double>> CalcMaxPt => tks => tks.Count() > 0 ? tks.OrderByDescending(t => t.pT).First().pT : 0.0;
+
+        /// <summary>
+        /// Sum pT of all tracks
+        /// </summary>
         public static IPlotSpec<JetInfoExtra> MaxTrackPtPlot =
-            MakePlotterSpec<JetInfoExtra>(40, 0.0, 20.0, j => j.AllTracks.Count() > 0 ? j.AllTracks.OrderByDescending(t => t.pT).First().pT : 0.0, "MaxTrkPt{0}", "Max pT of tracks for {0}; Max pT [GeV]");
+            MakePlotterSpec<JetInfoExtra>(40, 0.0, 20.0, j => CalcMaxPt.Invoke(j.AllTracks), "MaxTrkPt{0}", "Max pT of tracks for {0}; Max pT [GeV]");
 
         /// <summary>
         /// A pT plot of tracks associated with jets
         /// </summary>
         public static IPlotSpec<JetInfoExtra> TrackPtExtraPlot;
-
-        /// <summary>
-        /// Plot the number of tracks.
-        /// </summary>
-        public static IPlotSpec<JetInfoExtra> NTrackExtraPlot;
 
         /// <summary>
         /// 1D plot of jet eta
@@ -187,7 +213,7 @@ namespace libDataAccess
                 j.Jet.logRatio > 4 ? 3.99
                 : j.Jet.logRatio < -3.0 ? -2.99
                 : j.Jet.logRatio,
-                40, 0, 20.0, j => j.AllTracks.Count() > 0 ? j.AllTracks.OrderByDescending(t => t.pT).First().pT : 0.0,
+                40, 0, 20.0, j => CalcMaxPt.Invoke(j.AllTracks),
                 titleFormat: "CalRatio vs Max Track pT for {0}", nameFormat: "CalRvsMaxTrk{0}"
             );
 
@@ -195,7 +221,7 @@ namespace libDataAccess
         /// Plot of Sum PT vs Jet Pt
         /// </summary>
         public static IPlotSpec<JetInfoExtra> JetMaxPtVsPtPlot =
-            MakePlotterSpec<JetInfoExtra>(40, 0, 20.0, j => j.AllTracks.Count() > 0 ? j.AllTracks.OrderByDescending(t => t.pT).First().pT : 0.0,
+            MakePlotterSpec<JetInfoExtra>(40, 0, 20.0, j => CalcMaxPt.Invoke(j.AllTracks),
                 30, 25.0, 1000.0, j => j.Jet.pT,
                 titleFormat: "Track Max Pt vs Jet pT for {0}", nameFormat: "MaxPtvspT{0}"
             );
@@ -232,6 +258,9 @@ namespace libDataAccess
             JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
+            NTrackPlot = NTrackPlotRaw.FromType<double, IEnumerable<recoTreeTracks>>(tks => tks.Count());
+            SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));
+            MaxTrackPtPlot = MaxTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => CalcMaxPt.Invoke(j.AllTracks));
 
             JetExtraPtPlot = JetPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);

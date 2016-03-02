@@ -19,6 +19,9 @@ namespace JetMVATraining
         public double JetPt;
         public double CalRatio;
         public double JetEta;
+        public int NTracks;
+        public double SumPtOfAllTracks;
+        public double MaxTrackPt;
     }
 
     /// <summary>
@@ -35,6 +38,9 @@ namespace JetMVATraining
                     CalRatio = NormalizeCalRatio.Invoke(i.JetInfo.Jet.logRatio),
                     JetPt = i.JetInfo.Jet.pT,
                     JetEta = i.JetInfo.Jet.eta,
+                    NTracks = i.JetInfo.Tracks.Count(),
+                    SumPtOfAllTracks = i.JetInfo.AllTracks.Sum(t => t.pT),
+                    MaxTrackPt = CalcMaxPt.Invoke(i.JetInfo.AllTracks),
                 });
         }
 
@@ -53,6 +59,9 @@ namespace JetMVATraining
             new PlotInfo() { Plotter = JetEtaPlotRaw, ValueGetter = tu => tu.JetEta },
             new PlotInfo() { Plotter = JetCalRPlotRaw, ValueGetter = tu => tu.CalRatio },
             new PlotInfo() { Plotter = TrainingEventWeight, ValueGetter = tu => tu.Weight },
+            new PlotInfo() { Plotter = NTrackPlotRaw, ValueGetter = tu => tu.NTracks },
+            new PlotInfo() { Plotter = SumTrackPtPlotRaw, ValueGetter = tu => tu.SumPtOfAllTracks },
+            new PlotInfo() { Plotter = MaxTrackPtPlotRaw, ValueGetter = tu => tu.MaxTrackPt },
         };
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace libDataAccess.Utils
         /// <summary>
         /// Default pT cut for tracks
         /// </summary>
-        public static double TrackJetAssociationMinPt = 1.0;
+        public static double TrackJetAssociationMinPt = 2.0;
 
         /// <summary>
         /// Default for assocaiting all tracks - like lots of them.
