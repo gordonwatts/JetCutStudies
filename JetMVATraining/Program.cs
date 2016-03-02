@@ -1,4 +1,5 @@
 ﻿using libDataAccess;
+using libDataAccess.Utils;
 using LINQToTreeHelpers.FutureUtils;
 using LINQToTTreeLib.Files;
 using System;
@@ -19,6 +20,9 @@ namespace JetMVATraining
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            // Parse command line arguments
+            CommandLineUtils.Parse(args);
+
             // Our data sources
             var background = Files.GetAllJetSamples()
                 .AsGoodJetStream();
