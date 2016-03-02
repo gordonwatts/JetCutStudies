@@ -3,6 +3,8 @@ using LINQToTTreeLib;
 using System.Linq;
 using System.Collections.Generic;
 using static LINQToTreeHelpers.PlottingUtils;
+using System.Linq.Expressions;
+using System;
 
 namespace libDataAccess
 {
@@ -19,10 +21,16 @@ namespace libDataAccess
     public class PlotSpecifications
     {
         /// <summary>
+        /// The pT spectra we want.
+        /// TODO: Fix so that other JetPtPlot folks depend on this, rather than repeating binning.
+        /// </summary>
+        public static IPlotSpec<double> JetPtPlotRaw =
+            MakePlotterSpec<double>(50, 0.0, 300.0, j => j, "pT{0}", "pT of {0} jets; pT [GeV]");
+
+        /// <summary>
         /// 1D plot of jet PT
         /// </summary>
-        public static IPlotSpec<recoTreeJets> JetPtPlot =
-            MakePlotterSpec<recoTreeJets>(50, 0.0, 300.0, j => j.pT, "pT{0}", "pT of {0} jets; pT [GeV]");
+        public static IPlotSpec<recoTreeJets> JetPtPlot;
 
         /// <summary>
         /// 1D plot of jet PT.
@@ -33,14 +41,22 @@ namespace libDataAccess
         /// <summary>
         /// 1D plot of jet eta
         /// </summary>
-        public static IPlotSpec<recoTreeJets> JetEtaPlot =
-            MakePlotterSpec<recoTreeJets>(50, -5.0, 5.0, j => j.eta, "eta{0}", "eta of {0} jets; eta");
+        public static IPlotSpec<double> JetEtaPlotRaw =
+            MakePlotterSpec<double>(50, -5.0, 5.0, j => j, "eta{0}", "eta of {0} jets; eta");
+
+        /// <summary>
+        /// 1D plot of jet eta
+        /// </summary>
+        public static IPlotSpec<recoTreeJets> JetEtaPlot;
 
         /// <summary>
         /// Plot the number of tracks
         /// </summary>
         public static IPlotSpec<IEnumerable<recoTreeTracks>> NTrackPlot =
             MakePlotterSpec<IEnumerable<recoTreeTracks>> (21, -0.5, 20.5, tks => tks.Count(), "ntracks{0}", "Number of tracks with {0}; N_tracks");
+
+        public static IPlotSpec<double> TrainingEventWeight =
+            MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
 
         /// <summary>
         /// A pT plot of tracks associated with jets
@@ -76,14 +92,25 @@ namespace libDataAccess
         public static IPlotSpec<JetInfoExtra> JetExtraEtaPlot;
 
         /// <summary>
+        /// Normalize the cal ratio rate
+        /// </summary>
+        public static Expression<Func<double, double>> NormalizeCalRatio
+            = cr =>
+            cr > 4 ? 3.99
+            : cr < -3.0 ? -2.99
+            : cr;
+
+        /// <summary>
         /// 1D plot of cal ratio jets
         /// </summary>
-        public static IPlotSpec<recoTreeJets> JetCalRPlot =
-            MakePlotterSpec<recoTreeJets>(50, -3.0, 4.0, j => 
-            j.logRatio > 4 ? 3.99 
-            : j.logRatio < -3.0 ? -2.99
-            : j.logRatio, 
+        public static IPlotSpec<double> JetCalRPlotRaw =
+            MakePlotterSpec<double>(50, -3.0, 4.0, j => NormalizeCalRatio.Invoke(j),
                 "CalR{0}", "Log Ratio of {0} jets; logR");
+
+        /// <summary>
+        /// 1D plot of cal ratio jets
+        /// </summary>
+        public static IPlotSpec<recoTreeJets> JetCalRPlot;
 
         /// <summary>
         /// 1D plot of cal ratio jets
@@ -202,6 +229,10 @@ namespace libDataAccess
         /// </summary>
         static PlotSpecifications()
         {
+            JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
+            JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
+            JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
+
             JetExtraPtPlot = JetPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraCalRPlot = JetCalRPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);

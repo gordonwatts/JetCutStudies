@@ -30,7 +30,8 @@ namespace JetMVATraining
         {
             return source
                 .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { Jet = j, Weight = e.xSectionWeight }))
-                .Where(j => j.Jet.pT > 40.0 && Abs(j.Jet.eta) < 2.4);
+                .Where(j => j.Jet.pT > 40.0 && Abs(j.Jet.eta) < 2.4)
+                .Where(j => j.Jet.pT < 150.0);
         }
 
         /// <summary>
