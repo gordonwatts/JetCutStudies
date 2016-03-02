@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace libDataAccess.Utils
 {
+#if false
     [CPPHelperClass]
     public static class ROOTUtils
     {
@@ -38,4 +39,5 @@ namespace libDataAccess.Utils
 #endif
         }
     }
+#endif
 }

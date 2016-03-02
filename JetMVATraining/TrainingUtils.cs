@@ -32,9 +32,9 @@ namespace JetMVATraining
                 .Select(i => new TrainingTree()
                 {
                     Weight = i.Weight,
-                    CalRatio = NormalizeCalRatio.Invoke(i.Jet.logRatio),
-                    JetPt = i.Jet.pT,
-                    JetEta = i.Jet.eta,
+                    CalRatio = NormalizeCalRatio.Invoke(i.JetInfo.Jet.logRatio),
+                    JetPt = i.JetInfo.Jet.pT,
+                    JetEta = i.JetInfo.Jet.eta,
                 });
         }
 

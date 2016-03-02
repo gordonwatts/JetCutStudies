@@ -23,15 +23,15 @@ namespace JetMVATraining
         {
             // Make a before plot of the pT spectra.
             source
-                .Select(j => Tuple.Create(j.Jet, j.Weight))
+                .Select(j => Tuple.Create(j.JetInfo.Jet, j.Weight))
                 .FuturePlot<recoTreeJets>(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlot, samplePrefix)
                 .Save(output);
 
             var r = source
-                .ReweightToFlat(JetPtPlot, t => t.Jet, t => t.Weight, (t, w) => new JetStream() { Jet = t.Jet, Weight = w });
+                .ReweightToFlat(JetPtPlot, t => t.JetInfo.Jet, t => t.Weight, (t, w) => new JetStream() { JetInfo = t.JetInfo, Weight = w });
 
             r
-                .Select(j => Tuple.Create(j.Jet, j.Weight))
+                .Select(j => Tuple.Create(j.JetInfo.Jet, j.Weight))
                 .FuturePlot(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlot, $"{samplePrefix}flat")
                 .Save(output);
 

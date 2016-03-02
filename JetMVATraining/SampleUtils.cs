@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using static libDataAccess.Files;
 using static System.Math;
 using static libDataAccess.CutConstants;
+using libDataAccess;
+using static libDataAccess.JetInfoExtraHelpers;
 
 namespace JetMVATraining
 {
@@ -18,7 +20,7 @@ namespace JetMVATraining
         /// </summary>
         public class JetStream
         {
-            public recoTreeJets Jet;
+            public JetInfoExtra JetInfo;
             public double Weight;
         }
 
@@ -29,9 +31,9 @@ namespace JetMVATraining
         public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source)
         {
             return source
-                .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { Jet = j, Weight = e.xSectionWeight }))
-                .Where(j => j.Jet.pT > 40.0 && Abs(j.Jet.eta) < 2.4)
-                .Where(j => j.Jet.pT < 150.0);
+                .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, j), Weight = e.xSectionWeight }))
+                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < 2.4)
+                .Where(j => j.JetInfo.Jet.pT < 150.0);
         }
 
         /// <summary>
@@ -42,8 +44,8 @@ namespace JetMVATraining
         public static IQueryable<JetStream> FilterSignal(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.Jet.LLP.IsGoodIndex())
-                .Where(j => j.Jet.LLP.Lxy > InnerDistanceForSignalLLPDecay);
+                .Where(j => j.JetInfo.Jet.LLP.IsGoodIndex())
+                .Where(j => j.JetInfo.Jet.LLP.Lxy > InnerDistanceForSignalLLPDecay);
         }
     }
 }
