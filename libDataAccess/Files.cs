@@ -113,8 +113,8 @@ namespace libDataAccess
         {
             return
                 GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)
-                //.Concat(GenerateStream(libDataAccess.Files.GetJ3Z(), 0.5))
-                //.Concat(GenerateStream(libDataAccess.Files.GetJ4Z(), 0.25))
+                .Concat(GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0))
+                .Concat(GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0))
                 ;
         }
 
