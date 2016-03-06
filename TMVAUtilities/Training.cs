@@ -120,6 +120,7 @@ namespace TMVAUtilities
         /// <returns></returns>
         public Training<T> Train(string jobName)
         {
+#if false
             // First task is to get the dates of all the files so we can see if there
             // have been updates since the last time the training ran.
             var outputFile = new FileInfo($"{jobName}.training.root");
@@ -232,6 +233,8 @@ namespace TMVAUtilities
             {
                 output.Close();
             }
+#endif
+            return null;
         }
     }
 

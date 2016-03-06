@@ -44,12 +44,12 @@ namespace JetMVATraining
                 var backgroundTrainingData = background
                     .AsTrainingTree()
                     .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background")
-                    .AsTTree(new FileInfo("backgroundTraining.root"));
+                    .AsTTree(treeName: "TrainingTree", outputROOTFile: new FileInfo("backgroundTraining.root"));
 
                 var signalTrainingData = signal
                     .AsTrainingTree()
                     .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal")
-                    .AsTTree(new FileInfo("signalTraining.root"));
+                    .AsTTree(treeName: "TrainingTree", outputROOTFile: new FileInfo("signalTraining.root"));
 
                 // Now, do the training.
 

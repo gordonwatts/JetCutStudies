@@ -21,7 +21,7 @@ namespace TMVAUtilities
         /// </summary>
         private static int _f_index = 0;
 
-        public static Tuple<NTTree, FileInfo> ToTTreeAndFile<T> (this IQueryable<T> source, string sampleTitle = "")
+        public static Tuple<ROOTNET.Interface.NTTree, FileInfo>[] ToTTreeAndFile<T> (this IQueryable<T> source, string sampleTitle = "")
         {
             // Get the default directory. Look for a cxproj file, and if we don't find it
             // just use where we are now.
@@ -31,12 +31,24 @@ namespace TMVAUtilities
                 d = new DirectoryInfo(".");
             }
             var fname = new FileInfo(Path.Combine(d.FullName, string.IsNullOrWhiteSpace(sampleTitle) ? $"{_f_index}.training.root" : $"{sampleTitle}.training.root"));
-            var f = source.AsTTree(fname);
             _f_index++;
-            var input = NTFile.Open(f.FullName, "READ");
-            var tree = input.Get("mytree") as NTTree;
-            _saver.Add(Tuple.Create(input, tree));
-            return Create(tree, fname);
+            var f = source.AsTTree(treeName: "TrainingTree", outputROOTFile: fname);
+
+            // Convert into open files
+            var results = (from finfo in f
+                           let openFile = NTFile.Open(finfo.FullName, "READ")
+                           select Create(openFile.Get("TrainingTree") as ROOTNET.Interface.NTTree, finfo, openFile))
+                          .ToArray();
+
+            // Make sure we hold onto them so they are garbage collected for some odd reason.
+            _saver.AddRange(
+                results
+                .Select(i => Create(i.Item3, i.Item1 as NTTree))
+                );
+
+            return results
+                .Select(i => Create(i.Item1, i.Item2))
+                .ToArray();
         }
 
         /// <summary>
@@ -46,7 +58,7 @@ namespace TMVAUtilities
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static NTTree ToTTree<T>(this IQueryable<T> source, string sampleTitle = "")
+        public static NTTree[] ToTTree<T>(this IQueryable<T> source, string sampleTitle = "")
         {
             // Get the default directory. Look for a cxproj file, and if we don't find it
             // just use where we are now.
@@ -55,12 +67,20 @@ namespace TMVAUtilities
             {
                 d = new DirectoryInfo(".");
             }
-            var f = source.AsTTree(new FileInfo(Path.Combine(d.FullName, string.IsNullOrWhiteSpace(sampleTitle) ? $"{_f_index}.training.root" : $"{sampleTitle}.training.root")));
+            var f = source.AsTTree(treeName: "TrainingTree", outputROOTFile: new FileInfo(Path.Combine(d.FullName, string.IsNullOrWhiteSpace(sampleTitle) ? $"{_f_index}.training.root" : $"{sampleTitle}.training.root")));
             _f_index++;
-            var input = NTFile.Open(f.FullName, "READ");
-            var tree = input.Get("mytree") as NTTree;
-            _saver.Add(Tuple.Create(input, tree));
-            return tree;
+
+            var results = (from finfo in f
+                           let openFile = NTFile.Open(finfo.FullName, "READ")
+                           let atree = openFile.Get("TrainingTree") as ROOTNET.NTTree
+                           select Create(openFile, atree))
+                          .ToArray();
+
+            _saver.AddRange(results);
+
+            return results
+                .Select(i => i.Item2)
+                .ToArray();
         }
 
         /// <summary>
