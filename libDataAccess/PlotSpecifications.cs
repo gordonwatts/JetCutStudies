@@ -25,7 +25,7 @@ namespace libDataAccess
         /// TODO: Fix so that other JetPtPlot folks depend on this, rather than repeating binning.
         /// </summary>
         public static IPlotSpec<double> JetPtPlotRaw =
-            MakePlotterSpec<double>(50, 0.0, 300.0, j => j, "pT{0}", "pT of {0} jets; pT [GeV]");
+            MakePlotterSpec<double>(150, 0.0, 750.0, j => j, "pT{0}", "pT of {0} jets; pT [GeV]");
 
         /// <summary>
         /// 1D plot of jet PT
