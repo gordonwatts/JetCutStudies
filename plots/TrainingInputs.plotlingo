@@ -1,0 +1,45 @@
+#
+# Simple 1D plots of all the training put variables we are going to use.
+#
+
+include ("common.plotlingo");
+
+#
+# All the types of plots
+#
+
+plottypes = [
+	{title => "Maximum Track pT", xaxis => "Max [GeV]", name => "MaxTrkPt"},
+	{title => "Sum of all Track pT", xaxis => "Sum [GeV]", name => "sumTrkPt"},
+	{title => "Number of Tracks", xaxis => "N Tracks", name => "ntracks"},
+	{title => "Jet Eta", xaxis => "{\eta}", name => "eta"},
+	{title => "Jet p_{T}", xaxis => "Jet p_{T} [GeV]", name => "pT"},
+	{title => "CalRatio", xaxis => "CalRatio", name => "CalR"}
+];
+
+#
+# Legend info
+#
+
+Legend("signal" => {Color => 2, Title => "Signal"});
+Legend("background" => {Color => 1, Title => "Background"});
+
+##NormalizePlots();
+
+#
+# Plots of CalR vs pT per sample for the signal.
+#
+wts = [{name_add => "", title_add => ""}, {name_add => "_unweighted", title_add => " (unweighted)"}];
+for (plottypes) {
+    for (wts) {
+		sig = f_training.Get("signal/{name}training_signal{name_add}").normalize().minimum(0);
+		bac = f_training.Get("background/{name}training_background{name_add}").normalize().minimum(0);
+
+		[sig,bac]
+			.plot()
+			.size(1200, 800)
+			.title("{title}{title_add}")
+			.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
+			.xaxis(xaxis);
+	};
+};

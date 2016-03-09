@@ -3,7 +3,8 @@
 #
 
 # File we are looking at...
-f = file ("GenericPerformancePlots.root");
+f_generic = file ("GenericPerformancePlots.root");
+f_training = file ("JetMVATraining.root");
 //f = file ("..\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
 //f_llp = file ("..\LLPInvestigations\bin\x86\Debug\LLPInvestigations.root");
 
