@@ -329,7 +329,6 @@
   <ItemGroup>
     <Compile Include="ExpressionUtilities.cs" />
     <Compile Include="FileInfoUtilities.cs" />
-    <Compile Include="FutureConsole.cs" />
     <Compile Include="IQuerableUtils.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="NTStringUtils.cs" />

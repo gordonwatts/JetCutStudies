@@ -12,7 +12,6 @@ using TMVAUtilities;
 using static LINQToTreeHelpers.ROOTUtils;
 using static System.Console;
 using static System.Math;
-using static TMVAUtilities.FutureConsole;
 
 namespace SimpleJetCutTraining
 {
@@ -79,7 +78,7 @@ namespace SimpleJetCutTraining
             effResults.Write();
             effResults.Close();
 
-            Emit();
+            //Emit();
         }
 
         /// <summary>
@@ -108,7 +107,7 @@ namespace SimpleJetCutTraining
             var eff_b = from tb in total_b from ns in selected_b select (double) ns / (double) tb;
             var eff_s = from tb in total_s from ns in selected_s select (double) ns / (double) tb;
 
-            FutureWrite(from eb in eff_b from es in eff_s select $"Signal eff: {es}; Background eff: {eb}");
+            //FutureWrite(from eb in eff_b from es in eff_s select $"Signal eff: {es}; Background eff: {eb}");
 
             return eff_s;
         }

@@ -15,6 +15,7 @@ using ROOTNET.Interface;
 using static LINQToTreeHelpers.PlottingUtils;
 using System.Collections.Generic;
 using DiVertAnalysis;
+using TMVAUtilities;
 
 namespace JetMVATraining
 {
@@ -50,15 +51,21 @@ namespace JetMVATraining
                 // Finally, write out a tree for training everything.
                 var backgroundTrainingData = background
                     .AsTrainingTree()
-                    .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background")
-                    .AsTTree(treeName: "TrainingTree", outputROOTFile: new FileInfo("backgroundTraining.root"));
+                    .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background");
 
                 var signalTrainingData = signal
                     .AsTrainingTree()
-                    .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal")
-                    .AsTTree(treeName: "TrainingTree", outputROOTFile: new FileInfo("signalTraining.root"));
+                    .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal");
 
                 // Now, do the training.
+
+                var training = signalTrainingData
+                    .AsSignal()
+                    .Background(backgroundTrainingData);
+
+                var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT");
+
+                training.Train("JetMVATraining");
 
                 // And, finally, generate some efficiency plots.
 
