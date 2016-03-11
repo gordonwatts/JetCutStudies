@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LinqToTTreeInterfacesLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,9 +20,18 @@ namespace libDataAccess.Utils
         /// appropriate time.
         /// </summary>
         /// <param name="futureString"></param>
-        public static void WriteLine (Func<string> futureString)
+        public static void FutureWriteLine (Func<string> futureString)
         {
             _lines.Add(futureString);
+        }
+
+        /// <summary>
+        /// Write out a line...
+        /// </summary>
+        /// <param name="futureString"></param>
+        public static void FutureWriteLine(IFutureValue<string> futureString)
+        {
+            _lines.Add(() => futureString.Value);
         }
 
         /// <summary>

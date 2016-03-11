@@ -16,6 +16,7 @@ using static LINQToTreeHelpers.PlottingUtils;
 using System.Collections.Generic;
 using DiVertAnalysis;
 using TMVAUtilities;
+using static libDataAccess.Utils.FutureConsole;
 
 namespace JetMVATraining
 {
@@ -77,12 +78,12 @@ namespace JetMVATraining
                 // Calculate the background efficiency for the standard Run 1 cut.
                 var standardBackgroundEff = background
                     .CalcualteEfficiency(cuts[0].Cut, js => js.Weight);
-                FutureConsole.WriteLine(() => $"The background efficiency: {standardBackgroundEff.Value}");
+                FutureWriteLine(() => $"The background efficiency: {standardBackgroundEff.Value}");
 
                 foreach (var c in cuts)
                 {
                     var eff = GenerateEfficiencyPlots(outputHistograms.mkdir(c.Title), c.Cut, signal);
-                    FutureConsole.WriteLine(() => $"The signal efficiency for {c.Title}: {eff.Value}.");
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title}: {eff.Value}.");
                 }
 
                 // Done. Dump all output.
