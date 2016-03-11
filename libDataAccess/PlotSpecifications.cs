@@ -155,10 +155,24 @@ namespace libDataAccess
             );
 
         /// <summary>
+        /// 2D Lxy vs pT plot
+        /// </summary>
+        public static IPlotSpec<recoTreeJets> JetPtVsLXYPlot =
+            MakePlotterSpec<recoTreeJets>(150, 0.0, 750.0, j => j.pT,
+                30, 0.0, 10.0, j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000 : 0.0,
+                titleFormat: "Jet pT vs Lxy for {0}", nameFormat: "pTvsLxy{0}"
+            );
+
+        /// <summary>
         /// Raw plotter for Lxy
         /// </summary>
         public static IPlotSpec<double> JetLxyPlotRaw =
             MakePlotterSpec<double>(80, 0.0, 8.0, j => j, nFormat: "Lxy{0}", tFormat: "Lxy for {0}; Lxy [m]");
+
+        /// <summary>
+        /// Plot from recoTreeJets
+        /// </summary>
+        public static IPlotSpec<recoTreeJets> JetLxyPlot;
 
         /// <summary>
         /// Plot of CalR vs Jet Pt
@@ -263,6 +277,7 @@ namespace libDataAccess
         {
             JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
+            JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
             NTrackPlot = NTrackPlotRaw.FromType<double, IEnumerable<recoTreeTracks>>(tks => tks.Count());
             SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));

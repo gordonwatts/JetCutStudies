@@ -14,6 +14,7 @@ using static libDataAccess.PlotSpecifications;
 using ROOTNET.Interface;
 using static LINQToTreeHelpers.PlottingUtils;
 using System.Collections.Generic;
+using DiVertAnalysis;
 
 namespace JetMVATraining
 {
@@ -83,21 +84,26 @@ namespace JetMVATraining
 
         }
 
+        /// <summary>
+        /// Spec that we need to hold onto.
+        /// </summary>
         class Plot1DInfo
         {
-            public Expression<Func<JetStream, double>> ValueFunc;
-            public IPlotSpec<double> PlotSpec;
+            public IPlotSpec<JetStream> PlotSpec;
         }
+
+        /// <summary>
+        /// Plot specs to hold onto what we want to plot and weights.
+        /// </summary>
+        public static IPlotSpec<JetStream> JetStreamPtVsLXYPlot = null;
+        public static IPlotSpec<JetStream> JetStreamPtPlot = null;
+        public static IPlotSpec<JetStream> JetStreamEtaPlot = null;
+        public static IPlotSpec<JetStream> JetStreamLxyPlot = null;
 
         /// <summary>
         /// List of the 1D plots we want to put out there.
         /// </summary>
-        private static List<Plot1DInfo> _toPlot = new List<Plot1DInfo>()
-        {
-            new Plot1DInfo() { PlotSpec = JetPtPlotRaw, ValueFunc = jr => jr.JetInfo.Jet.pT },
-            new Plot1DInfo() { PlotSpec = JetEtaPlotRaw, ValueFunc = jr => jr.JetInfo.Jet.eta },
-            new Plot1DInfo() { PlotSpec = JetLxyPlotRaw, ValueFunc = jr => jr.JetInfo.Jet.LLP.IsGoodIndex() ? jr.JetInfo.Jet.LLP.Lxy / 1000 : 0.0 },
-        };
+        private static List<Plot1DInfo> _toPlot = null;
 
         /// <summary>
         /// Generate the required efficiency plots
@@ -106,6 +112,23 @@ namespace JetMVATraining
         /// <param name="cut"></param>
         private static IFutureValue<double> GenerateEfficiencyPlots(FutureTDirectory outh, Expression<Func<JetStream, bool>> cut, IQueryable<JetStream> source)
         {
+            // Initialize everything the plotters and lists of plots. Sadly, order is important here.
+            if (JetStreamPtVsLXYPlot == null)
+            {
+                JetStreamPtVsLXYPlot = JetPtVsLXYPlot.FromType<recoTreeJets, JetStream>(js => js.JetInfo.Jet, weight: js => js.Weight);
+                JetStreamPtPlot = JetPtPlot.FromType<recoTreeJets, JetStream>(js => js.JetInfo.Jet, weight: js => js.Weight);
+                JetStreamEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetStream>(js => js.JetInfo.Jet, weight: js => js.Weight);
+                JetStreamLxyPlot = JetLxyPlot.FromType<recoTreeJets, JetStream>(js => js.JetInfo.Jet, weight: js => js.Weight);
+
+                _toPlot = new List<Plot1DInfo>()
+                {
+                    new Plot1DInfo() { PlotSpec = JetStreamPtPlot },
+                    new Plot1DInfo() { PlotSpec = JetStreamEtaPlot },
+                    new Plot1DInfo() { PlotSpec = JetStreamLxyPlot },
+                    new Plot1DInfo() { PlotSpec = JetStreamPtVsLXYPlot },
+                };
+            }
+
             // Calculate the overall efficiency of this guy.
             var eff = source.CalcualteEfficiency(cut, js => js.Weight);
 
@@ -114,12 +137,10 @@ namespace JetMVATraining
                 .ForEach(i =>
                 {
                     var denominator = source
-                        .Select(r => Tuple.Create(i.ValueFunc.Invoke(r), r.Weight))
-                        .FuturePlot(i.PlotSpec.NameFormat, i.PlotSpec.TitleFormat, i.PlotSpec, "denominator");
+                        .FuturePlot(i.PlotSpec, "denominator");
                     var numerator = source
                         .Where(r => cut.Invoke(r))
-                        .Select(r => Tuple.Create(i.ValueFunc.Invoke(r), r.Weight))
-                        .FuturePlot(i.PlotSpec.NameFormat, i.PlotSpec.TitleFormat, i.PlotSpec, "efficiency");
+                        .FuturePlot(i.PlotSpec, "efficiency");
 
                     (from n in numerator from d in denominator select DivideHistogram(n, d))
                         .Save(outh);
