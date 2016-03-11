@@ -155,6 +155,12 @@ namespace libDataAccess
             );
 
         /// <summary>
+        /// Raw plotter for Lxy
+        /// </summary>
+        public static IPlotSpec<double> JetLxyPlotRaw =
+            MakePlotterSpec<double>(80, 0.0, 8.0, j => j, nFormat: "Lxy{0}", tFormat: "Lxy for {0}; Lxy [m]");
+
+        /// <summary>
         /// Plot of CalR vs Jet Pt
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetCalRVsPtPlot =

@@ -176,7 +176,9 @@
     <Compile Include="SampleMetaData.cs" />
     <Compile Include="Utils\CommandLineUtils.cs" />
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\FutureConsole.cs" />
     <Compile Include="Utils\HistUtils.cs" />
+    <Compile Include="Utils\IQueriableUitils.cs" />
     <Compile Include="Utils\ObjectUtils.cs" />
   </ItemGroup>
   <ItemGroup>

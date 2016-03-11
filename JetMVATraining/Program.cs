@@ -1,17 +1,19 @@
 ﻿using libDataAccess;
 using libDataAccess.Utils;
+using LINQToTreeHelpers;
 using LINQToTreeHelpers.FutureUtils;
+using LinqToTTreeInterfacesLib;
 using LINQToTTreeLib.Files;
-using System;
 using LINQToTTreeLib;
-using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using static JetMVATraining.SampleUtils;
-using LinqToTTreeInterfacesLib;
+using static libDataAccess.PlotSpecifications;
+using ROOTNET.Interface;
+using static LINQToTreeHelpers.PlottingUtils;
+using System.Collections.Generic;
 
 namespace JetMVATraining
 {
@@ -64,31 +66,78 @@ namespace JetMVATraining
                     new CutInfo() {Title="Run1", Cut = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any() },
                 };
 
-                // Calc the background efficiency for the standard Run 1 cut.
+                // Calculate the background efficiency for the standard Run 1 cut.
                 var standardBackgroundEff = background
                     .CalcualteEfficiency(cuts[0].Cut, js => js.Weight);
-
-
+                FutureConsole.WriteLine(() => $"The background efficiency: {standardBackgroundEff.Value}");
 
                 foreach (var c in cuts)
                 {
-                    //GenerateEfficiencyPlots(outputHistograms.mkdir(c.Title), c.Cut);
+                    var eff = GenerateEfficiencyPlots(outputHistograms.mkdir(c.Title), c.Cut, signal);
+                    FutureConsole.WriteLine(() => $"The signal efficiency for {c.Title}: {eff.Value}.");
                 }
+
+                // Done. Dump all output.
+                Console.Out.DumpFutureLines();
             }
 
         }
 
+        class Plot1DInfo
+        {
+            public Expression<Func<JetStream, double>> ValueFunc;
+            public IPlotSpec<double> PlotSpec;
+        }
+
+        /// <summary>
+        /// List of the 1D plots we want to put out there.
+        /// </summary>
+        private static List<Plot1DInfo> _toPlot = new List<Plot1DInfo>()
+        {
+            new Plot1DInfo() { PlotSpec = JetPtPlotRaw, ValueFunc = jr => jr.JetInfo.Jet.pT },
+            new Plot1DInfo() { PlotSpec = JetEtaPlotRaw, ValueFunc = jr => jr.JetInfo.Jet.eta },
+            new Plot1DInfo() { PlotSpec = JetLxyPlotRaw, ValueFunc = jr => jr.JetInfo.Jet.LLP.IsGoodIndex() ? jr.JetInfo.Jet.LLP.Lxy / 1000 : 0.0 },
+        };
+
         /// <summary>
         /// Generate the required efficiency plots
         /// </summary>
-        /// <param name="futureTDirectory"></param>
+        /// <param name="outh"></param>
         /// <param name="cut"></param>
-        private static IFutureValue<double> GenerateEfficiencyPlots(FutureTDirectory futureTDirectory, Expression<Func<JetStream, bool>> cut, IQueryable<JetStream> source)
+        private static IFutureValue<double> GenerateEfficiencyPlots(FutureTDirectory outh, Expression<Func<JetStream, bool>> cut, IQueryable<JetStream> source)
         {
             // Calculate the overall efficiency of this guy.
             var eff = source.CalcualteEfficiency(cut, js => js.Weight);
 
+            // Next, lets do the 1D plots
+            _toPlot
+                .ForEach(i =>
+                {
+                    var denominator = source
+                        .Select(r => Tuple.Create(i.ValueFunc.Invoke(r), r.Weight))
+                        .FuturePlot(i.PlotSpec.NameFormat, i.PlotSpec.TitleFormat, i.PlotSpec, "denominator");
+                    var numerator = source
+                        .Where(r => cut.Invoke(r))
+                        .Select(r => Tuple.Create(i.ValueFunc.Invoke(r), r.Weight))
+                        .FuturePlot(i.PlotSpec.NameFormat, i.PlotSpec.TitleFormat, i.PlotSpec, "efficiency");
+
+                    (from n in numerator from d in denominator select DivideHistogram(n, d))
+                        .Save(outh);
+                });
+
             return eff;
+        }
+
+        /// <summary>
+        /// A simple divide. returns the numerator, which is what is divided by!
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        private static NTH1 DivideHistogram(NTH1 n, NTH1 d)
+        {
+            n.Divide(d);
+            return n;
         }
 
         private class CutInfo
