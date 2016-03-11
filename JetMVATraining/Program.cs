@@ -85,14 +85,6 @@ namespace JetMVATraining
         }
 
         /// <summary>
-        /// Spec that we need to hold onto.
-        /// </summary>
-        class Plot1DInfo
-        {
-            public IPlotSpec<JetStream> PlotSpec;
-        }
-
-        /// <summary>
         /// Plot specs to hold onto what we want to plot and weights.
         /// </summary>
         public static IPlotSpec<JetStream> JetStreamPtVsLXYPlot = null;
@@ -103,7 +95,7 @@ namespace JetMVATraining
         /// <summary>
         /// List of the 1D plots we want to put out there.
         /// </summary>
-        private static List<Plot1DInfo> _toPlot = null;
+        private static List<IPlotSpec<JetStream>> _toPlot = null;
 
         /// <summary>
         /// Generate the required efficiency plots
@@ -120,12 +112,12 @@ namespace JetMVATraining
                 JetStreamEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetStream>(js => js.JetInfo.Jet, weight: js => js.Weight);
                 JetStreamLxyPlot = JetLxyPlot.FromType<recoTreeJets, JetStream>(js => js.JetInfo.Jet, weight: js => js.Weight);
 
-                _toPlot = new List<Plot1DInfo>()
+                _toPlot = new List<IPlotSpec<JetStream>>()
                 {
-                    new Plot1DInfo() { PlotSpec = JetStreamPtPlot },
-                    new Plot1DInfo() { PlotSpec = JetStreamEtaPlot },
-                    new Plot1DInfo() { PlotSpec = JetStreamLxyPlot },
-                    new Plot1DInfo() { PlotSpec = JetStreamPtVsLXYPlot },
+                    JetStreamPtPlot,
+                    JetStreamEtaPlot,
+                    JetStreamLxyPlot,
+                    JetStreamPtVsLXYPlot,
                 };
             }
 
@@ -137,10 +129,10 @@ namespace JetMVATraining
                 .ForEach(i =>
                 {
                     var denominator = source
-                        .FuturePlot(i.PlotSpec, "denominator");
+                        .FuturePlot(i, "denominator");
                     var numerator = source
                         .Where(r => cut.Invoke(r))
-                        .FuturePlot(i.PlotSpec, "efficiency");
+                        .FuturePlot(i, "efficiency");
 
                     (from n in numerator from d in denominator select DivideHistogram(n, d))
                         .Save(outh);
