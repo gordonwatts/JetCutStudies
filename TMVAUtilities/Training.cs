@@ -120,15 +120,14 @@ namespace TMVAUtilities
         /// <returns></returns>
         public Training<T> Train(string jobName)
         {
-#if false
             // First task is to get the dates of all the files so we can see if there
             // have been updates since the last time the training ran.
             var outputFile = new FileInfo($"{jobName}.training.root");
             var hashFileName = outputFile.FullName.Replace(".root", ".hash.txt");
             var hashFile = new FileInfo(hashFileName);
 
-            var signals = _signals.Select(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
-            var backgrounds = _backgrounds.Select(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
+            var signals = _signals.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
+            var backgrounds = _backgrounds.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
 
             var oldestInput = signals.Concat(backgrounds).Select(i => i.Item2.LastWriteTime).Max();
             bool rerun = false;
@@ -136,6 +135,7 @@ namespace TMVAUtilities
 
             // We need the list of parameters for the next step
             var parameters_names = new List<string>();
+            string weight_name = "";
             foreach (var field in typeof(T).GetFields())
             {
                 var name = field.Name;
@@ -143,7 +143,13 @@ namespace TMVAUtilities
                 {
                     if (!_ignore_variables.Contains(name))
                     {
-                        parameters_names.Add(name);
+                        if (name == "Weight")
+                        {
+                            weight_name = name;
+                        }
+                        else {
+                            parameters_names.Add(name);
+                        }
                     }
                 }
             }
@@ -193,13 +199,13 @@ namespace TMVAUtilities
                 var f = new ROOTNET.NTMVA.NFactory(jobName.AsTS(), output, _tmva_options.AsTS());
 
                 // Add signal and background. Each one has to be written out.
-                foreach (var sample in _signals.Select(s => s._sample.ToTTree(s._title)))
+                foreach (var sample in signals)
                 {
-                    f.AddSignalTree(sample);
+                    f.AddSignalTree(sample.Item1);
                 }
-                foreach (var sample in _backgrounds.Select(s => s._sample.ToTTree(s._title)))
+                foreach (var sample in backgrounds)
                 {
-                    f.AddBackgroundTree(sample);
+                    f.AddBackgroundTree(sample.Item1);
                 }
 
                 // Do the variables by looking through each item in object T.
@@ -207,6 +213,12 @@ namespace TMVAUtilities
                 foreach (var n in parameters_names)
                 {
                     f.AddVariable(n.AsTS());
+                }
+
+                // The weight
+                if (!string.IsNullOrWhiteSpace(weight_name))
+                {
+                    f.WeightExpression = weight_name.AsTS();
                 }
 
                 // Now book all the methods that were requested
@@ -233,11 +245,12 @@ namespace TMVAUtilities
             {
                 output.Close();
             }
-#endif
-            return null;
         }
     }
 
+    /// <summary>
+    /// Some helpers to get the training environment created.
+    /// </summary>
     public static class TrainingHelpers
     {
         /// <summary>
