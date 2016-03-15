@@ -62,7 +62,7 @@ namespace libDataAccess
         /// <returns></returns>
         public static QueriableTTree<recoTree> GetJ1Z()
         {
-            var backgroundFiles = GetFileList("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
+            var backgroundFiles = GetFileList("mc15_13TeV.361021.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ1W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             //backgroundEvents.IgnoreQueryCache = true;
             //backgroundEvents.UseStatementOptimizer = false;
