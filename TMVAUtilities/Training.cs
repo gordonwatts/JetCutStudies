@@ -113,12 +113,24 @@ namespace TMVAUtilities
         /// </summary>
         private string _tmva_options = "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification";
 
+        public class TrainingResult
+        {
+            public DirectoryInfo OutputName;
+
+            public string JobName { get; internal set; }
+
+            public FileInfo GenerateWeightFile<T>(Method<T> m)
+            {
+                return new FileInfo(Path.Combine(OutputName.FullName, $"{JobName}_{m.Name}.weights.xml"));
+            }
+        }
+
         /// <summary>
         /// Run the training
         /// </summary>
         /// <param name="jobName"></param>
         /// <returns></returns>
-        public Training<T> Train(string jobName)
+        public TrainingResult Train(string jobName)
         {
             // First task is to get the dates of all the files so we can see if there
             // have been updates since the last time the training ran.
@@ -136,7 +148,7 @@ namespace TMVAUtilities
             // We need the list of parameters for the next step
             var parameters_names = new List<string>();
             string weight_name = "";
-            foreach (var field in typeof(T).GetFields())
+            foreach (var field in typeof(T).GetFields().OrderBy(f => f.MetadataToken))
             {
                 var name = field.Name;
                 if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
@@ -186,9 +198,16 @@ namespace TMVAUtilities
                 }
             }
 
+            // Build the result object
+            var resultObject = new TrainingResult()
+            {
+                OutputName = new DirectoryInfo("weights"),
+                JobName = jobName
+            };
+
             if (!rerun)
             {
-                return this;
+                return resultObject;
             }
 
             // THis is the file where most of the basic results from the training will be written.
@@ -240,7 +259,7 @@ namespace TMVAUtilities
                     wr.WriteLine(hash);
                 }
 
-                return this;
+                return resultObject;
             } finally
             {
                 output.Close();

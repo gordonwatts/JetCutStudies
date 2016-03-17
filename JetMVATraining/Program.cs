@@ -66,7 +66,7 @@ namespace JetMVATraining
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT");
 
-                training.Train("JetMVATraining");
+                var trainingResult = training.Train("JetMVATraining");
 
                 // And, finally, generate some efficiency plots.
 
@@ -80,6 +80,19 @@ namespace JetMVATraining
                     .CalcualteEfficiency(cuts[0].Cut, js => js.Weight);
                 FutureWriteLine(() => $"The background efficiency: {standardBackgroundEff.Value}");
 
+                // Next, calculate the cut for the MVA with that background efficiency
+                var nncut = backgroundTrainingData
+                    .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), trainingResult.GenerateWeightFile(m1));
+                FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is MVA > {nncut}.");
+
+                cuts = cuts
+                    .Concat(new CutInfo[]
+                    {
+                        new CutInfo() {Title="BDT", Cut = js => TrainingUtils.CalculateMVA.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js), trainingResult.GenerateWeightFile(m1)) > nncut }
+                    })
+                    .ToArray();
+
+                // Now dump the signal efficiency for all those cuts we've built.
                 foreach (var c in cuts)
                 {
                     var eff = GenerateEfficiencyPlots(outputHistograms.mkdir(c.Title), c.Cut, signal);
