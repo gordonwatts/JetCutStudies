@@ -116,6 +116,7 @@ namespace libDataAccess
                 //Concat(GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0))
                 //GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0)
                 //.Concat(GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0))
+                //GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0)
                 ;
         }
 
