@@ -132,20 +132,12 @@ namespace TMVAUtilities
         /// <returns></returns>
         public TrainingResult Train(string jobName)
         {
-            // First task is to get the dates of all the files so we can see if there
-            // have been updates since the last time the training ran.
-            var outputFile = new FileInfo($"{jobName}.training.root");
-            var hashFileName = outputFile.FullName.Replace(".root", ".hash.txt");
-            var hashFile = new FileInfo(hashFileName);
-
             var signals = _signals.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
             var backgrounds = _backgrounds.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
 
             var oldestInput = signals.Concat(backgrounds).Select(i => i.Item2.LastWriteTime).Max();
-            bool rerun = false;
-            rerun = oldestInput > outputFile.LastWriteTime;
 
-            // We need the list of parameters for the next step
+            // We need an ordered list of parameters for the next step
             var parameters_names = new List<string>();
             string weight_name = "";
             foreach (var field in typeof(T).GetFields().OrderBy(f => f.MetadataToken))
@@ -166,43 +158,77 @@ namespace TMVAUtilities
                 }
             }
 
-            // Did the options change?
-            int hash = 0;
-            if (!rerun)
+            // Did the options change? Calc a string for the hash.
+            var bldOptionsString = new StringBuilder();
+            bldOptionsString.Append(_tmva_options);
+            foreach (var item in _ignore_variables.Concat(_use_variables))
             {
-                var bld = new StringBuilder();
-                bld.Append(_tmva_options);
-                foreach (var item in _ignore_variables.Concat(_use_variables))
-                {
-                    bld.Append(item);
-                }
-                foreach (var m in _methods)
-                {
-                    bld.Append(m.Name);
-                    bld.Append(m.What.ToString());
-                    bld.Append(m.BuildArgumentList(parameters_names));
-                }
+                bldOptionsString.Append(item);
+            }
+            foreach (var item in _use_variables)
+            {
+                bldOptionsString.Append(item);
+            }
 
-                hash = bld.ToString().GetHashCode();
-                rerun = true;
-                if (hashFile.Exists)
+            // How about the parameters?
+            foreach (var p in parameters_names)
+            {
+                bldOptionsString.Append(p);
+            }
+            bldOptionsString.Append(weight_name);
+
+            // Methods and their options.
+            foreach (var m in _methods)
+            {
+                bldOptionsString.Append(m.Name);
+                bldOptionsString.Append(m.What.ToString());
+                bldOptionsString.Append(m.BuildArgumentList(parameters_names));
+            }
+
+            // signal and background files
+            foreach (var fname in signals.Concat(backgrounds).Select(s => s.Item2.FullName))
+            {
+                bldOptionsString.Append(fname);
+            }
+
+            // Next, given these inputs, we can calculate the names of the output files.
+            var hash = bldOptionsString.ToString().GetHashCode();
+
+            var outputFile = new FileInfo($"{jobName}-{hash}.training.root");
+            var hashFileName = outputFile.FullName.Replace(".root", ".hash.txt");
+            var hashFile = new FileInfo(hashFileName);
+
+            // And now see if the hash has changed since our last run as a double check
+            // [note this is redundant now the hash now exists in filenames that are output
+            // by the training.]
+            bool rerun = true;
+            if (hashFile.Exists)
+            {
+                using (var rdr = hashFile.OpenText())
                 {
-                    using (var rdr = hashFile.OpenText())
+                    var s = rdr.ReadLine();
+                    if (s == hash.ToString())
                     {
-                        var s = rdr.ReadLine();
-                        if (s == hash.ToString())
-                        {
-                            rerun = false;
-                        }
+                        rerun = false;
                     }
                 }
             }
 
-            // Build the result object
+            rerun = rerun || oldestInput > outputFile.LastWriteTime;
+            rerun = rerun || !hashFile.Exists;
+
+            foreach (var m in _methods)
+            {
+                var mtf = new FileInfo($"weights/{jobName}-{hash}_{m.Name}.weights.xml");
+                rerun = rerun || !mtf.Exists;
+            }
+
+            // Build the result object. If there is no need to re-run, then
+            // we can ignore this.
             var resultObject = new TrainingResult()
             {
                 OutputName = new DirectoryInfo("weights"),
-                JobName = jobName
+                JobName = $"{jobName}-{hash}"
             };
 
             if (!rerun)
@@ -210,12 +236,12 @@ namespace TMVAUtilities
                 return resultObject;
             }
 
-            // THis is the file where most of the basic results from the training will be written.
+            // This is the file where most of the basic results from the training will be written.
             var output = NTFile.Open(outputFile.FullName, "RECREATE");
             try {
 
                 // Create the factory.
-                var f = new ROOTNET.NTMVA.NFactory(jobName.AsTS(), output, _tmva_options.AsTS());
+                var f = new ROOTNET.NTMVA.NFactory($"{jobName}-{hash}".AsTS(), output, _tmva_options.AsTS());
 
                 // Add signal and background. Each one has to be written out.
                 foreach (var sample in signals)

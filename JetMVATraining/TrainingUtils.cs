@@ -202,7 +202,7 @@ namespace JetMVATraining
                 "  readerUnique = new TMVA::Reader();",
                 "  readerUnique->AddVariable(\"JetPt\", &JetPtUnique);",
                 "  readerUnique->AddVariable(\"CalRatio\", &CalRatioUnique);",
-                "  readerUnique->AddVariable(\"JetEta\", &JetEtaUnique);",
+                "  //readerUnique->AddVariable(\"JetEta\", &JetEtaUnique);",
                 "  readerUnique->AddVariable(\"NTracks\", &nTracksUnique);",
                 "  readerUnique->AddVariable(\"SumPtOfAllTracks\", &SumPtOfAllTracksUnique);",
                 "  readerUnique->AddVariable(\"MaxTrackPt\", &MaxTrackPtUnique);",
