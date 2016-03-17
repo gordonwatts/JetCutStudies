@@ -129,6 +129,12 @@ namespace JetMVATraining
             return binCenter.Value;
         }
 
+        /// <summary>
+        /// Calculate the pass fraction for a bin.
+        /// </summary>
+        /// <param name="h">Histogram we are to examine (assume 1D)</param>
+        /// <param name="passFraction">The fraction for passing - assume it is between 0 and 1.</param>
+        /// <returns></returns>
         private static int CalcBinWhereFractionIs(NTH1F h, double passFraction)
         {
             var sum = Enumerable.Range(0, h.GetNbinsX() + 1).Select(b => h.GetBinContent(b)).Sum();
@@ -144,8 +150,9 @@ namespace JetMVATraining
                 }
             }
 
-            // If we got here, then we never made it. Very bad.
-            throw new InvalidOperationException("Should never not be able to find a pass fraction!");
+            // If we got here, then the number must have been 1, and it is the last
+            // bin that we return!
+            return h.GetNbinsX() + 1;
         }
 
         /// <summary>
