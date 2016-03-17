@@ -112,9 +112,9 @@ namespace libDataAccess
         public static IQueryable<MetaData> GetAllJetSamples()
         {
             return
-                //GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)
+                GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)
                 //Concat(GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0))
-                GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0)
+                //GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0)
                 //.Concat(GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0))
                 ;
         }

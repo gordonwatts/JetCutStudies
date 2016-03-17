@@ -49,7 +49,7 @@ namespace JetMVATraining
                 signal = signal
                     .FlattenPtSpectra(outputHistograms, "signal");
 
-                // Finally, write out a tree for training everything.
+                // Finally, plots of all the training input variables.
                 var backgroundTrainingData = background
                     .AsTrainingTree()
                     .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background");
@@ -62,7 +62,8 @@ namespace JetMVATraining
 
                 var training = signalTrainingData
                     .AsSignal()
-                    .Background(backgroundTrainingData);
+                    .Background(backgroundTrainingData)
+                    .IgnoreVariables(t => t.JetEta);
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT");
 
@@ -70,7 +71,7 @@ namespace JetMVATraining
 
                 // And, finally, generate some efficiency plots.
 
-                var cuts = new CutInfo[]
+                var cuts = new List<CutInfo>()
                 {
                     new CutInfo() {Title="Run1", Cut = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any() },
                 };
@@ -85,12 +86,10 @@ namespace JetMVATraining
                     .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), trainingResult.GenerateWeightFile(m1));
                 FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is MVA > {nncut}.");
 
-                cuts = cuts
-                    .Concat(new CutInfo[]
-                    {
-                        new CutInfo() {Title="BDT", Cut = js => TrainingUtils.CalculateMVA.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js), trainingResult.GenerateWeightFile(m1)) > nncut }
-                    })
-                    .ToArray();
+                cuts.Add(new CutInfo() {
+                    Title = "BDT",
+                    Cut = js => TrainingUtils.CalculateMVA.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js), trainingResult.GenerateWeightFile(m1)) > nncut
+                });
 
                 // Now dump the signal efficiency for all those cuts we've built.
                 foreach (var c in cuts)
