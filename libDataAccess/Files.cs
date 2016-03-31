@@ -75,6 +75,7 @@ namespace libDataAccess
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             //backgroundEvents.IgnoreQueryCache = true;
             //backgroundEvents.UseStatementOptimizer = false;
+            backgroundEvents.CleanupQuery = false;
             return backgroundEvents;
         }
 
@@ -111,11 +112,10 @@ namespace libDataAccess
         /// <returns></returns>
         public static IQueryable<MetaData> GetAllJetSamples()
         {
-            const int nEvents = 20000;
             return
-                GenerateStream(libDataAccess.Files.GetJ2Z().Take(nEvents), 1.0)
-                .Concat(GenerateStream(libDataAccess.Files.GetJ3Z().Take(nEvents), 1.0))
-                .Concat(GenerateStream(libDataAccess.Files.GetJ4Z().Take(nEvents), 1.0));
+                GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)
+                .Concat(GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0))
+                .Concat(GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0));
                 ;
         }
 

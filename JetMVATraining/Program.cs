@@ -34,7 +34,8 @@ namespace JetMVATraining
 
             // Our data sources
             var background = Files.GetAllJetSamples()
-                .AsGoodJetStream();
+                .AsGoodJetStream()
+                .Take(300);
 
             var signal = (Files.Get600pi150lt9m().Concat(Files.Get200pi25lt5m()).Concat(Files.Get400pi100lt9m()))
                 .GenerateStream(1.0)
