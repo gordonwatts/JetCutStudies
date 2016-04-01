@@ -39,6 +39,8 @@ namespace JetMVATraining
 
         }
 
+        private static int _plotIndex = 0;
+
         /// <summary>
         /// Will make a sequence flat in some plotting parameter.
         /// It should work for a 2D distribution as well as a 1D one, but it hasn't been tested yet.
@@ -57,9 +59,10 @@ namespace JetMVATraining
             // First, get the spectra. We will process that into a re-weighting.
             var ptSpecra = source
                 .Select(t => Tuple.Create(converter.Invoke(t), weight.Invoke(t)))
-                .FuturePlot("bogus_name", "bogus_title", plotter);
+                .FuturePlot($"bogus_name_{_plotIndex}", "bogus_title", plotter);
+            _plotIndex++;
 
-            // Reweight
+            // Re weight
             var reweightSpectr = ptSpecra.Value;
             foreach (var b in Enumerable.Range(0, reweightSpectr.NbinsX + 1))
             {
