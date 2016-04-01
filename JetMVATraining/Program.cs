@@ -33,9 +33,9 @@ namespace JetMVATraining
             CommandLineUtils.Parse(args);
 
             // Our data sources
-            var background = Files.GetAllJetSamples()
+            var background = CommandLineUtils.GetRequestedBackground()
                 .AsGoodJetStream()
-                .TakePerSource(100000);
+                .TakePerSource(150000);
 
             var signal = (Files.Get600pi150lt9m().Concat(Files.Get200pi25lt5m()).Concat(Files.Get400pi100lt9m()))
                 .GenerateStream(1.0)
