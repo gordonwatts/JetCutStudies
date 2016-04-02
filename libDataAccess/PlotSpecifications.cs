@@ -18,6 +18,9 @@ namespace libDataAccess
     /// <summary>
     /// Things to help with uniform binning of plots, etc.
     /// </summary>
+    /// <remarks>
+    /// You can't have auto-determined binning - as it might be run on multiple samples and combined!
+    /// </remarks>
     public class PlotSpecifications
     {
         /// <summary>
@@ -70,7 +73,7 @@ namespace libDataAccess
         /// Plot the event weights
         /// </summary>
         public static IPlotSpec<double> TrainingEventWeight =
-            MakePlotterSpec<double>(100, 1.0, -1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
+            MakePlotterSpec<double>(100, -1.0, 1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
 
         /// <summary>
         /// A pT plot of tracks associated with jets
