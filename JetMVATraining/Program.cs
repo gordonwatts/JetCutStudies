@@ -1,22 +1,20 @@
-﻿using libDataAccess;
+﻿using DiVertAnalysis;
+using libDataAccess;
 using libDataAccess.Utils;
 using LINQToTreeHelpers;
 using LINQToTreeHelpers.FutureUtils;
 using LinqToTTreeInterfacesLib;
-using LINQToTTreeLib.Files;
 using LINQToTTreeLib;
+using ROOTNET.Interface;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using TMVAUtilities;
 using static JetMVATraining.SampleUtils;
 using static libDataAccess.PlotSpecifications;
-using ROOTNET.Interface;
-using static LINQToTreeHelpers.PlottingUtils;
-using System.Collections.Generic;
-using DiVertAnalysis;
-using TMVAUtilities;
 using static libDataAccess.Utils.FutureConsole;
+using static LINQToTreeHelpers.PlottingUtils;
 
 namespace JetMVATraining
 {
