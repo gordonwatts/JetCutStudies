@@ -25,7 +25,7 @@ namespace JetMVATraining
         /// <summary>
         /// Total number of background events to use. It will be split equally amongst all JZ samples.
         /// </summary>
-        const int NumberOfBackgroundEvents = 150000;
+        const int NumberOfBackgroundEvents = 250000;
 
         /// <summary>
         /// Run the training for the MVA. This is run in a library,
