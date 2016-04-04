@@ -117,11 +117,41 @@ namespace TMVAUtilities
         {
             public DirectoryInfo OutputName;
 
+            public FileInfo TrainingOutputFile { get; set; }
+
             public string JobName { get; internal set; }
+
+            public string[] MethodList { get; internal set; }
+
+            /// <summary>
+            /// Copy the output .root file and xml file to a common name, rather than the one with the crazy
+            /// names we are currently using.
+            /// </summary>
+            public void CopyToJobName(string name = "JetMVATraining", DirectoryInfo dir = null)
+            {
+                dir = dir == null ? new DirectoryInfo(".") : dir;
+
+                // Copy over the output training root file.
+                var outputTrainingRootInfo = Path.Combine(dir.FullName, $"{name}.training.root");
+                TrainingOutputFile.CopyTo(outputTrainingRootInfo, true);
+
+                // Next, each of the weight files
+                foreach (var m in MethodList)
+                {
+                    var originalWeightFile = GenerateWeightFileFromName(m);
+                    var finalName = Path.Combine(dir.FullName, $"{name}_{m}.weights.xml");
+                    originalWeightFile.CopyTo(finalName, true);
+                }
+            }
 
             public FileInfo GenerateWeightFile<T>(Method<T> m)
             {
-                return new FileInfo(Path.Combine(OutputName.FullName, $"{JobName}_{m.Name}.weights.xml"));
+                return GenerateWeightFileFromName(m.Name);
+            }
+
+            private FileInfo GenerateWeightFileFromName(string name)
+            {
+                return new FileInfo(Path.Combine(OutputName.FullName, $"{JobName}_{name}.weights.xml"));
             }
         }
 
@@ -228,7 +258,9 @@ namespace TMVAUtilities
             var resultObject = new TrainingResult()
             {
                 OutputName = new DirectoryInfo("weights"),
-                JobName = $"{jobName}-{hash}"
+                JobName = $"{jobName}-{hash}",
+                TrainingOutputFile = outputFile,
+                MethodList = _methods.Select(m => m.Name).ToArray(),
             };
 
             if (!rerun)

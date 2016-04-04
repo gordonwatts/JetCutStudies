@@ -78,6 +78,10 @@ namespace JetMVATraining
 
                 var trainingResult = training.Train("JetMVATraining");
 
+                // Copy to a common filename. We do this only because it makes
+                // the Jenkins artifacts to pick up only what we are producing this round.
+                trainingResult.CopyToJobName();
+
                 // And, finally, generate some efficiency plots.
 
                 var cuts = new List<CutInfo>()
