@@ -158,7 +158,7 @@ namespace libDataAccess
             return sigEvents;
         }
 #endif
-        public static QueriableTTree<recoTree> Get200pi25lt5m()
+        public static IQueryable<recoTree> Get200pi25lt5m()
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
@@ -167,7 +167,7 @@ namespace libDataAccess
             return sigEvents;
         }
 
-        public static QueriableTTree<recoTree> Get400pi100lt9m()
+        public static IQueryable<recoTree> Get400pi100lt9m()
         {
             var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
@@ -176,7 +176,7 @@ namespace libDataAccess
             return sigEvents;
         }
 
-        public static QueriableTTree<recoTree> Get600pi150lt9m()
+        public static IQueryable<recoTree> Get600pi150lt9m()
         {
             var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);

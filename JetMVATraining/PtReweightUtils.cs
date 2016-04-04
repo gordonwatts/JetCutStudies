@@ -19,20 +19,29 @@ namespace JetMVATraining
         /// <param name="source"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public static IQueryable<JetStream> FlattenPtSpectra (this IQueryable<JetStream> source, FutureTDirectory output, string samplePrefix)
+        public static IQueryable<TrainingTree> FlattenPtSpectra (this IQueryable<TrainingTree> source, FutureTDirectory output, string samplePrefix)
         {
             // Make a before plot of the pT spectra.
             source
-                .Select(j => Tuple.Create(j.JetInfo.Jet, j.Weight))
-                .FuturePlot<recoTreeJets>(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlot, samplePrefix)
+                .Select(j => Tuple.Create(j.JetPt, j.Weight))
+                .FuturePlot<double>(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlotRaw, samplePrefix)
                 .Save(output);
 
             var r = source
-                .ReweightToFlat(JetPtPlot, t => t.JetInfo.Jet, t => t.Weight, (t, w) => new JetStream() { JetInfo = t.JetInfo, Weight = w });
+                .ReweightToFlat(JetPtPlotRaw, t => t.JetPt, t => t.Weight, (t, w) => new TrainingTree()
+                {
+                    Weight = w,
+                    CalRatio = t.CalRatio,
+                    JetEta = t.JetEta,
+                    JetPt = t.JetPt,
+                    MaxTrackPt = t.MaxTrackPt,
+                    NTracks = t.NTracks,
+                    SumPtOfAllTracks = t.SumPtOfAllTracks
+                });
 
             r
-                .Select(j => Tuple.Create(j.JetInfo.Jet, j.Weight))
-                .FuturePlot(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlot, $"{samplePrefix}flat")
+                .Select(j => Tuple.Create(j.JetPt, j.Weight))
+                .FuturePlot(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlotRaw, $"{samplePrefix}flat")
                 .Save(output);
 
             return r;

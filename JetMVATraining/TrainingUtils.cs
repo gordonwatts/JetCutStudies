@@ -47,12 +47,14 @@ namespace JetMVATraining
 
         /// <summary>
         /// Create a training tree from a jet stream.
+        /// Apply training cleanup cuts.
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
         internal static IQueryable<TrainingTree> AsTrainingTree(this IQueryable<JetStream> source)
         {
             return source
+                .Where(j => j.JetInfo.Jet.pT < 400.0)
                 .Select(i => TrainingTreeConverter.Invoke(i));
         }
 

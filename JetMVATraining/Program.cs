@@ -40,31 +40,42 @@ namespace JetMVATraining
             var numberSources = backgroundSources.Count();
             var numberOfEventsPerSource = NumberOfBackgroundEvents / numberSources;
 
-            // Our data sources
-            var background = CommandLineUtils.GetRequestedBackground()
-                .AsGoodJetStream()
+            var backgrounds = backgroundSources
+                .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
+                .AsGoodJetStream();
+
+            var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
+                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
+                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
+                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
+            };
+
+            var signals = signalSources
+                .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
+                .AsGoodJetStream();
+
+            // Put the sources into a stream of jets.
+            var backgroundTrainingSample = backgrounds
                 .TakePerSource(numberOfEventsPerSource);
 
-            var signal = (Files.Get600pi150lt9m().Concat(Files.Get200pi25lt5m()).Concat(Files.Get400pi100lt9m()))
-                .GenerateStream(1.0)
-                .AsGoodJetStream()
+            var signal = signals
                 .FilterSignal();
 
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
             {
-                // Plot the pt spectra before flattening.
-                background = background
+                // Create the training data and flatten the pT spectra.
+                var backgroundTrainingData = backgroundTrainingSample
+                    .AsTrainingTree()
                     .FlattenPtSpectra(outputHistograms, "background");
-                signal = signal
+                var signalTrainingData = signal
+                    .AsTrainingTree()
                     .FlattenPtSpectra(outputHistograms, "signal");
 
                 // Finally, plots of all the training input variables.
-                var backgroundTrainingData = background
-                    .AsTrainingTree()
+                backgroundTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background");
 
-                var signalTrainingData = signal
-                    .AsTrainingTree()
+                signalTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal");
 
                 // Now, do the training.
@@ -83,19 +94,20 @@ namespace JetMVATraining
                 trainingResult.CopyToJobName();
 
                 // And, finally, generate some efficiency plots.
-
+                // First, get the list of cuts we are going to use. Start with the boring Run 1.
                 var cuts = new List<CutInfo>()
                 {
                     new CutInfo() {Title="Run1", Cut = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any() },
                 };
 
                 // Calculate the background efficiency for the standard Run 1 cut.
-                var standardBackgroundEff = background
+                var standardBackgroundEff = backgrounds
                     .CalcualteEfficiency(cuts[0].Cut, js => js.Weight);
                 FutureWriteLine(() => $"The background efficiency: {standardBackgroundEff.Value}");
 
                 // Next, calculate the cut for the MVA with that background efficiency
-                var nncut = backgroundTrainingData
+                var nncut = backgrounds
+                    .AsTrainingTree()
                     .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), trainingResult.GenerateWeightFile(m1));
                 FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is MVA > {nncut}.");
 
@@ -107,8 +119,16 @@ namespace JetMVATraining
                 // Now dump the signal efficiency for all those cuts we've built.
                 foreach (var c in cuts)
                 {
-                    var eff = GenerateEfficiencyPlots(outputHistograms.mkdir(c.Title), c.Cut, signal);
-                    FutureWriteLine(() => $"The signal efficiency for {c.Title}: {eff.Value}.");
+                    var cutDir = outputHistograms.mkdir(c.Title);
+                    foreach (var s in signalSources)
+                    {
+                        var sEvents = s.Item2
+                            .AsGoodJetStream();
+                        var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, sEvents);
+                        FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");
+                    }
+                    var eff = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, signal);
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents: {eff.Value}.");
                 }
 
                 // Done. Dump all output.
