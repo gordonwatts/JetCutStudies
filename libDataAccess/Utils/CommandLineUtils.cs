@@ -70,6 +70,41 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
+        /// Get the list of background samples depending on the option that was given to us.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Tuple<string, IQueryable<MetaData>>> GetRequestedBackgroundSourceList()
+        {
+            switch (RequstedBackgroundSample)
+            {
+                case BackgroundSampleEnum.All:
+                    return new Tuple<string, IQueryable<MetaData>>[] {
+                        Tuple.Create("J2Z", Files.GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)),
+                        Tuple.Create("J3Z", Files.GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0)),
+                        Tuple.Create("J4Z", Files.GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0)),
+                    };
+
+                case BackgroundSampleEnum.JZ2:
+                    return new Tuple<string, IQueryable<MetaData>>[] {
+                        Tuple.Create("J2Z", Files.GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)),
+                    };
+
+                case BackgroundSampleEnum.JZ3:
+                    return new Tuple<string, IQueryable<MetaData>>[] {
+                        Tuple.Create("J3Z", Files.GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0)),
+                    };
+
+                case BackgroundSampleEnum.JZ4:
+                    return new Tuple<string, IQueryable<MetaData>>[] {
+                        Tuple.Create("J4Z", Files.GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0)),
+                    };
+
+                default:
+                    throw new InvalidOperationException("Unknown background samples");
+            }
+        }
+
+        /// <summary>
         /// Parse the command line arguments, and deal with their execution.
         /// </summary>
         /// <param name="args"></param>
