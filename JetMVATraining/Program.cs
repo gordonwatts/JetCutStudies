@@ -21,6 +21,11 @@ namespace JetMVATraining
     class Program
     {
         /// <summary>
+        /// Total number of background events to use. It will be split equally amongst all JZ samples.
+        /// </summary>
+        const int NumberOfBackgroundEvents = 250000;
+
+        /// <summary>
         /// Run the training for the MVA. This is run in a library,
         /// so basically behind-this-guys-back. But it provides an easy single item to run.
         /// </summary>
@@ -30,10 +35,15 @@ namespace JetMVATraining
             // Parse command line arguments
             CommandLineUtils.Parse(args);
 
+            // Get the background data sources, and figure out how many per source we want to grab.
+            var backgroundSources = CommandLineUtils.GetRequestedBackgroundSourceList();
+            var numberSources = backgroundSources.Count();
+            var numberOfEventsPerSource = NumberOfBackgroundEvents / numberSources;
+
             // Our data sources
             var background = CommandLineUtils.GetRequestedBackground()
                 .AsGoodJetStream()
-                .TakePerSource(150000);
+                .TakePerSource(numberOfEventsPerSource);
 
             var signal = (Files.Get600pi150lt9m().Concat(Files.Get200pi25lt5m()).Concat(Files.Get400pi100lt9m()))
                 .GenerateStream(1.0)
