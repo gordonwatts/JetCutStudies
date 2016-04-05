@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using static LINQToTreeHelpers.PlottingUtils;
 using System.Linq.Expressions;
 using System;
+using static libDataAccess.Files;
+using libDataAccess.Utils;
 
 namespace libDataAccess
 {
@@ -34,6 +36,11 @@ namespace libDataAccess
         /// 1D plot of jet PT
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetPtPlot;
+
+        /// <summary>
+        /// Do the pt plot directly from meta data.
+        /// </summary>
+        public static IPlotSpec<JetStream> JetPtPlotJetStream;
 
         /// <summary>
         /// 1D plot of jet PT.
@@ -279,6 +286,7 @@ namespace libDataAccess
         static PlotSpecifications()
         {
             JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
+            JetPtPlotJetStream = JetPtPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);

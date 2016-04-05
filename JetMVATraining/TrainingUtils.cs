@@ -4,13 +4,14 @@ using LINQToTreeHelpers.FutureUtils;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using static JetMVATraining.SampleUtils;
+using static libDataAccess.Utils.SampleUtils;
 using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
 using LINQToTTreeLib.CodeAttributes;
 using LinqToTTreeInterfacesLib;
 using System.IO;
 using ROOTNET;
+using libDataAccess.Utils;
 
 namespace JetMVATraining
 {

@@ -5,7 +5,7 @@ using LINQToTTreeLib;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using static JetMVATraining.SampleUtils;
+using static libDataAccess.Utils.SampleUtils;
 using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
 

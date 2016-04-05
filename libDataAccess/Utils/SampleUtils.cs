@@ -11,19 +11,19 @@ using static libDataAccess.CutConstants;
 using libDataAccess;
 using static libDataAccess.JetInfoExtraHelpers;
 
-namespace JetMVATraining
+namespace libDataAccess.Utils
 {
-    static class SampleUtils
+    /// <summary>
+    /// Jet info we need for training
+    /// </summary>
+    public class JetStream
     {
-        /// <summary>
-        /// Jet info we need for training
-        /// </summary>
-        public class JetStream
-        {
-            public JetInfoExtra JetInfo;
-            public double Weight;
-        }
+        public JetInfoExtra JetInfo;
+        public double Weight;
+    }
 
+    public static class SampleUtils
+    {
         /// <summary>
         /// Turn an event sample into a jet sample.
         /// Apply default cuts as well.
@@ -34,6 +34,20 @@ namespace JetMVATraining
                 .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, j), Weight = e.xSectionWeight }))
                 .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < 2.4)
                 ;
+        }
+
+        /// <summary>
+        /// Get a good jet stream that is the high pT jet.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<JetStream> AsGoodFirstJetStream(this IQueryable<MetaData> source)
+        {
+            return source
+                .Select(e => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, e.Data.Jets.OrderByDescending(j => j.pT).First()), Weight = e.xSectionWeight })
+                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < 2.4)
+                ;
+
         }
 
         /// <summary>

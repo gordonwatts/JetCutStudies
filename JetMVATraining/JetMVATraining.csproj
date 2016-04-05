@@ -337,7 +337,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PtReweightUtils.cs" />
-    <Compile Include="SampleUtils.cs" />
     <Compile Include="TrainingUtils.cs" />
   </ItemGroup>
   <ItemGroup>

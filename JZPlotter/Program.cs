@@ -5,6 +5,8 @@ using LINQToTTreeLib;
 using System;
 using System.Linq;
 using static libDataAccess.PlotSpecifications;
+using static libDataAccess.Files;
+using libDataAccess.Utils;
 
 namespace JZPlotter
 {
@@ -21,6 +23,10 @@ namespace JZPlotter
     {
         static void Main(string[] args)
         {
+            // Get command line arguments
+            libDataAccess.Utils.CommandLineUtils.Parse(args);
+
+            // Build our own set of background samples so we can experiment.
             var jets = new IQueryable<MetaData>[] {
                 GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0),
                 GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0),
@@ -32,10 +38,8 @@ namespace JZPlotter
             var firstsum = from c1 in individualCounts[0] from c2 in individualCounts[1] select c1 + c2;
             var sum = individualCounts.Skip(2).Aggregate(firstsum, (tot, val) => from t in tot from v in val select t + v);
 
-            // Count them by concatting them.
-            var allFilesNoWeight = jets
-                .Skip(1)
-                .Aggregate(jets[0], (seq, newj) => seq.Concat(newj));
+            // Get the samples with an official weight attached to them.
+            var allFilesNoWeight = GetAllJetSamples();
 
             var totalCount = allFilesNoWeight.FutureCount();
 
@@ -43,21 +47,21 @@ namespace JZPlotter
             using (var outputHistograms = new FutureTFile("JZPlotter.root"))
             {
                 allFilesNoWeight
-                    .SelectMany(e => e.Data.Jets)
-                    .FuturePlot(JetPtPlot, "pt_unweighted")
+                    .AsGoodJetStream()
+                    .FuturePlot(JetPtPlotJetStream, "pt_unweighted")
                     .Save(outputHistograms);
                 allFilesNoWeight
-                    .Select(e => e.Data.Jets.OrderByDescending(j => j.pT).First())
-                    .FuturePlot(JetPtPlot, "first_pt_unweighted")
+                    .AsGoodFirstJetStream()
+                    .FuturePlot(JetPtPlotJetStream, "first_pt_unweighted")
                     .Save(outputHistograms);
 
                 allFilesNoWeight
-                    .SelectMany(e => e.Data.Jets.Select(j => new { Jet = j, Weight = e.xSectionWeight}))
-                    .FuturePlot("pt_weighted", "Jet pT Weighted", 100, 0.0, 100.0, j => j.Jet.pT, j => j.Weight)
+                    .AsGoodJetStream()
+                    .FuturePlot(JetPtPlotJetStream, "pt_weighted")
                     .Save(outputHistograms);
                 allFilesNoWeight
-                    .Select(e => e.Data.Jets.OrderByDescending(j => j.pT).Select(j => new { Jet = j, Weight = e.xSectionWeight }).First())
-                    .FuturePlot("first_jet_pt_weighted", "Jet pT Weighted", 100, 0.0, 100.0, j => j.Jet.pT, j => j.Weight)
+                    .AsGoodFirstJetStream()
+                    .FuturePlot(JetPtPlotJetStream, "first_jet_pt_weighted")
                     .Save(outputHistograms);
             }
 
