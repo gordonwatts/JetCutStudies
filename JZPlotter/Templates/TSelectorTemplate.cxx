@@ -11,6 +11,7 @@
 #end
 
 \#include <TFile.h>
+\#include <TList.h>
 
 \#include <string>
 \#include <stdexcept>
@@ -46,6 +47,9 @@ public:
 
 		/// initialize the variables that we are going to be carrying along with us.
 #foreach($v in $ResultVariables)
+#foreach($l in $v.VarInitCode)
+		$l
+#end
 		$v.VariableName = $v.InitialValue;
 #end
 
@@ -183,6 +187,14 @@ private:
 		T result = static_cast<T>(fInput->FindObject(name.c_str()));
 		if (result == 0) {
 			std::cout << "Unable to find object '" << name << "' in the input list!" << std::endl;
+			std::cout << "Found the following objects in the input list: " << std::endl;
+			TIter next(fInput);
+			TObject *obj;
+			while ((obj = (TNamed*)next()) != nullptr)
+			{
+				std::cout << "  " << obj->GetName() << endl;
+			}
+
 			throw std::runtime_error(("Unable to load object '" + name + "' from the input list - not found!").c_str());
 		}
 
