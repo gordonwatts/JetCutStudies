@@ -24,7 +24,7 @@ namespace SimpleJetCutTraining
         static void Main(string[] args)
         {
             WriteLine("Finding the files");
-            var backgroundEvents = Files.GetJ2Z();
+            var backgroundEvents = Files.GetJ2Z().Select(e => e.Data);
             //var signalHV125pi15Events = Files.Get125pi15();
             //var signalHV125pi40Events = Files.Get125pi40();
             var signalHV600pi100Events = Files.Get600pi150lt9m();

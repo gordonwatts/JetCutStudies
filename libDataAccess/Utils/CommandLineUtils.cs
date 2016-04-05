@@ -56,13 +56,13 @@ namespace libDataAccess.Utils
                     return Files.GetAllJetSamples();
 
                 case BackgroundSampleEnum.JZ2:
-                    return Files.GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0);
+                    return GetJ2Z();
 
                 case BackgroundSampleEnum.JZ3:
-                    return Files.GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0);
+                    return GetJ3Z();
 
                 case BackgroundSampleEnum.JZ4:
-                    return Files.GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0);
+                    return GetJ4Z();
 
                 default:
                     throw new InvalidOperationException("Unknown background samples");
@@ -79,24 +79,24 @@ namespace libDataAccess.Utils
             {
                 case BackgroundSampleEnum.All:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", Files.GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)),
-                        Tuple.Create("J3Z", Files.GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0)),
-                        Tuple.Create("J4Z", Files.GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0)),
+                        Tuple.Create("J2Z", GetJ2Z()),
+                        Tuple.Create("J3Z", GetJ3Z()),
+                        Tuple.Create("J4Z", GetJ4Z()),
                     };
 
                 case BackgroundSampleEnum.JZ2:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", Files.GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)),
+                        Tuple.Create("J2Z", GetJ2Z()),
                     };
 
                 case BackgroundSampleEnum.JZ3:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J3Z", Files.GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0)),
+                        Tuple.Create("J3Z", GetJ3Z()),
                     };
 
                 case BackgroundSampleEnum.JZ4:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J4Z", Files.GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0)),
+                        Tuple.Create("J4Z", GetJ4Z()),
                     };
 
                 default:

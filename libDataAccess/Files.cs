@@ -60,41 +60,39 @@ namespace libDataAccess
         /// Get the J2Z files for running.
         /// </summary>
         /// <returns></returns>
-        public static QueriableTTree<recoTree> GetJ1Z()
+        public static IQueryable<MetaData> GetJ1Z()
         {
-            var backgroundFiles = GetFileList("mc15_13TeV.361021.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ1W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
-            //backgroundEvents.IgnoreQueryCache = true;
-            //backgroundEvents.UseStatementOptimizer = false;
-            return backgroundEvents;
+            const string sample = "mc15_13TeV.361021.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ1W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452";
+            return GetSampleAsMetaData(sample);
         }
 
-        public static QueriableTTree<recoTree> GetJ2Z()
+        /// <summary>
+        /// Returns the sample as metadata.
+        /// </summary>
+        /// <param name="sample"></param>
+        /// <returns></returns>
+        private static IQueryable<MetaData> GetSampleAsMetaData(string sample)
         {
-            var backgroundFiles = GetFileList("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
+            var backgroundFiles = GetFileList(sample);
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             //backgroundEvents.IgnoreQueryCache = true;
             //backgroundEvents.UseStatementOptimizer = false;
-            backgroundEvents.CleanupQuery = false;
-            return backgroundEvents;
+            return GenerateStream(backgroundEvents, 1.0);
         }
 
-        public static QueriableTTree<recoTree> GetJ3Z()
+        public static IQueryable<MetaData> GetJ2Z()
         {
-            var backgroundFiles = GetFileList("mc15_13TeV.361023.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ3W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
-            //backgroundEvents.IgnoreQueryCache = true;
-            //backgroundEvents.UseStatementOptimizer = false;
-            return backgroundEvents;
+            return GetSampleAsMetaData("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
         }
 
-        public static QueriableTTree<recoTree> GetJ4Z()
+        public static IQueryable<MetaData> GetJ3Z()
         {
-            var backgroundFiles = GetFileList("mc15_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
-            //backgroundEvents.IgnoreQueryCache = true;
-            //backgroundEvents.UseStatementOptimizer = false;
-            return backgroundEvents;
+            return GetSampleAsMetaData("mc15_13TeV.361023.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ3W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
+        }
+
+        public static IQueryable<MetaData> GetJ4Z()
+        {
+            return GetSampleAsMetaData("mc15_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
         }
 
         /// <summary>
@@ -113,9 +111,9 @@ namespace libDataAccess
         public static IQueryable<MetaData> GetAllJetSamples()
         {
             return
-                GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0)
-                .Concat(GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0))
-                .Concat(GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0));
+                GetJ2Z()
+                .Concat(GetJ3Z())
+                .Concat(GetJ4Z());
                 ;
         }
 

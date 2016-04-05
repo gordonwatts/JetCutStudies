@@ -10,12 +10,6 @@ using libDataAccess.Utils;
 
 namespace JZPlotter
 {
-    public class MetaData
-    {
-        public recoTree Data;
-        public double xSectionWeight;
-    }
-
     /// <summary>
     /// This is a mostly experimental program to look at how to combine JZ samples into a single background.
     /// </summary>
@@ -28,9 +22,9 @@ namespace JZPlotter
 
             // Build our own set of background samples so we can experiment.
             var jets = new IQueryable<MetaData>[] {
-                GenerateStream(libDataAccess.Files.GetJ2Z(), 1.0),
-                GenerateStream(libDataAccess.Files.GetJ3Z(), 1.0),
-                GenerateStream(libDataAccess.Files.GetJ4Z(), 1.0),
+                GetJ2Z(),
+                GetJ3Z(),
+                GetJ4Z(),
             };
 
             // Count them individually
