@@ -68,5 +68,11 @@ namespace libDataAccess.Utils
                 Tuple.Create(120.0, 200.0),
                 Tuple.Create(200.0, 1000.0)
             };
+
+        /// <summary>
+        /// Luminosity for the analysis, in inverse nanobarnes.
+        /// 3,340,000
+        /// </summary>
+        public static readonly double Luminosity = 3.34 * 1.0e6;
     }
 }

@@ -1,12 +1,9 @@
 ﻿using DiVertAnalysis;
-using LINQToTTreeLib;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static libDataAccess.Utils.Constants;
 
 namespace libDataAccess
 {
@@ -66,20 +63,6 @@ namespace libDataAccess
             return GetSampleAsMetaData(sample);
         }
 
-        /// <summary>
-        /// Returns the sample as metadata.
-        /// </summary>
-        /// <param name="sample"></param>
-        /// <returns></returns>
-        private static IQueryable<MetaData> GetSampleAsMetaData(string sample)
-        {
-            var backgroundFiles = GetFileList(sample);
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
-            //backgroundEvents.IgnoreQueryCache = true;
-            //backgroundEvents.UseStatementOptimizer = false;
-            return GenerateStream(backgroundEvents, 1.0);
-        }
-
         public static IQueryable<MetaData> GetJ2Z()
         {
             return GetSampleAsMetaData("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
@@ -93,6 +76,35 @@ namespace libDataAccess
         public static IQueryable<MetaData> GetJ4Z()
         {
             return GetSampleAsMetaData("mc15_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
+        }
+
+        /// <summary>
+        /// Returns the sample as metadata, including an extract cross section weight.
+        /// </summary>
+        /// <param name="sample"></param>
+        /// <returns></returns>
+        private static IQueryable<MetaData> GetSampleAsMetaData(string sample)
+        {
+            // Build the query tree
+            var backgroundFiles = GetFileList(sample);
+            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
+            //backgroundEvents.IgnoreQueryCache = true;
+            //backgroundEvents.UseStatementOptimizer = false;
+
+            // fetch the cross section weight
+            double xSectionWeight = 1.0;
+            try
+            {
+                var sampleInfo = SampleMetaData.LoadFromCSV(sample);
+                xSectionWeight = sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / sampleInfo.EventsGenerated; //backgroundEvents.Count();
+            } catch (Exception e)
+            {
+                Console.WriteLine($"WARNING: Sample '{sample}' not found in x-section list. Assuming a cross section weight of 1.");
+                Console.WriteLine($"  Error: {e.Message}");
+            }
+
+            // And return the stream.
+            return GenerateStream(backgroundEvents, xSectionWeight);
         }
 
         /// <summary>

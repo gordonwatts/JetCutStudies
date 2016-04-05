@@ -7,6 +7,7 @@ using System.Linq;
 using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Files;
 using libDataAccess.Utils;
+using System.Collections.Generic;
 
 namespace JZPlotter
 {
@@ -33,30 +34,42 @@ namespace JZPlotter
             var sum = individualCounts.Skip(2).Aggregate(firstsum, (tot, val) => from t in tot from v in val select t + v);
 
             // Get the samples with an official weight attached to them.
-            var allFilesNoWeight = GetAllJetSamples();
+            var allSamplesToTest = new List<Tuple<String, IQueryable<MetaData>>>()
+            {
+                Tuple.Create("AllJZ", GetAllJetSamples()),
+                Tuple.Create("J2Z", GetJ2Z()),
+                Tuple.Create("J3Z", GetJ3Z()),
+                Tuple.Create("J4Z", GetJ4Z())
+            };
 
-            var totalCount = allFilesNoWeight.FutureCount();
+            var totalCount = GetAllJetSamples().FutureCount();
 
             // Make a pT plot
             using (var outputHistograms = new FutureTFile("JZPlotter.root"))
             {
-                allFilesNoWeight
-                    .AsGoodJetStream()
-                    .FuturePlot(JetPtPlotJetStream, "pt_unweighted")
-                    .Save(outputHistograms);
-                allFilesNoWeight
-                    .AsGoodFirstJetStream()
-                    .FuturePlot(JetPtPlotJetStream, "first_pt_unweighted")
-                    .Save(outputHistograms);
+                foreach (var sampleInfo in allSamplesToTest)
+                {
+                    var events = sampleInfo.Item2;
+                    var hdir = outputHistograms.mkdir(sampleInfo.Item1);
 
-                allFilesNoWeight
-                    .AsGoodJetStream()
-                    .FuturePlot(JetPtPlotJetStream, "pt_weighted")
-                    .Save(outputHistograms);
-                allFilesNoWeight
-                    .AsGoodFirstJetStream()
-                    .FuturePlot(JetPtPlotJetStream, "first_jet_pt_weighted")
-                    .Save(outputHistograms);
+                    events
+                        .AsGoodJetStream()
+                        .FuturePlot(JetPtPlotJetStream, "pt_unweighted")
+                        .Save(hdir);
+                    events
+                        .AsGoodFirstJetStream()
+                        .FuturePlot(JetPtPlotJetStream, "first_pt_unweighted")
+                        .Save(hdir);
+
+                    events
+                        .AsGoodJetStream()
+                        .FuturePlot(JetPtPlotJetStream, "pt_weighted")
+                        .Save(hdir);
+                    events
+                        .AsGoodFirstJetStream()
+                        .FuturePlot(JetPtPlotJetStream, "first_jet_pt_weighted")
+                        .Save(hdir);
+                }
             }
 
             // Print out summary of numbers
