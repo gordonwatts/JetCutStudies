@@ -53,6 +53,11 @@ namespace JZPlotter
                     var hdir = outputHistograms.mkdir(sampleInfo.Item1);
 
                     events
+                        .Select(e => e.Data.eventWeight)
+                        .FuturePlot("event_weights", "Sample EventWeights", 100, 0.0, 1000.0)
+                        .Save(hdir);
+
+                    events
                         .AsGoodJetStream()
                         .FuturePlot(JetPtPlotJetStream.ResetWeight(), "pt_unweighted")
                         .Save(hdir);

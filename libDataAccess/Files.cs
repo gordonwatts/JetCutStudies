@@ -133,14 +133,14 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Return a metadata stream version of the event sequence.
+        /// Return a metadata stream version of the event sequence, with appropriate event and sample weights applied.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="xSecWeight"></param>
         /// <returns></returns>
         public static IQueryable<MetaData> GenerateStream(this IQueryable<recoTree> source, double xSecWeight)
         {
-            return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight });
+            return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight * e.eventWeight });
         }
 
 #if false
