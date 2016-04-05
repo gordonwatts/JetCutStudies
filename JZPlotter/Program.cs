@@ -54,11 +54,11 @@ namespace JZPlotter
 
                     events
                         .AsGoodJetStream()
-                        .FuturePlot(JetPtPlotJetStream, "pt_unweighted")
+                        .FuturePlot(JetPtPlotJetStream.ResetWeight(), "pt_unweighted")
                         .Save(hdir);
                     events
                         .AsGoodFirstJetStream()
-                        .FuturePlot(JetPtPlotJetStream, "first_pt_unweighted")
+                        .FuturePlot(JetPtPlotJetStream.ResetWeight(), "first_pt_unweighted")
                         .Save(hdir);
 
                     events
