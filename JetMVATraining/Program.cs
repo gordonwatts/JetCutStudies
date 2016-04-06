@@ -46,7 +46,7 @@ namespace JetMVATraining
 
             var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
                 Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
-                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
+                //Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
                 Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
             };
 
