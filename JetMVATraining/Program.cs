@@ -86,7 +86,7 @@ namespace JetMVATraining
                     .IgnoreVariables(t => t.JetEta);
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
-                    .Option("MaxDepth", "6");
+                    .Option("MaxDepth", "12");
 
                 var trainingResult = training.Train("JetMVATraining");
 
