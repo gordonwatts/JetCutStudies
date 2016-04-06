@@ -1,0 +1,48 @@
+#
+# Generate some nice(er) plots of the training results.
+#
+
+include ("common.plotlingo");
+
+#
+# All the types of plots
+#
+
+plottypes = [
+	{title => "Eff vs jet pT", xaxis => "Jet [GeV]", name => "pTefficiency"},
+	{title => "Eff vs Lxy", xaxis => "Lxy [m]", name => "Lxyefficiency"}
+];
+
+#
+# Legend info
+#
+
+#Legend("signal" => {Color => 2, Title => "Signal"});
+#Legend("background" => {Color => 1, Title => "Background"});
+
+##NormalizePlots();
+
+#
+# Plots of CalR vs pT per sample for the signal.
+#
+for (plottypes) {
+	plots = map(sample, trainingSamples) {
+	  f_training.Get("Run1/{sample}/{name}").tag(sample);
+	};
+
+	plots
+		.plot()
+		.size(1200,800)
+		.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
+		.title("{title}");
+
+#		sig = f_training.Get("signal/{name}training_signal{name_add}").normalize().minimum(0);
+#		bac = f_training.Get("background/{name}training_background{name_add}").normalize().minimum(0);
+
+#		[sig,bac]
+#			.plot()
+#			.size(1200, 800)
+#			.title("{title}{title_add}")
+#			.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
+#			.xaxis(xaxis);
+};

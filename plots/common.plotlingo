@@ -10,6 +10,11 @@ f_training = file ("JetMVATraining.root");
 
 # The samples that are hidden in the file
 samples = ["200-25", "400-100", "600-150"];
+trainingSamples = ["600pi150lt9m", "400pi100lt9m", "200pi25lt5m"];
+
+Legend("600pi150lt9m" => {Color => 1, Title => "600/150 - 9m"});
+Legend("200pi25lt5m" => {Color => 2, Title => "200/25 - 5m"});
+Legend("400pi100lt9m" => {Color => 3, Title => "400/100 - 9m"});
 
 # Some legend stuff to help out
 Legend("200-25" => {Color => 1, Title => "200-25"});
