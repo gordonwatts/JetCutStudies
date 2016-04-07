@@ -13,6 +13,10 @@ plottypes = [
 	{title => "Eff vs Lxy", xaxis => "Lxy [m]", name => "Lxyefficiency"}
 ];
 
+trainings = ["BDT", "Run1"];
+Legend("Run1" => {Color => 1, Title => "Run 1"});
+Legend("BDT" => {Color => 2, Title => "BDT"});
+
 #
 # Legend info
 #
@@ -20,21 +24,24 @@ plottypes = [
 #Legend("signal" => {Color => 2, Title => "Signal"});
 #Legend("background" => {Color => 1, Title => "Background"});
 
+
 ##NormalizePlots();
 
 #
 # Plots of CalR vs pT per sample for the signal.
 #
 for (plottypes) {
-	plots = map(sample, trainingSamples) {
-	  f_training.Get("Run1/{sample}/{name}").tag(sample);
-	};
+    for (t, trainings) {
 
-	plots
-		.plot()
-		.size(1200,800)
-		.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
-		.title("{title}");
+		plots = map(sample, trainingSamples) {
+		  f_training.Get("{t}/{sample}/{name}").tag(sample);
+		};
+
+		plots
+			.plot()
+			.size(1200,800)
+			.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
+			.title("{t} - {title}");
 
 #		sig = f_training.Get("signal/{name}training_signal{name_add}").normalize().minimum(0);
 #		bac = f_training.Get("background/{name}training_background{name_add}").normalize().minimum(0);
@@ -45,4 +52,18 @@ for (plottypes) {
 #			.title("{title}{title_add}")
 #			.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
 #			.xaxis(xaxis);
+	};
+
+	for (sample, trainingSamples) {
+		plots = map(t, trainings) {
+			f_training.Get("{t}/{sample}/{name}").tag(t);
+		};
+
+		plots
+			.plot()
+			.size(1200,800)
+			.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
+			.title("{sample} - {title}");
+		
+	};
 };
