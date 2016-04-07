@@ -99,7 +99,11 @@ namespace JetMVATraining
                 // First, get the list of cuts we are going to use. Start with the boring Run 1.
                 var cuts = new List<CutInfo>()
                 {
-                    new CutInfo() {Title="Run1", Cut = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any() },
+                    new CutInfo() {
+                        Title ="Run1",
+                        Cut = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any(),
+                        CutValue = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any() ? 1.0 : 0.0
+                    },
                 };
 
                 // Calculate the background efficiency for the standard Run 1 cut.
@@ -116,7 +120,8 @@ namespace JetMVATraining
                 var cBDT = m1.GetMVAValue();
                 cuts.Add(new CutInfo() {
                     Title = "BDT",
-                    Cut = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js)) > nncut
+                    Cut = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js)) > nncut,
+                    CutValue = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js))
                 });
 
                 // Now dump the signal efficiency for all those cuts we've built.
@@ -127,10 +132,10 @@ namespace JetMVATraining
                     {
                         var sEvents = s.Item2
                             .AsGoodJetStream();
-                        var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, sEvents);
+                        var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, c.CutValue, sEvents);
                         FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");
                     }
-                    var eff = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, signalInCalOnly);
+                    var eff = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly);
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents: {eff.Value}.");
                 }
 
@@ -158,7 +163,7 @@ namespace JetMVATraining
         /// </summary>
         /// <param name="outh"></param>
         /// <param name="cut"></param>
-        private static IFutureValue<double> GenerateEfficiencyPlots(FutureTDirectory outh, Expression<Func<JetStream, bool>> cut, IQueryable<JetStream> source)
+        private static IFutureValue<double> GenerateEfficiencyPlots(FutureTDirectory outh, Expression<Func<JetStream, bool>> cut, Expression<Func<JetStream, double>> cVal, IQueryable<JetStream> source)
         {
             // Initialize everything the plotters and lists of plots. Sadly, order is important here.
             if (JetStreamPtVsLXYPlot == null)
@@ -194,6 +199,12 @@ namespace JetMVATraining
                         .Save(outh);
                 });
 
+            // And the MVA output we cut for both (no efficiency required).
+            source
+                .Select(j => cVal.Invoke(j))
+                .FuturePlot(TrainingEventWeight, "MVAWeight")
+                .Save(outh);
+
             return eff;
         }
 
@@ -215,6 +226,11 @@ namespace JetMVATraining
             /// The actual cut
             /// </summary>
             public Expression<Func<JetStream, bool>> Cut;
+
+            /// <summary>
+            /// What is the value of the MVA or cut?
+            /// </summary>
+            public Expression<Func<JetStream, double>> CutValue;
 
             /// <summary>
             /// What we should be calling this thing
