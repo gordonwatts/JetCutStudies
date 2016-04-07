@@ -41,11 +41,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AtlasSSH, Version=2.1.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.1.8-beta3\lib\net451\AtlasSSH.dll</HintPath>
+      <HintPath>..\packages\AtlasSSH.2.1.8-beta4\lib\net451\AtlasSSH.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AtlasWorkFlows, Version=2.1.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.1.8-beta3\lib\net451\AtlasWorkFlows.dll</HintPath>
+      <HintPath>..\packages\AtlasSSH.2.1.8-beta4\lib\net451\AtlasWorkFlows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -133,7 +133,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NVelocity, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
