@@ -12,6 +12,7 @@ using LinqToTTreeInterfacesLib;
 using System.IO;
 using ROOTNET;
 using libDataAccess.Utils;
+using TMVAUtilities;
 
 namespace JetMVATraining
 {
@@ -111,7 +112,7 @@ namespace JetMVATraining
         /// <param name="passFraction"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        internal static double FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, FileInfo weightFile)
+        internal static double FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, Method<TrainingTree> m)
         {
             if (passFraction < 0 || passFraction > 1.0)
             {
@@ -120,7 +121,7 @@ namespace JetMVATraining
 
             // dump the MVA output into a large histogram that has lots of bins so we can calculate.
             var p = source
-                .MakeNNPlot(weightFile)
+                .MakeNNPlot(m)
                 .Save(dir);
 
             // Now, look through the plot, bin by bin, till we get past the total.
@@ -159,70 +160,22 @@ namespace JetMVATraining
         }
 
         /// <summary>
-        /// Calculate the MVA
-        /// </summary>
-        internal static Expression<Func<TrainingTree, FileInfo, double>> CalculateMVA = (t, weightFile) => TMVAReaderHelpers.TMVASelectorJetBDT(t.JetPt, t.CalRatio, t.JetEta, t.NTracks, t.SumPtOfAllTracks, t.MaxTrackPt, weightFile.FullName.Escape());
-
-        /// <summary>
         /// Build a nice plot of the training value
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        internal static IFutureValue<ROOTNET.NTH1F> MakeNNPlot (this IQueryable<TrainingTree> source, FileInfo weightFile)
+        internal static IFutureValue<ROOTNET.NTH1F> MakeNNPlot (this IQueryable<TrainingTree> source, Method<TrainingTree> m)
         {
             // Argument check
-            if (!weightFile.Exists)
+            if (!m.WeightFile.Exists)
             {
-                throw new ArgumentException($"File {weightFile.FullName} can't be located.");
+                throw new ArgumentException($"File {m.WeightFile.FullName} can't be located.");
             }
 
             // Generate a pretty detailed plot
+            var mvaCalc = m.GetMVAValue();
             return source
-                .FuturePlot("mva_weights", "MVA Output Weights", 1000, -1.0, 1.0, t => CalculateMVA.Invoke(t, weightFile));
-        }
-
-        private static string Escape(this string s)
-        {
-            return s.Replace("\\", "\\\\");
-        }
-    }
-
-    [CPPHelperClass]
-    public class TMVAReaderHelpers
-    {
-        [CPPCode(IncludeFiles = new[] { "tmva/Reader.h" },
-            Code = new[] {
-                "static bool initUnique = false;",
-                "static float JetPtUnique = 0.0;",
-                "static float CalRatioUnique = 0.0;",
-                "static float JetEtaUnique = 0.0;",
-                "static float nTracksUnique = 0.0;",
-                "static float SumPtOfAllTracksUnique = 0.0;",
-                "static float MaxTrackPtUnique = 0.0;",
-                "static TMVA::Reader *readerUnique = 0;",
-                "if (!initUnique) {",
-                "  initUnique = true;",
-                "  readerUnique = new TMVA::Reader();",
-                "  readerUnique->AddVariable(\"JetPt\", &JetPtUnique);",
-                "  readerUnique->AddVariable(\"CalRatio\", &CalRatioUnique);",
-                "  //readerUnique->AddVariable(\"JetEta\", &JetEtaUnique);",
-                "  readerUnique->AddVariable(\"NTracks\", &nTracksUnique);",
-                "  readerUnique->AddVariable(\"SumPtOfAllTracks\", &SumPtOfAllTracksUnique);",
-                "  readerUnique->AddVariable(\"MaxTrackPt\", &MaxTrackPtUnique);",
-                "  readerUnique->BookMVA(\"SimpleBDT\", weightName);",
-                "}",
-                "JetPtUnique = jetPTa;",
-                "CalRatioUnique = CalRatioa;",
-                "JetEtaUnique = JetEtaa;",
-                "nTracksUnique = nTracksa;",
-                "SumPtOfAllTracksUnique = SumPta;",
-                "MaxTrackPtUnique = maxTrackPta;",
-                "TMVASelectorJetBDT = readerUnique->EvaluateMVA(\"SimpleBDT\");"
-            })]
-        public static double TMVASelectorJetBDT(double jetPTa, double CalRatioa, double JetEtaa,
-            int nTracksa, double SumPta, double maxTrackPta, string weightName)
-        {
-            throw new NotImplementedException("This should never get called!");
+                .FuturePlot("mva_weights", "MVA Output Weights", 1000, -1.0, 1.0, t => mvaCalc.Invoke(t));
         }
     }
 }

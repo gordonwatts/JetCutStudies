@@ -61,6 +61,41 @@ namespace TMVAUtilities
         }
 
         /// <summary>
+        /// Build an expression that can be used in a LINQ query to evaluate this guy given the input
+        /// we are running on.
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <returns></returns>
+        internal Expression<Func<T, double>> GetMVAValue(string methodName, FileInfo weightFile)
+        {
+            // Get the list of variables we are going to need to pass in.
+
+            // The center of it all is the code statement that will run everything given a list of inputs.
+            var pnames = GetParameterAndWeightNames().Item2;
+            var code = new TMVAReaderCodeGenerator<T>(methodName, weightFile, pnames);
+
+            // We are going to build up a lambda expression that takes T as an argument and returns a
+            // double.
+            Expression<Func<T, double>> r = myT => code.MVAResultValue(1.0);
+
+            var myTArgParam = Expression.Parameter(typeof(T));
+            var args = pnames
+                .Select(p => typeof(T).GetField(p))
+                .Select(pf => Expression.Field(myTArgParam, pf))
+                .Select(fa => (fa.Type != typeof(double)) ? Expression.Convert(fa, typeof(double)) as Expression : fa);
+
+            var argTypes = pnames.Select(_ => typeof(double)).ToArray();
+            var method = code.GetType().GetMethod("MVAResultValue", argTypes);
+            var call = Expression.Call(Expression.Constant(code), method, args.ToArray());
+
+            var lambda = Expression.Lambda<Func<T, double>>(call, myTArgParam);
+
+            return lambda;
+
+            //return r;
+        }
+
+        /// <summary>
         /// Ignore the variables listed. Overrides the UseVariables call.
         /// </summary>
         /// <typeparam name="U"></typeparam>
@@ -138,25 +173,9 @@ namespace TMVAUtilities
             var oldestInput = signals.Concat(backgrounds).Select(i => i.Item2.LastWriteTime).Max();
 
             // We need an ordered list of parameters for the next step
-            var parameters_names = new List<string>();
-            string weight_name = "";
-            foreach (var field in typeof(T).GetFields().OrderBy(f => f.MetadataToken))
-            {
-                var name = field.Name;
-                if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
-                {
-                    if (!_ignore_variables.Contains(name))
-                    {
-                        if (name == "Weight")
-                        {
-                            weight_name = name;
-                        }
-                        else {
-                            parameters_names.Add(name);
-                        }
-                    }
-                }
-            }
+            var r = GetParameterAndWeightNames();
+            var weight_name = r.Item1;
+            var parameters_names = r.Item2;
 
             // Did the options change? Calc a string for the hash.
             var bldOptionsString = new StringBuilder();
@@ -241,7 +260,8 @@ namespace TMVAUtilities
 
             // This is the file where most of the basic results from the training will be written.
             var output = NTFile.Open(outputFile.FullName, "RECREATE");
-            try {
+            try
+            {
 
                 // Create the factory.
                 var f = new ROOTNET.NTMVA.NFactory($"{jobName}-{hash}".AsTS(), output, _tmva_options.AsTS());
@@ -289,10 +309,42 @@ namespace TMVAUtilities
                 }
 
                 return resultObject;
-            } finally
+            }
+            finally
             {
                 output.Close();
             }
+        }
+
+        /// <summary>
+        /// Get the list of parameter names to use from the object T's fields.
+        /// </summary>
+        /// <param name="parameters_names"></param>
+        /// <returns></returns>
+        private Tuple<string, List<string>> GetParameterAndWeightNames()
+        {
+            var parameter_names = new List<string>();
+            string weight_name = "";
+            foreach (var field in typeof(T).GetFields().OrderBy(f => f.MetadataToken))
+            {
+                var name = field.Name;
+                if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
+                {
+                    if (!_ignore_variables.Contains(name))
+                    {
+                        if (name == "Weight")
+                        {
+                            weight_name = name;
+                        }
+                        else
+                        {
+                            parameter_names.Add(name);
+                        }
+                    }
+                }
+            }
+
+            return Tuple.Create(weight_name, parameter_names);
         }
     }
 
