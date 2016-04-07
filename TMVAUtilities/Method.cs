@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ROOTNET.Interface.NTMVA;
 using ROOTNET.NTMVA;
 using static System.Tuple;
+using System.IO;
 
 namespace TMVAUtilities
 {
@@ -33,10 +34,26 @@ namespace TMVAUtilities
         }
 
         /// <summary>
+        /// Return the weight xml file
+        /// </summary>
+        public FileInfo WeightFile
+        {
+            get
+            {
+                return new FileInfo(Path.Combine(new DirectoryInfo("weights").FullName, $"{Training.JobName}_{Name}.weights.xml"));
+            }
+        }
+
+        /// <summary>
+        /// What training are we part of?
+        /// </summary>
+        public Training<T> Training { get; private set; }
+
+        /// <summary>
         /// Can only be created as part of a training, so this is hidden
         /// from everyone outside.
         /// </summary>
-        internal Method(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions)
+        internal Method(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions, Training<T> parent)
         {
             this.What = what;
             this.Name = methodTitle;
@@ -45,6 +62,8 @@ namespace TMVAUtilities
             {
                 Option(methodOptions);
             }
+
+            Training = parent;
         }
 
         private List<Tuple<string, string, string>> _parameter_options = new List<Tuple<string, string, string>>();

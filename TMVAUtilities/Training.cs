@@ -20,7 +20,9 @@ namespace TMVAUtilities
         /// Make it hard to create this object without using the Signal or Background helper.
         /// </summary>
         internal Training()
-        { }
+        {
+            JobName = "";
+        }
 
         /// <summary>
         /// Hold all info for a sample.
@@ -36,6 +38,11 @@ namespace TMVAUtilities
 
         private List<string> _ignore_variables = new List<string>();
         private List<string> _use_variables = new List<string>();
+
+        /// <summary>
+        /// Job name we ran under. To help with file names.
+        /// </summary>
+        public string JobName { get; private set; }
 
         /// <summary>
         /// List the variables to be used for the training. Only these will be used.
@@ -80,7 +87,7 @@ namespace TMVAUtilities
         }
 
         /// <summary>
-        /// Add a singal guy to the list we are looking at.
+        /// Add a signal guy to the list we are looking at.
         /// </summary>
         /// <param name="source"></param>
         public Training<T> Signal(IQueryable<T> source, string title = "")
@@ -103,7 +110,7 @@ namespace TMVAUtilities
         /// <returns></returns>
         public Method<T> AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions = "")
         {
-            var m = new Method<T>(what, methodTitle, methodOptions);
+            var m = new Method<T>(what, methodTitle, methodOptions, this);
             _methods.Add(m);
             return m;
         }
@@ -113,55 +120,18 @@ namespace TMVAUtilities
         /// </summary>
         private string _tmva_options = "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification";
 
-        public class TrainingResult
-        {
-            public DirectoryInfo OutputName;
-
-            public FileInfo TrainingOutputFile { get; set; }
-
-            public string JobName { get; internal set; }
-
-            public string[] MethodList { get; internal set; }
-
-            /// <summary>
-            /// Copy the output .root file and xml file to a common name, rather than the one with the crazy
-            /// names we are currently using.
-            /// </summary>
-            public void CopyToJobName(string name = "JetMVATraining", DirectoryInfo dir = null)
-            {
-                dir = dir == null ? new DirectoryInfo(".") : dir;
-
-                // Copy over the output training root file.
-                var outputTrainingRootInfo = Path.Combine(dir.FullName, $"{name}.training.root");
-                TrainingOutputFile.CopyTo(outputTrainingRootInfo, true);
-
-                // Next, each of the weight files
-                foreach (var m in MethodList)
-                {
-                    var originalWeightFile = GenerateWeightFileFromName(m);
-                    var finalName = Path.Combine(dir.FullName, $"{name}_{m}.weights.xml");
-                    originalWeightFile.CopyTo(finalName, true);
-                }
-            }
-
-            public FileInfo GenerateWeightFile<T>(Method<T> m)
-            {
-                return GenerateWeightFileFromName(m.Name);
-            }
-
-            private FileInfo GenerateWeightFileFromName(string name)
-            {
-                return new FileInfo(Path.Combine(OutputName.FullName, $"{JobName}_{name}.weights.xml"));
-            }
-        }
-
         /// <summary>
         /// Run the training
         /// </summary>
         /// <param name="jobName"></param>
         /// <returns></returns>
-        public TrainingResult Train(string jobName)
+        public TrainingResult<T> Train(string jobName)
         {
+            if (!string.IsNullOrWhiteSpace(JobName))
+            {
+                throw new InvalidOperationException("Can't train twice!");
+            }
+
             var signals = _signals.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
             var backgrounds = _backgrounds.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
 
@@ -224,6 +194,8 @@ namespace TMVAUtilities
             // Next, given these inputs, we can calculate the names of the output files.
             var hash = bldOptionsString.ToString().GetHashCode();
 
+            JobName = $"{jobName}-{hash}";
+
             var outputFile = new FileInfo($"{jobName}-{hash}.training.root");
             var hashFileName = outputFile.FullName.Replace(".root", ".hash.txt");
             var hashFile = new FileInfo(hashFileName);
@@ -249,18 +221,17 @@ namespace TMVAUtilities
 
             foreach (var m in _methods)
             {
-                var mtf = new FileInfo($"weights/{jobName}-{hash}_{m.Name}.weights.xml");
-                rerun = rerun || !mtf.Exists;
+                rerun = rerun || !m.WeightFile.Exists;
             }
 
             // Build the result object. If there is no need to re-run, then
             // we can ignore this.
-            var resultObject = new TrainingResult()
+            var resultObject = new TrainingResult<T>()
             {
                 OutputName = new DirectoryInfo("weights"),
                 JobName = $"{jobName}-{hash}",
                 TrainingOutputFile = outputFile,
-                MethodList = _methods.Select(m => m.Name).ToArray(),
+                MethodList = _methods.ToArray(),
             };
 
             if (!rerun)

@@ -334,6 +334,7 @@
     <Compile Include="NTStringUtils.cs" />
     <Compile Include="Training.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TrainingResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ConfigData\default.classmethodmappings">
