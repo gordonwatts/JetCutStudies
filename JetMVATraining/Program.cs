@@ -50,24 +50,22 @@ namespace JetMVATraining
                 Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
             };
 
-            var signals = signalSources
+            var signalUnfiltered = signalSources
                 .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
                 .AsGoodJetStream();
 
-            // Put the sources into a stream of jets.
-            var backgroundTrainingSample = backgrounds
-                .TakePerSource(numberOfEventsPerSource);
-
-            var signal = signals
+            // Generate a filtered version of the signal.
+            var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
             {
                 // Create the training data and flatten the pT spectra.
-                var backgroundTrainingData = backgroundTrainingSample
+                var backgroundTrainingData = backgrounds
                     .AsTrainingTree()
+                    .TakePerSource(numberOfEventsPerSource)
                     .FlattenPtSpectra(outputHistograms, "background");
-                var signalTrainingData = signal
+                var signalTrainingData = signalInCalOnly
                     .AsTrainingTree()
                     .FlattenPtSpectra(outputHistograms, "signal");
 
@@ -132,7 +130,7 @@ namespace JetMVATraining
                         var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, sEvents);
                         FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");
                     }
-                    var eff = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, signal);
+                    var eff = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, signalInCalOnly);
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents: {eff.Value}.");
                 }
 
