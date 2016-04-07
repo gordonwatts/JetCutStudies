@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,7 +68,8 @@ namespace libDataAccess
         {
             if (_samples == null)
             {
-                var f = new FileInfo("Sample Meta Data.csv");
+                var rootdir = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
+                var f = new FileInfo(Path.Combine(rootdir.FullName, "Sample Meta Data.csv"));
                 if (!f.Exists)
                 {
                     throw new FileNotFoundException($"Unable to load our sample metadata file from {f.FullName}.");
