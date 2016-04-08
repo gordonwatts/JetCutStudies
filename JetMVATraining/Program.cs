@@ -81,12 +81,13 @@ namespace JetMVATraining
                 var training = signalTrainingData
                     .AsSignal()
                     .Background(backgroundTrainingData)
-                    .IgnoreVariables(t => t.JetEta);
+                    .IgnoreVariables(t => t.JetEta, t => t.JetPt);
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
                     .Option("MaxDepth", "30")
-                    .Option("MinNodeSize", "0.05")
-                    .Option("nCuts", "40")
+                    //.Option("MinNodeSize", "0.05")
+                    //.Option("MinNodeSize", "0.1")
+                    //.Option("nCuts", "40")
                     ;
 
                 var trainingResult = training.Train("JetMVATraining");

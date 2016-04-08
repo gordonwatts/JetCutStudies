@@ -180,19 +180,19 @@ namespace TMVAUtilities
             // Did the options change? Calc a string for the hash.
             var bldOptionsString = new StringBuilder();
             bldOptionsString.Append(_tmva_options);
-            foreach (var item in _ignore_variables.Concat(_use_variables))
+            foreach (var item in _ignore_variables)
             {
-                bldOptionsString.Append(item);
+                bldOptionsString.Append($"i-{item}");
             }
             foreach (var item in _use_variables)
             {
-                bldOptionsString.Append(item);
+                bldOptionsString.Append($"u-{item}");
             }
 
             // How about the parameters?
             foreach (var p in parameters_names)
             {
-                bldOptionsString.Append(p);
+                bldOptionsString.Append($"p-{p}");
             }
             bldOptionsString.Append(weight_name);
 
