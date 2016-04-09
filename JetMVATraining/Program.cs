@@ -64,10 +64,12 @@ namespace JetMVATraining
                 var backgroundTrainingData = backgrounds
                     .AsTrainingTree()
                     .TakePerSource(numberOfEventsPerSource)
-                    .FlattenPtSpectra(outputHistograms, "background");
+                    .FlattenPtSpectra(outputHistograms, "background")
+                    ;
                 var signalTrainingData = signalInCalOnly
                     .AsTrainingTree()
-                    .FlattenPtSpectra(outputHistograms, "signal");
+                    .FlattenPtSpectra(outputHistograms, "signal")
+                    ;
 
                 // Finally, plots of all the training input variables.
                 backgroundTrainingData
@@ -84,10 +86,10 @@ namespace JetMVATraining
                     .IgnoreVariables(t => t.JetEta, t => t.JetPt);
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
-                    .Option("MaxDepth", "30")
+                    .Option("MaxDepth", "10")
                     //.Option("MinNodeSize", "0.05")
                     //.Option("MinNodeSize", "0.1")
-                    //.Option("nCuts", "40")
+                    .Option("nCuts", "200")
                     ;
 
                 var trainingResult = training.Train("JetMVATraining");
