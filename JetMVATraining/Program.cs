@@ -35,14 +35,8 @@ namespace JetMVATraining
             // Parse command line arguments
             CommandLineUtils.Parse(args);
 
-            // Get the background data sources, and figure out how many per source we want to grab.
-            var backgroundSources = CommandLineUtils.GetRequestedBackgroundSourceList();
-            var numberSources = backgroundSources.Count();
-            var numberOfEventsPerSource = NumberOfBackgroundEvents / numberSources;
-
-            var backgrounds = backgroundSources
-                .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
-                .AsGoodJetStream();
+            // Get the background and signal data trees for use (and training.
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource();
 
             var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
                 Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
@@ -54,35 +48,33 @@ namespace JetMVATraining
                 .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
                 .AsGoodJetStream();
 
-            // Generate a filtered version of the signal.
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
+            // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
             {
                 // Create the training data and flatten the pT spectra.
-                var backgroundTrainingData = backgrounds
-                    .AsTrainingTree()
-                    .TakePerSource(numberOfEventsPerSource)
+                var flatBackgroundTrainingData = backgroundTrainingTree
                     .FlattenPtSpectra(outputHistograms, "background")
                     ;
-                var signalTrainingData = signalInCalOnly
+                var flatSignalTrainingData = signalInCalOnly
                     .AsTrainingTree()
                     .FlattenPtSpectra(outputHistograms, "signal")
                     ;
 
                 // Finally, plots of all the training input variables.
-                backgroundTrainingData
+                flatBackgroundTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background");
 
-                signalTrainingData
+                flatSignalTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal");
 
                 // Now, do the training.
 
-                var training = signalTrainingData
+                var training = flatSignalTrainingData
                     .AsSignal()
-                    .Background(backgroundTrainingData)
+                    .Background(flatBackgroundTrainingData)
                     .IgnoreVariables(t => t.JetEta);
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
@@ -156,6 +148,32 @@ namespace JetMVATraining
                 Console.Out.DumpFutureLines();
             }
 
+        }
+
+        /// <summary>
+        /// Generate the training data source.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// Take the same fraction of events from each source.
+        /// </remarks>
+        private static IQueryable<TrainingTree> BuildBackgroundTrainingTreeDataSource()
+        {
+            // Get the number of events in each source.
+            var backgroundSources = CommandLineUtils.GetRequestedBackgroundSourceList();
+            var backgroundEventsWithCounts = backgroundSources
+                .Select(b => b.Item2.AsGoodJetStream().AsTrainingTree())
+                .Select(b => Tuple.Create(b.Count(), b))
+                .ToArray();
+
+            // The fraction of weight we want from each source we will take.
+            var sourceFraction = ((double)NumberOfBackgroundEvents) / backgroundEventsWithCounts.Select(e => e.Item1).Sum();
+            sourceFraction = sourceFraction > 1.0 ? 1.0 : sourceFraction;
+
+            // Build a stream of all the backgrounds, stitched together.
+            return backgroundEventsWithCounts
+                .Select(e => e.Item2.Take((int)(e.Item1 * sourceFraction)))
+                .Aggregate((IQueryable<TrainingTree>)null, (s, add) => s == null ? add : s.Concat(add));
         }
 
         /// <summary>
