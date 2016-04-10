@@ -175,7 +175,7 @@ namespace JetMVATraining
             // Generate a pretty detailed plot
             var mvaCalc = m.GetMVAValue();
             return source
-                .FuturePlot("mva_weights", "MVA Output Weights", 1000, -1.0, 1.0, t => mvaCalc.Invoke(t));
+                .FuturePlot("mva_weights", "MVA Output Weights", 1000, -1.0, 1.0, t => mvaCalc.Invoke(t), weight: t => t.Weight);
         }
     }
 }

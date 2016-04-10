@@ -83,14 +83,17 @@ namespace JetMVATraining
                 var training = signalTrainingData
                     .AsSignal()
                     .Background(backgroundTrainingData)
-                    .IgnoreVariables(t => t.JetEta, t => t.JetPt);
+                    .IgnoreVariables(t => t.JetEta);
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
-                    .Option("MaxDepth", "10")
+                    //.Option("MaxDepth", "10")
                     //.Option("MinNodeSize", "0.05")
                     //.Option("MinNodeSize", "0.1")
-                    .Option("nCuts", "200")
+                    //.Option("nCuts", "200")
                     ;
+
+                var methods = new List<Method<TrainingTree>>();
+                methods.Add(m1);
 
                 var trainingResult = training.Train("JetMVATraining");
 
@@ -109,23 +112,29 @@ namespace JetMVATraining
                     },
                 };
 
-                // Calculate the background efficiency for the standard Run 1 cut.
-                var standardBackgroundEff = backgrounds
+                // Now, for each of the trained methods, we need to do the same thing.
+                var fullBackgroundSample = Files.GetAllJetSamples()
+                    .AsGoodJetStream();
+                var standardBackgroundEff = fullBackgroundSample
                     .CalcualteEfficiency(cuts[0].Cut, js => js.Weight);
-                FutureWriteLine(() => $"The background efficiency: {standardBackgroundEff.Value}");
+                FutureWriteLine(() => $"The background efficiency for Run 1 cuts: {standardBackgroundEff.Value}");
+                foreach (var m in methods)
+                {
+                    // Calculate where we have to place the cut in order to get the same over-all background efficiency.
+                    var nncut = fullBackgroundSample
+                        .AsTrainingTree()
+                        .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), m);
+                    FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is {m.Name} > {nncut}.");
 
-                // Next, calculate the cut for the MVA with that background efficiency
-                var nncut = backgrounds
-                    .AsTrainingTree()
-                    .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), m1);
-                FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is MVA > {nncut}.");
-
-                var cBDT = m1.GetMVAValue();
-                cuts.Add(new CutInfo() {
-                    Title = "BDT",
-                    Cut = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js)) > nncut,
-                    CutValue = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js))
-                });
+                    // Now build a new cut object and add it into the cut list.
+                    var cBDT = m1.GetMVAValue();
+                    cuts.Add(new CutInfo()
+                    {
+                        Title = m.Name,
+                        Cut = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js)) > nncut,
+                        CutValue = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js))
+                    });
+                }
 
                 // Now dump the signal efficiency for all those cuts we've built.
                 foreach (var c in cuts)
@@ -134,7 +143,8 @@ namespace JetMVATraining
                     foreach (var s in signalSources)
                     {
                         var sEvents = s.Item2
-                            .AsGoodJetStream();
+                            .AsGoodJetStream()
+                            .FilterLLPNear();
                         var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, c.CutValue, sEvents);
                         FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");
                     }
@@ -204,8 +214,8 @@ namespace JetMVATraining
 
             // And the MVA output we cut for both (no efficiency required).
             source
-                .Select(j => cVal.Invoke(j))
-                .FuturePlot(TrainingEventWeight, "MVAWeight")
+                .Select(j => Tuple.Create(cVal.Invoke(j), j.Weight))
+                .FuturePlot(TrainingEventWeight.NameFormat, TrainingEventWeight.TitleFormat, TrainingEventWeight, "ForJetsWithLLPNear")
                 .Save(outh);
 
             return eff;

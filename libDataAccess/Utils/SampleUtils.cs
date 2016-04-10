@@ -61,5 +61,16 @@ namespace libDataAccess.Utils
                 .Where(j => j.JetInfo.Jet.LLP.IsGoodIndex())
                 .Where(j => j.JetInfo.Jet.LLP.Lxy > InnerDistanceForSignalLLPDecay);
         }
+
+        /// <summary>
+        /// Only jets with a LLP near by.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<JetStream> FilterLLPNear(this IQueryable<JetStream> source)
+        {
+            return source
+                .Where(j => j.JetInfo.Jet.LLP.IsGoodIndex());
+        }
     }
 }

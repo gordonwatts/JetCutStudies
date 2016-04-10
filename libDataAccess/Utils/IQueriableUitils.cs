@@ -15,7 +15,7 @@ namespace libDataAccess.Utils
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="cut"></param>
-        /// <param name="weight"></param>
+        /// <param name="weight">The weight of each even is what is summed during the calculation</param>
         /// <param name="source"></param>
         /// <returns></returns>
         public static IFutureValue<double> CalcualteEfficiency<T>(this IQueryable<T> source, Expression<Func<T, bool>> cut, Expression<Func<T, double>> weight)
