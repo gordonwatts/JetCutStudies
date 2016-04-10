@@ -23,7 +23,7 @@ namespace JetMVATraining
         /// <summary>
         /// Total number of background events to use. It will be split equally amongst all JZ samples.
         /// </summary>
-        const int NumberOfBackgroundEvents = 250000;
+        const int NumberOfBackgroundEvents = 500000;
 
         /// <summary>
         /// Run the training for the MVA. This is run in a library,
@@ -81,7 +81,7 @@ namespace JetMVATraining
                     //.Option("MaxDepth", "10")
                     //.Option("MinNodeSize", "0.05")
                     //.Option("MinNodeSize", "0.1")
-                    //.Option("nCuts", "200")
+                    .Option("nCuts", "200")
                     ;
 
                 var methods = new List<Method<TrainingTree>>();
