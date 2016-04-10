@@ -47,6 +47,16 @@ namespace TMVAUtilities
         /// <returns></returns>
         public IEnumerable<string> LinesOfCode(string methodName)
         {
+            // Include comments for the name of the file and its creation date. This will make sure that
+            // even if nothing else changes, we will force a code update when the training re-runs.
+            // (filename appears in the code, so we don't have to, but if you are looking at it, it is nice,
+            // date, however is necessary).
+            yield return $"// Training Weights File: {_weightFile.Name}";
+            var lastWriteTime = _weightFile.LastWriteTime;
+            yield return $"//   -> Modification Date      : {lastWriteTime.ToLongDateString()} {lastWriteTime.ToLongTimeString()}";
+            lastWriteTime = _weightFile.LastWriteTime.ToUniversalTime();
+            yield return $"//   -> Modification Date (UTC): {lastWriteTime.ToLongDateString()} {lastWriteTime.ToLongTimeString()}";
+
             // Static declare variables we will past to the reader.
             // This allows the nice address way of loading the reader.
             foreach (var v in _variables)
