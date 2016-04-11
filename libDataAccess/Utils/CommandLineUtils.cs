@@ -32,6 +32,9 @@ namespace libDataAccess.Utils
 
             [Option("UseBackgroundJZ4", Default = false, SetName = "backgroundsamples")]
             public bool BackgroundJZ4 { get; set; }
+
+            [Option("BDTMaxDepth", Default = 3)]
+            public int BDTMaxDepth { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -105,6 +108,11 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
+        /// The max depth for BDT training
+        /// </summary>
+        public static int MaxBDTDepth = 3;
+
+        /// <summary>
         /// Parse the command line arguments, and deal with their execution.
         /// </summary>
         /// <param name="args"></param>
@@ -120,6 +128,7 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
                     if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
+                    MaxBDTDepth = options.BDTMaxDepth;
                     return 0;
                 },
                 errors => {
