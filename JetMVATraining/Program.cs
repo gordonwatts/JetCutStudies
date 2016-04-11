@@ -79,8 +79,7 @@ namespace JetMVATraining
 
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
                     .Option("MaxDepth", CommandLineUtils.MaxBDTDepth.ToString())
-                    //.Option("MinNodeSize", "0.05")
-                    //.Option("MinNodeSize", "0.1")
+                    .Option("MinNodeSize", CommandLineUtils.BDTLeafMinFraction.ToString())
                     .Option("nCuts", "200")
                     ;
 

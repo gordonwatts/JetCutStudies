@@ -35,6 +35,9 @@ namespace libDataAccess.Utils
 
             [Option("BDTMaxDepth", Default = 3)]
             public int BDTMaxDepth { get; set; }
+
+            [Option("BDTLeafMinFraction", Default = 5)]
+            public double BDTLeafMinFraction { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -113,6 +116,11 @@ namespace libDataAccess.Utils
         public static int MaxBDTDepth = 3;
 
         /// <summary>
+        /// Min fraction of total evens that can be put into each leaf. It is a percentage.
+        /// </summary>
+        public static double BDTLeafMinFraction = 5;
+
+        /// <summary>
         /// Parse the command line arguments, and deal with their execution.
         /// </summary>
         /// <param name="args"></param>
@@ -129,6 +137,7 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
                     MaxBDTDepth = options.BDTMaxDepth;
+                    BDTLeafMinFraction = options.BDTLeafMinFraction;
                     return 0;
                 },
                 errors => {
