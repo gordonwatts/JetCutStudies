@@ -38,6 +38,9 @@ namespace libDataAccess.Utils
 
             [Option("BDTLeafMinFraction", Default = 5)]
             public double BDTLeafMinFraction { get; set; }
+
+            [Option("VariableTransform", Default = "")]
+            public string VariableTransform { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -120,6 +123,8 @@ namespace libDataAccess.Utils
         /// </summary>
         public static double BDTLeafMinFraction = 5;
 
+        public static string TrainingVariableTransform = "";
+
         /// <summary>
         /// Parse the command line arguments, and deal with their execution.
         /// </summary>
@@ -138,6 +143,7 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
                     MaxBDTDepth = options.BDTMaxDepth;
                     BDTLeafMinFraction = options.BDTLeafMinFraction;
+                    TrainingVariableTransform = options.VariableTransform;
                     return 0;
                 },
                 errors => {
