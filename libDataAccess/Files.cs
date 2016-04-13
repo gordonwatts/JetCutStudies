@@ -97,9 +97,9 @@ namespace libDataAccess
             {
                 var sampleInfo = SampleMetaData.LoadFromCSV(sample);
                 xSectionWeight = sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count();
-                Console.WriteLine($"Sample: {sample}");
-                Console.WriteLine($"  Total Weight: {xSectionWeight}");
-                Console.WriteLine($"  Number raw events: {backgroundEvents.Count()}");
+                //Console.WriteLine($"Sample: {sample}");
+                //Console.WriteLine($"  Total Weight: {xSectionWeight}");
+                //Console.WriteLine($"  Number raw events: {backgroundEvents.Count()}");
             } catch (Exception e)
             {
                 Console.WriteLine($"WARNING: Sample '{sample}' not found in x-section list. Assuming a cross section weight of 1.");
