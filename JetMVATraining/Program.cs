@@ -72,15 +72,22 @@ namespace JetMVATraining
                     .Background(flatBackgroundTrainingData)
                     .IgnoreVariables(t => t.JetEta);
 
+                // Build options (like what we might like to transform.
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
                     .Option("MaxDepth", CommandLineUtils.MaxBDTDepth.ToString())
                     .Option("MinNodeSize", CommandLineUtils.BDTLeafMinFraction.ToString())
                     .Option("nCuts", "200")
                     ;
 
+                if (!string.IsNullOrWhiteSpace(CommandLineUtils.TrainingVariableTransform))
+                {
+                    m1.Option("VarTransform", CommandLineUtils.TrainingVariableTransform);
+                }
+
                 var methods = new List<Method<TrainingTree>>();
                 methods.Add(m1);
 
+                // Do the training
                 var trainingResult = training.Train("JetMVATraining");
 
                 // Copy to a common filename. We do this only because it makes

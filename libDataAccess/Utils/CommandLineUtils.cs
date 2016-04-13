@@ -41,6 +41,9 @@ namespace libDataAccess.Utils
 
             [Option("TrainingEvents", Default = 500000)]
             public int EventsToUseForTrainingAndTesting { get; set; }
+
+            [Option("VariableTransform", Default = "")]
+            public string VariableTransform { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -123,6 +126,8 @@ namespace libDataAccess.Utils
         /// </summary>
         public static double BDTLeafMinFraction = 5;
 
+        public static string TrainingVariableTransform = "";
+
         /// <summary>
         /// How many events to use for training/testing.
         /// </summary>
@@ -146,6 +151,7 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
                     MaxBDTDepth = options.BDTMaxDepth;
                     BDTLeafMinFraction = options.BDTLeafMinFraction;
+                    TrainingVariableTransform = options.VariableTransform;
                     TrainingEvents = options.EventsToUseForTrainingAndTesting;
                     return 0;
                 },
