@@ -7,6 +7,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using static System.Math;
 using static LINQToTreeHelpers.ROOTUtils;
+using libDataAccess;
+using System.Collections.Generic;
 
 namespace LLPInvestigations
 {
@@ -14,29 +16,29 @@ namespace LLPInvestigations
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Finding the files");
 
-#if false
-            var llp125_15 = Files.Get125pi15();
-            var llp125_40 = Files.Get125pi40();
-            var llp600_100 = Files.Get600pi100();
+            var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
+                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
+                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
+                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
+            };
 
             using (var outputHistograms = new FutureTFile("LLPInvestigations.root"))
             {
-                // How often does a LLP get shared?
-
-                ProcessSample(llp125_15, outputHistograms.mkdir("125-15"));
-                ProcessSample(llp125_40, outputHistograms.mkdir("125-40"));
-                ProcessSample(llp600_100, outputHistograms.mkdir("600-100"));
+                foreach (var s in signalSources)
+                {
+                    Console.WriteLine(s.Item1);
+                    ProcessSample(s.Item2, outputHistograms.mkdir(s.Item1));
+                }
             }
-#endif
         }
 
-        private static void ProcessSample(QueriableTTree<DiVertAnalysis.recoTree> llp, FutureTDirectory dir)
+        private static void ProcessSample(IQueryable<Files.MetaData> llp, FutureTDirectory dir)
         {
+            // Look at the number of times sharing occurs (should never happen)
             var sharedJets = from ev in llp
-                             from j1 in ev.Jets
-                             from j2 in ev.Jets
+                             from j1 in ev.Data.Jets
+                             from j2 in ev.Data.Jets
                              where j1.LLP.IsGoodIndex() && j2.LLP.IsGoodIndex()
                              where j1 != j2
                              where j1.LLP == j2.LLP
@@ -46,8 +48,8 @@ namespace LLPInvestigations
 
             // Calc how close things are for the LLP's
             var sharedLLPs = from ev in llp
-                             let l1 = ev.LLPs.First()
-                             let l2 = ev.LLPs.Skip(1).First()
+                             let l1 = ev.Data.LLPs.First()
+                             let l2 = ev.Data.LLPs.Skip(1).First()
                              select Tuple.Create(l1, l2);
 
             sharedLLPs
@@ -64,8 +66,8 @@ namespace LLPInvestigations
             Expression<Func<recoTreeJets, recoTreeLLPs, double>> DR2 = (l, j) => DeltaR2(l.eta, l.phi, j.eta, j.phi);
             double openingAngle = 0.4;
             var llpsCloseToJets = from ev in llp
-                                  select from j in ev.Jets
-                                         select from lp in ev.LLPs
+                                  select from j in ev.Data.Jets
+                                         select from lp in ev.Data.LLPs
                                                 let dr = DR2.Invoke(j, lp)
                                                 let dphi = Abs(DeltaPhi(j.phi, lp.phi))
                                                 select Tuple.Create(j, lp, dr, dphi);
@@ -122,17 +124,53 @@ namespace LLPInvestigations
                     60, -0.5, 0.5, jet => jet.Item1.eta - jet.Item2.eta)
                 .Save(dir);
 
-            llpsCloseToJets
-                .SelectMany(jets => jets)
-                .Select(jets => jets.OrderByDescending(j => j.Item4).First())
-                .FuturePlot("maxDPhiVsDRZoom", "Max DPhi between each jet and all LLPs in event vs DR; Delta Phi; Delta R",
-                    60, 0, 0.4, jet => jet.Item4,
-                    60, -0.5, 0.5, jet => Sqrt(jet.Item3))
+            var matchedLLPs = from ev in llp
+                              where ev.Data.Jets.Count() >= 2
+                              select from lp in ev.Data.LLPs
+                                     let closeJet = (from j in ev.Data.Jets
+                                                     let dr = DR2.Invoke(j, lp)
+                                                     //where dr < 0.4*0.4
+                                                     orderby dr ascending
+                                                     select j).FirstOrDefault()
+                                     where closeJet != null
+                                     select Tuple.Create(lp, closeJet);
+
+            var eventsWithTwoMatchedJets = matchedLLPs
+                .Where(linfo => linfo.Count() == 2)
+                .Where(linfo => linfo.First().Item2 == linfo.Skip(1).First().Item2)
+                .FutureCount();
+
+            matchedLLPs
+                .SelectMany(linfo => linfo)
+                .FuturePlot("DRLLPJet", "The DR between jet and LLP; DR", 100, 0.0, 1.6, linfo => DR2.Invoke(linfo.Item2, linfo.Item1))
                 .Save(dir);
 
+            matchedLLPs
+                .SelectMany(linfo => linfo)
+                .Where(linfo => linfo.Item1.Lxy > 2000.0)
+                .FuturePlot("DRLLPJetInCal", "The DR between jet and LLP for Lxy > 2.0 m; DR", 100, 0.0, 1.6, linfo => DR2.Invoke(linfo.Item2, linfo.Item1))
+                .Save(dir);
+
+
+            matchedLLPs
+                .SelectMany(linfo => linfo)
+                .FuturePlot("DRvsCalRLLPJet", "The DR between jet and LLP; DR(jet,llp) ; CalRatio",
+                    100, 0.0, 1.6, linfo => DR2.Invoke(linfo.Item2, linfo.Item1),
+                    100, -2.0, 3.0, linfo => linfo.Item2.logRatio)
+                .Save(dir);
+
+            matchedLLPs
+                .SelectMany(linfo => linfo)
+                .Where(linfo => linfo.Item1.Lxy > 2000.0)
+                .FuturePlot("DRvsCalRLLPJetInCal", "The DR between jet and LLP for Lxy > 2.0 m; DR(jet,llp) ; CalRatio",
+                    100, 0.0, 1.6, linfo => DR2.Invoke(linfo.Item2, linfo.Item1),
+                    100, -2.0, 3.0, linfo => linfo.Item2.logRatio)
+                .Save(dir);
+
+#if false
             var jetsCloseToLLPs = from ev in llp
-                                  select from lp in ev.LLPs
-                                         select from j in ev.Jets
+                                  select from lp in ev.Data.LLPs
+                                         select from j in ev.Data.Jets
                                                 let dr = DR2.Invoke(j, lp)
                                                 select Tuple.Create(j, lp, dr);
 
@@ -142,8 +180,18 @@ namespace LLPInvestigations
                     60, 0.0, 3.0, jets => Sqrt(jets.Max(v => v.Item3)))
                 .Save(dir);
 
+            llpsCloseToJets
+                .SelectMany(jets => jets)
+                .Select(jets => jets.OrderByDescending(j => j.Item4).First())
+                .FuturePlot("maxDPhiVsDRZoom", "Max DPhi between each jet and all LLPs in event vs DR; Delta Phi; Delta R",
+                    60, 0, 0.4, jet => jet.Item4,
+                    60, -0.5, 0.5, jet => Sqrt(jet.Item3))
+                .Save(dir);
+
+#endif
             // Dump some results
-            Console.WriteLine($"Number of jets that share an LLP: {count.Value}");
+            Console.WriteLine($"  Number of jets that share an LLP: {count.Value}");
+            Console.WriteLine($"  Number of events where two LLPs are closest to one jet: {eventsWithTwoMatchedJets.Value}");
         }
     }
 }
