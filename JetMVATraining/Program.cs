@@ -21,11 +21,6 @@ namespace JetMVATraining
     class Program
     {
         /// <summary>
-        /// Total number of background events to use. It will be split equally amongst all JZ samples.
-        /// </summary>
-        const int NumberOfBackgroundEvents = 500000;
-
-        /// <summary>
         /// Run the training for the MVA. This is run in a library,
         /// so basically behind-this-guys-back. But it provides an easy single item to run.
         /// </summary>
@@ -166,7 +161,7 @@ namespace JetMVATraining
                 .ToArray();
 
             // The fraction of weight we want from each source we will take.
-            var sourceFraction = ((double)NumberOfBackgroundEvents) / backgroundEventsWithCounts.Select(e => e.Item1).Sum();
+            var sourceFraction = ((double)CommandLineUtils.TrainingEvents) / backgroundEventsWithCounts.Select(e => e.Item1).Sum();
             sourceFraction = sourceFraction > 1.0 ? 1.0 : sourceFraction;
 
             // Build a stream of all the backgrounds, stitched together.

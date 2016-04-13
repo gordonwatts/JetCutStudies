@@ -38,6 +38,9 @@ namespace libDataAccess.Utils
 
             [Option("BDTLeafMinFraction", Default = 5)]
             public double BDTLeafMinFraction { get; set; }
+
+            [Option("TrainingEvents", Default = 500000)]
+            public int EventsToUseForTrainingAndTesting { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -121,6 +124,11 @@ namespace libDataAccess.Utils
         public static double BDTLeafMinFraction = 5;
 
         /// <summary>
+        /// How many events to use for training/testing.
+        /// </summary>
+        public static int TrainingEvents = 500000;
+
+        /// <summary>
         /// Parse the command line arguments, and deal with their execution.
         /// </summary>
         /// <param name="args"></param>
@@ -138,6 +146,7 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
                     MaxBDTDepth = options.BDTMaxDepth;
                     BDTLeafMinFraction = options.BDTLeafMinFraction;
+                    TrainingEvents = options.EventsToUseForTrainingAndTesting;
                     return 0;
                 },
                 errors => {
