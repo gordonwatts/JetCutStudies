@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plots", "Plots", "{B5DE55FA-3DC6-4A07-8472-E11AC38825A6}"
 EndProject
@@ -28,52 +28,36 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JZPlotter", "JZPlotter\JZPl
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
-		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Debug|x86.ActiveCfg = Debug|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Debug|x86.Build.0 = Debug|x86
-		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Release|Any CPU.ActiveCfg = Release|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Release|x86.ActiveCfg = Release|x86
 		{5D22D284-363D-4349-8A3F-FE78AD95E5B9}.Release|x86.Build.0 = Release|x86
-		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Debug|x86.ActiveCfg = Debug|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Debug|x86.Build.0 = Debug|x86
-		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Release|Any CPU.ActiveCfg = Release|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Release|x86.ActiveCfg = Release|x86
 		{8694CC04-FBE1-4A4A-88D2-910D02941248}.Release|x86.Build.0 = Release|x86
-		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Debug|x86.ActiveCfg = Debug|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Debug|x86.Build.0 = Debug|x86
-		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Release|Any CPU.ActiveCfg = Release|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Release|x86.ActiveCfg = Release|x86
 		{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}.Release|x86.Build.0 = Release|x86
-		{4CFA3572-3E9B-42D7-B60C-28829CCF7C11}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{4CFA3572-3E9B-42D7-B60C-28829CCF7C11}.Debug|x86.ActiveCfg = Debug|x86
 		{4CFA3572-3E9B-42D7-B60C-28829CCF7C11}.Debug|x86.Build.0 = Debug|x86
-		{4CFA3572-3E9B-42D7-B60C-28829CCF7C11}.Release|Any CPU.ActiveCfg = Release|x86
 		{4CFA3572-3E9B-42D7-B60C-28829CCF7C11}.Release|x86.ActiveCfg = Release|x86
 		{4CFA3572-3E9B-42D7-B60C-28829CCF7C11}.Release|x86.Build.0 = Release|x86
-		{C6BDE3ED-5F55-4A35-BBC6-43B299017669}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{C6BDE3ED-5F55-4A35-BBC6-43B299017669}.Debug|x86.ActiveCfg = Debug|x86
 		{C6BDE3ED-5F55-4A35-BBC6-43B299017669}.Debug|x86.Build.0 = Debug|x86
-		{C6BDE3ED-5F55-4A35-BBC6-43B299017669}.Release|Any CPU.ActiveCfg = Release|x86
 		{C6BDE3ED-5F55-4A35-BBC6-43B299017669}.Release|x86.ActiveCfg = Release|x86
 		{C6BDE3ED-5F55-4A35-BBC6-43B299017669}.Release|x86.Build.0 = Release|x86
-		{4DF5FD79-B53D-42AF-BF7D-2906C95A02E7}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{4DF5FD79-B53D-42AF-BF7D-2906C95A02E7}.Debug|x86.ActiveCfg = Debug|x86
 		{4DF5FD79-B53D-42AF-BF7D-2906C95A02E7}.Debug|x86.Build.0 = Debug|x86
-		{4DF5FD79-B53D-42AF-BF7D-2906C95A02E7}.Release|Any CPU.ActiveCfg = Release|x86
 		{4DF5FD79-B53D-42AF-BF7D-2906C95A02E7}.Release|x86.ActiveCfg = Release|x86
 		{4DF5FD79-B53D-42AF-BF7D-2906C95A02E7}.Release|x86.Build.0 = Release|x86
-		{4A4C00E0-0DEF-4792-BCE2-03DA36D998C4}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{4A4C00E0-0DEF-4792-BCE2-03DA36D998C4}.Debug|x86.ActiveCfg = Debug|x86
 		{4A4C00E0-0DEF-4792-BCE2-03DA36D998C4}.Debug|x86.Build.0 = Debug|x86
-		{4A4C00E0-0DEF-4792-BCE2-03DA36D998C4}.Release|Any CPU.ActiveCfg = Release|x86
 		{4A4C00E0-0DEF-4792-BCE2-03DA36D998C4}.Release|x86.ActiveCfg = Release|x86
 		{4A4C00E0-0DEF-4792-BCE2-03DA36D998C4}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
