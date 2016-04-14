@@ -156,6 +156,30 @@ namespace TMVAUtilities
         private string _tmva_options = "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification";
 
         /// <summary>
+        /// Dump to a text file some code on how this should be run.
+        /// </summary>
+        /// <param name="outf"></param>
+        /// <param name="name"></param>
+        /// <param name="weightFile"></param>
+        internal void DumpUsageInfo(StreamWriter outf, string name, FileInfo weightFile)
+        {
+            // First a simple listing of the input variables.
+            var p = GetParameterAndWeightNames();
+            outf.WriteLine("Input Variable Summary");
+            outf.WriteLine("======================");
+            foreach (var v in p.Item2.Zip(Enumerable.Range(0, p.Item2.Count), (vname, index) => Tuple.Create(index, vname)))
+            {
+                outf.WriteLine($"  {v.Item1}: {v.Item2}");
+            }
+
+            // Now show how to call and "init" the TMVAReader
+            outf.WriteLine();
+            outf.WriteLine("Calling TMVAReader");
+            outf.WriteLine("======================");
+
+        }
+
+        /// <summary>
         /// Run the training
         /// </summary>
         /// <param name="jobName"></param>

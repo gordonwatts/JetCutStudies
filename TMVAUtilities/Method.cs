@@ -159,5 +159,15 @@ namespace TMVAUtilities
 
             return b.ToString();
         }
+
+        /// <summary>
+        /// Dump usage information. This includes things like what the input variables are, etc., and
+        /// a sample call to the TMVAReader code.
+        /// </summary>
+        /// <param name="outf"></param>
+        public void DumpUsageInfo(StreamWriter outf)
+        {
+            Training.DumpUsageInfo(outf, Name, WeightFile);
+        }
     }
 }

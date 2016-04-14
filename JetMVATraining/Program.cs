@@ -15,6 +15,7 @@ using static libDataAccess.Utils.SampleUtils;
 using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Utils.FutureConsole;
 using static LINQToTreeHelpers.PlottingUtils;
+using System.IO;
 
 namespace JetMVATraining
 {
@@ -127,6 +128,20 @@ namespace JetMVATraining
                         Cut = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js)) > nncut,
                         CutValue = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js))
                     });
+
+                    // And write out a text file that contains the information needed to use this cut.
+                    var outf = File.CreateText($"{trainingResult.JobName}-{m.Name}-Info.txt");
+                    try
+                    {
+                        outf.WriteLine($"Using the MVA '{m.Name}' trained in job '{trainingResult.JobName}'");
+                        outf.WriteLine();
+                        outf.WriteLine($"TMVAReader Weight File: {m.WeightFile.Name}");
+                        outf.WriteLine();
+                        m.DumpUsageInfo(outf);
+                    } finally
+                    {
+                        outf.Close();
+                    }
                 }
 
                 // Now dump the signal efficiency for all those cuts we've built.
