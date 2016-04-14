@@ -68,8 +68,6 @@ namespace TMVAUtilities
         /// <returns></returns>
         internal Expression<Func<T, double>> GetMVAValue(string methodName, FileInfo weightFile)
         {
-            // Get the list of variables we are going to need to pass in.
-
             // The center of it all is the code statement that will run everything given a list of inputs.
             var pnames = GetParameterAndWeightNames().Item2;
             var code = new TMVAReaderCodeGenerator<T>(methodName, weightFile, pnames);
@@ -176,7 +174,21 @@ namespace TMVAUtilities
             outf.WriteLine();
             outf.WriteLine("Calling TMVAReader");
             outf.WriteLine("======================");
+            outf.WriteLine("Replace v1-v5 with the appropriate values, and the path to the filename as needed.");
+            var code = new TMVAReaderCodeGenerator<T>(name, weightFile, p.Item2);
+            foreach (var i in (code.IncludeFiles() == null) ? Enumerable.Empty<string>() : code.IncludeFiles())
+            {
+                outf.WriteLine($"#include \"{i}\"");
+            }
 
+            foreach (var l in code.LinesOfCode(name))
+            {
+                outf.WriteLine($"  {l}");
+            }
+
+            // Next we have to write out how the variables were prepared. Lets do the background, as that is likely to
+            // be most what the data preparation is going to look like.
+            var b = _backgrounds.First();
         }
 
         /// <summary>
