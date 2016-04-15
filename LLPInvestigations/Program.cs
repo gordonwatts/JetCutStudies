@@ -9,6 +9,7 @@ using static System.Math;
 using static LINQToTreeHelpers.ROOTUtils;
 using libDataAccess;
 using System.Collections.Generic;
+using libDataAccess.Utils;
 
 namespace LLPInvestigations
 {
@@ -16,6 +17,7 @@ namespace LLPInvestigations
     {
         static void Main(string[] args)
         {
+            CommandLineUtils.Parse(args);
 
             var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
                 Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
