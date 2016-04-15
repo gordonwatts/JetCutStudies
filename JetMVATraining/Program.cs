@@ -146,12 +146,13 @@ namespace JetMVATraining
                     });
 
                     // And write out a text file that contains the information needed to use this cut.
-                    var outf = File.CreateText($"{jobName}-{m.Name}-Info.txt");
+                    var outf = File.CreateText($"{jobName}_{m.Name}-Info.txt");
                     try
                     {
                         outf.WriteLine($"Using the MVA '{m.Name}' trained in job '{trainingResult.JobName}'");
                         outf.WriteLine();
-                        outf.WriteLine($"TMVAReader Weight File: {m.WeightFile.Name}");
+                        outf.WriteLine($"TMVAReader Weight File: {jobName}_{m.Name}.weights.xml");
+                        outf.WriteLine($"  MVAResultValue > {nncut} gives a total background fraction of {standardBackgroundEff.Value}");
                         outf.WriteLine();
                         m.DumpUsageInfo(outf);
                     } finally
