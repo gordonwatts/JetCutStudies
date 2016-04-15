@@ -1,4 +1,5 @@
-﻿using LINQToTTreeLib.Files;
+﻿using LINQToTTreeLib;
+using LINQToTTreeLib.Files;
 using ROOTNET;
 using System;
 using System.Collections.Generic;
@@ -89,8 +90,6 @@ namespace TMVAUtilities
             var lambda = Expression.Lambda<Func<T, double>>(call, myTArgParam);
 
             return lambda;
-
-            //return r;
         }
 
         /// <summary>
@@ -154,12 +153,22 @@ namespace TMVAUtilities
         private string _tmva_options = "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification";
 
         /// <summary>
+        /// Return a list of used variable names
+        /// </summary>
+        /// <returns></returns>
+        public string[] UsedVariables()
+        {
+            var p = GetParameterAndWeightNames();
+            return p.Item2.ToArray();
+        }
+
+        /// <summary>
         /// Dump to a text file some code on how this should be run.
         /// </summary>
         /// <param name="outf"></param>
         /// <param name="name"></param>
         /// <param name="weightFile"></param>
-        internal void DumpUsageInfo(StreamWriter outf, string name, FileInfo weightFile)
+        internal void DumpUsageInfo(StreamWriter outf, Method<T> method, FileInfo weightFile, ROOTNET.Interface.NTMVA.NTypes.EMVA what)
         {
             // First a simple listing of the input variables.
             var p = GetParameterAndWeightNames();
@@ -175,20 +184,66 @@ namespace TMVAUtilities
             outf.WriteLine("Calling TMVAReader");
             outf.WriteLine("======================");
             outf.WriteLine("Replace v1-v5 with the appropriate values, and the path to the filename as needed.");
-            var code = new TMVAReaderCodeGenerator<T>(name, weightFile, p.Item2);
+            var code = new TMVAReaderCodeGenerator<T>(method.Name, weightFile, p.Item2);
             foreach (var i in (code.IncludeFiles() == null) ? Enumerable.Empty<string>() : code.IncludeFiles())
             {
                 outf.WriteLine($"#include \"{i}\"");
             }
 
-            foreach (var l in code.LinesOfCode(name))
+            foreach (var l in code.LinesOfCode(method.Name))
             {
                 outf.WriteLine($"  {l}");
             }
 
             // Next we have to write out how the variables were prepared. Lets do the background, as that is likely to
             // be most what the data preparation is going to look like.
+            outf.WriteLine();
+            outf.WriteLine("How the variables are calculated");
+            outf.WriteLine("======================");
             var b = _backgrounds.First();
+
+            foreach (var pname in p.Item2)
+            {
+                var tParam = Expression.Parameter(typeof(T));
+                var access = Expression.Field(tParam, pname);
+
+                string pp = null;
+                if (access.Type == typeof(int))
+                {
+                    var lambda = Expression.Lambda<Func<T, int>>(access, tParam);
+                    var selector = b._sample.Select(lambda);
+                    pp = selector.PrettyPrintQuery();
+                } else if (access.Type == typeof(double))
+                {
+                    var lambda = Expression.Lambda<Func<T, double>>(access, tParam);
+                    var selector = b._sample.Select(lambda);
+                    pp = selector.PrettyPrintQuery();
+                } else
+                {
+                    throw new InvalidOperationException($"Do not know how to generate an expression for type {access.Type.Name}");
+                }
+                outf.WriteLine($"{pname} = {pp}");
+                outf.WriteLine();
+            }
+
+            // Parameters and etc for all of this.
+            outf.WriteLine();
+            outf.WriteLine("General Information About Training");
+            outf.WriteLine("======================");
+            outf.WriteLine($"Global TMVA parameters: {_tmva_options}");
+            outf.WriteLine($"Method {what.ToString()} with parameters '{method.BuildArgumentList(p.Item2)}'");
+            var allBackground = _backgrounds.Select(ms => ms._sample.Count()).Sum();
+            outf.WriteLine($"Total background events: {allBackground}");
+            foreach(var s in _backgrounds.Zip(Enumerable.Range(1,_backgrounds.Count), (bs, c) => Tuple.Create(bs,c)))
+            {
+                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events");
+            }
+            var allSignal = _signals.Select(ms => ms._sample.Count()).Sum();
+            outf.WriteLine($"Total signal events: {allSignal}");
+            foreach (var s in _signals.Zip(Enumerable.Range(1, _signals.Count), (bs, c) => Tuple.Create(bs, c)))
+            {
+                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events");
+            }
         }
 
         /// <summary>

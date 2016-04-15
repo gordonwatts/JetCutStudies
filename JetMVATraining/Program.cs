@@ -16,6 +16,7 @@ using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Utils.FutureConsole;
 using static LINQToTreeHelpers.PlottingUtils;
 using System.IO;
+using System.Text;
 
 namespace JetMVATraining
 {
@@ -91,9 +92,24 @@ namespace JetMVATraining
                 // Do the training
                 var trainingResult = training.Train("JetMVATraining");
 
+                // Build a job name.
+                var jobNameBuilder = new StringBuilder();
+                jobNameBuilder.Append($"Jet.MVATraining-");
+                bool first = true;
+                foreach (var v in training.UsedVariables())
+                {
+                    if (!first)
+                    {
+                        jobNameBuilder.Append(".");
+                    }
+                    first = false;
+                    jobNameBuilder.Append(v);
+                }
+                var jobName = jobNameBuilder.ToString();
+
                 // Copy to a common filename. We do this only because it makes
                 // the Jenkins artifacts to pick up only what we are producing this round.
-                trainingResult.CopyToJobName();
+                trainingResult.CopyToJobName(jobName);
 
                 // And, finally, generate some efficiency plots.
                 // First, get the list of cuts we are going to use. Start with the boring Run 1.
@@ -130,12 +146,13 @@ namespace JetMVATraining
                     });
 
                     // And write out a text file that contains the information needed to use this cut.
-                    var outf = File.CreateText($"{trainingResult.JobName}-{m.Name}-Info.txt");
+                    var outf = File.CreateText($"{jobName}_{m.Name}-Info.txt");
                     try
                     {
                         outf.WriteLine($"Using the MVA '{m.Name}' trained in job '{trainingResult.JobName}'");
                         outf.WriteLine();
-                        outf.WriteLine($"TMVAReader Weight File: {m.WeightFile.Name}");
+                        outf.WriteLine($"TMVAReader Weight File: {jobName}_{m.Name}.weights.xml");
+                        outf.WriteLine($"  MVAResultValue > {nncut} gives a total background fraction of {standardBackgroundEff.Value}");
                         outf.WriteLine();
                         m.DumpUsageInfo(outf);
                     } finally
