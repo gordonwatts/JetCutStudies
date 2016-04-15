@@ -1,4 +1,5 @@
-﻿using LINQToTTreeLib.Files;
+﻿using LINQToTTreeLib;
+using LINQToTTreeLib.Files;
 using ROOTNET;
 using System;
 using System.Collections.Generic;
@@ -188,7 +189,11 @@ namespace TMVAUtilities
 
             // Next we have to write out how the variables were prepared. Lets do the background, as that is likely to
             // be most what the data preparation is going to look like.
+            outf.WriteLine();
+            outf.WriteLine("How the variables are calculated");
+            outf.WriteLine("======================");
             var b = _backgrounds.First();
+            outf.WriteLine(b._sample.PrettyPrintQuery());
         }
 
         /// <summary>
