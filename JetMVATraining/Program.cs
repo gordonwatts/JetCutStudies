@@ -16,6 +16,7 @@ using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Utils.FutureConsole;
 using static LINQToTreeHelpers.PlottingUtils;
 using System.IO;
+using System.Text;
 
 namespace JetMVATraining
 {
@@ -91,9 +92,23 @@ namespace JetMVATraining
                 // Do the training
                 var trainingResult = training.Train("JetMVATraining");
 
+                // Build a job name.
+                var jobNameBuilder = new StringBuilder();
+                jobNameBuilder.Append("JetMVATraining-");
+                bool first = true;
+                foreach (var v in training.UsedVariables())
+                {
+                    if (!first)
+                    {
+                        jobNameBuilder.Append(".");
+                    }
+                    first = false;
+                    jobNameBuilder.Append(v);
+                }
+                var jobName = jobNameBuilder.ToString();
+
                 // Copy to a common filename. We do this only because it makes
                 // the Jenkins artifacts to pick up only what we are producing this round.
-                var jobName = "JetMVATraining";
                 trainingResult.CopyToJobName(jobName);
 
                 // And, finally, generate some efficiency plots.

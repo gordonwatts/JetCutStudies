@@ -153,6 +153,16 @@ namespace TMVAUtilities
         private string _tmva_options = "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification";
 
         /// <summary>
+        /// Return a list of used variable names
+        /// </summary>
+        /// <returns></returns>
+        public string[] UsedVariables()
+        {
+            var p = GetParameterAndWeightNames();
+            return p.Item2.ToArray();
+        }
+
+        /// <summary>
         /// Dump to a text file some code on how this should be run.
         /// </summary>
         /// <param name="outf"></param>
