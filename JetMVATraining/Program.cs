@@ -93,7 +93,8 @@ namespace JetMVATraining
 
                 // Copy to a common filename. We do this only because it makes
                 // the Jenkins artifacts to pick up only what we are producing this round.
-                trainingResult.CopyToJobName();
+                var jobName = "JetMVATraining";
+                trainingResult.CopyToJobName(jobName);
 
                 // And, finally, generate some efficiency plots.
                 // First, get the list of cuts we are going to use. Start with the boring Run 1.
@@ -130,7 +131,7 @@ namespace JetMVATraining
                     });
 
                     // And write out a text file that contains the information needed to use this cut.
-                    var outf = File.CreateText($"{trainingResult.JobName}-{m.Name}-Info.txt");
+                    var outf = File.CreateText($"{jobName}-{m.Name}-Info.txt");
                     try
                     {
                         outf.WriteLine($"Using the MVA '{m.Name}' trained in job '{trainingResult.JobName}'");

@@ -90,8 +90,6 @@ namespace TMVAUtilities
             var lambda = Expression.Lambda<Func<T, double>>(call, myTArgParam);
 
             return lambda;
-
-            //return r;
         }
 
         /// <summary>
@@ -193,7 +191,30 @@ namespace TMVAUtilities
             outf.WriteLine("How the variables are calculated");
             outf.WriteLine("======================");
             var b = _backgrounds.First();
-            outf.WriteLine(b._sample.PrettyPrintQuery());
+
+            foreach (var pname in p.Item2)
+            {
+                var tParam = Expression.Parameter(typeof(T));
+                var access = Expression.Field(tParam, pname);
+
+                string pp = null;
+                if (access.Type == typeof(int))
+                {
+                    var lambda = Expression.Lambda<Func<T, int>>(access, tParam);
+                    var selector = b._sample.Select(lambda);
+                    pp = selector.PrettyPrintQuery();
+                } else if (access.Type == typeof(double))
+                {
+                    var lambda = Expression.Lambda<Func<T, double>>(access, tParam);
+                    var selector = b._sample.Select(lambda);
+                    pp = selector.PrettyPrintQuery();
+                } else
+                {
+                    throw new InvalidOperationException($"Do not know how to generate an expression for type {access.Type.Name}");
+                }
+                outf.WriteLine($"{pname} = {pp}");
+                outf.WriteLine();
+            }
         }
 
         /// <summary>
