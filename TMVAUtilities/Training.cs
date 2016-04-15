@@ -234,15 +234,15 @@ namespace TMVAUtilities
             outf.WriteLine($"Method {what.ToString()} with parameters '{method.BuildArgumentList(p.Item2)}'");
             var allBackground = _backgrounds.Select(ms => ms._sample.Count()).Sum();
             outf.WriteLine($"Total background events: {allBackground}");
-            foreach(var s in _backgrounds)
+            foreach(var s in _backgrounds.Zip(Enumerable.Range(1,_backgrounds.Count), (bs, c) => Tuple.Create(bs,c)))
             {
-                outf.WriteLine($"  Background input stream: {s._sample.Count()} events");
+                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events");
             }
             var allSignal = _signals.Select(ms => ms._sample.Count()).Sum();
             outf.WriteLine($"Total signal events: {allSignal}");
-            foreach (var s in _signals)
+            foreach (var s in _signals.Zip(Enumerable.Range(1, _signals.Count), (bs, c) => Tuple.Create(bs, c)))
             {
-                outf.WriteLine($"  Signal input stream: {s._sample.Count()} events");
+                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events");
             }
         }
 
