@@ -167,7 +167,7 @@ namespace TMVAUtilities
         /// <param name="outf"></param>
         public void DumpUsageInfo(StreamWriter outf)
         {
-            Training.DumpUsageInfo(outf, Name, WeightFile);
+            Training.DumpUsageInfo(outf, this, WeightFile, What);
         }
     }
 }

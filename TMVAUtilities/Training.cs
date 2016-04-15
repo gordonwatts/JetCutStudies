@@ -158,7 +158,7 @@ namespace TMVAUtilities
         /// <param name="outf"></param>
         /// <param name="name"></param>
         /// <param name="weightFile"></param>
-        internal void DumpUsageInfo(StreamWriter outf, string name, FileInfo weightFile)
+        internal void DumpUsageInfo(StreamWriter outf, Method<T> method, FileInfo weightFile, ROOTNET.Interface.NTMVA.NTypes.EMVA what)
         {
             // First a simple listing of the input variables.
             var p = GetParameterAndWeightNames();
@@ -174,13 +174,13 @@ namespace TMVAUtilities
             outf.WriteLine("Calling TMVAReader");
             outf.WriteLine("======================");
             outf.WriteLine("Replace v1-v5 with the appropriate values, and the path to the filename as needed.");
-            var code = new TMVAReaderCodeGenerator<T>(name, weightFile, p.Item2);
+            var code = new TMVAReaderCodeGenerator<T>(method.Name, weightFile, p.Item2);
             foreach (var i in (code.IncludeFiles() == null) ? Enumerable.Empty<string>() : code.IncludeFiles())
             {
                 outf.WriteLine($"#include \"{i}\"");
             }
 
-            foreach (var l in code.LinesOfCode(name))
+            foreach (var l in code.LinesOfCode(method.Name))
             {
                 outf.WriteLine($"  {l}");
             }
@@ -214,6 +214,25 @@ namespace TMVAUtilities
                 }
                 outf.WriteLine($"{pname} = {pp}");
                 outf.WriteLine();
+            }
+
+            // Parameters and etc for all of this.
+            outf.WriteLine();
+            outf.WriteLine("General Information About Training");
+            outf.WriteLine("======================");
+            outf.WriteLine($"Global TMVA parameters: {_tmva_options}");
+            outf.WriteLine($"Method {what.ToString()} with parameters '{method.BuildArgumentList(p.Item2)}'");
+            var allBackground = _backgrounds.Select(ms => ms._sample.Count()).Sum();
+            outf.WriteLine($"Total background events: {allBackground}");
+            foreach(var s in _backgrounds)
+            {
+                outf.WriteLine($"  Background input stream: {s._sample.Count()} events");
+            }
+            var allSignal = _signals.Select(ms => ms._sample.Count()).Sum();
+            outf.WriteLine($"Total signal events: {allSignal}");
+            foreach (var s in _signals)
+            {
+                outf.WriteLine($"  Signal input stream: {s._sample.Count()} events");
             }
         }
 
