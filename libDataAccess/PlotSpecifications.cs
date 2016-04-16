@@ -25,6 +25,7 @@ namespace libDataAccess
     /// </remarks>
     public class PlotSpecifications
     {
+
         /// <summary>
         /// The pT spectra we want.
         /// TODO: Fix so that other JetPtPlot folks depend on this, rather than repeating binning.
@@ -281,6 +282,13 @@ namespace libDataAccess
             MakePlotterSpec<recoTreeLLPs>(50, -5.0, 5.0, llp => llp.eta, "LLPEta{0}", "LLP eta for {0}; eta");
 
         /// <summary>
+        /// Plot LLP pt
+        /// </summary>
+        public static IPlotSpec<double> LLPPtPlotRaw =
+            MakePlotterSpec<double>(150, 0.0, 750.0, j => j, "pT{0}", "pT of {0} LLP; pT [GeV]");
+        public static IPlotSpec<recoTreeLLPs> LLPPtPlot;
+
+        /// <summary>
         /// Get the dependencies right
         /// </summary>
         static PlotSpecifications()
@@ -293,6 +301,8 @@ namespace libDataAccess
             NTrackPlot = NTrackPlotRaw.FromType<double, IEnumerable<recoTreeTracks>>(tks => tks.Count());
             SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));
             MaxTrackPtPlot = MaxTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => CalcMaxPt.Invoke(j.AllTracks));
+
+            LLPPtPlot = LLPPtPlotRaw.FromType<double, recoTreeLLPs>(j => j.pT / 1000.0);
 
             JetExtraPtPlot = JetPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);

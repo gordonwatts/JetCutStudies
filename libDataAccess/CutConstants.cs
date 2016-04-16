@@ -16,5 +16,20 @@ namespace libDataAccess
         /// Units are mm.
         /// </summary>
         public static double InnerDistanceForSignalLLPDecay = 2 * 1000;
+
+        /// <summary>
+        /// Cut for the log ratio when doing straight cuts.
+        /// </summary>
+        public static double LogRatioCut = 1.2;
+
+        /// <summary>
+        /// Cut in GeV for a track to violate isolation.
+        /// </summary>
+        public static double IsolationTrackPtCut = 2.0;
+
+        /// <summary>
+        /// How many tracks are allowed before isolation is violated?
+        /// </summary>
+        public static int IsolationTrackCountAllowed = 0;
     }
 }

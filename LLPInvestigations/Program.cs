@@ -1,15 +1,17 @@
 ﻿using DiVertAnalysis;
+using libDataAccess;
+using libDataAccess.Utils;
 using LINQToTreeHelpers;
 using LINQToTreeHelpers.FutureUtils;
 using LINQToTTreeLib;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using static System.Math;
+using static libDataAccess.Utils.FutureConsole;
+using static libDataAccess.CutConstants;
 using static LINQToTreeHelpers.ROOTUtils;
-using libDataAccess;
-using System.Collections.Generic;
-using libDataAccess.Utils;
+using static System.Math;
 
 namespace LLPInvestigations
 {
@@ -29,14 +31,24 @@ namespace LLPInvestigations
             {
                 foreach (var s in signalSources)
                 {
-                    Console.WriteLine(s.Item1);
+                    FutureWriteLine(s.Item1);
                     ProcessSample(s.Item2, outputHistograms.mkdir(s.Item1));
                 }
             }
         }
 
+        /// <summary>
+        /// Make a series of plots for the LLP's.
+        /// </summary>
+        /// <param name="llp"></param>
+        /// <param name="dir"></param>
         private static void ProcessSample(IQueryable<Files.MetaData> llp, FutureTDirectory dir)
         {
+            // Dump basic plots with info for the LLPs.
+            var llpStream = llp.SelectMany(l => l.Data.LLPs);
+            llpStream
+                .PlotBasicLLPValues("all", dir);
+
             // Look at the number of times sharing occurs (should never happen)
             var sharedJets = from ev in llp
                              from j1 in ev.Data.Jets
@@ -48,7 +60,9 @@ namespace LLPInvestigations
 
             var count = sharedJets.FutureCount();
 
-            // Calc how close things are for the LLP's
+            FutureWriteLine(() => $"  Number of jets that share an LLP: {count.Value}");
+
+            // Calculate how close things are for the LLP's
             var sharedLLPs = from ev in llp
                              let l1 = ev.Data.LLPs.First()
                              let l2 = ev.Data.LLPs.Skip(1).First()
@@ -56,12 +70,12 @@ namespace LLPInvestigations
 
             sharedLLPs
                 .Select(l => Sqrt(DeltaR2(l.Item1.eta, l.Item1.phi, l.Item2.eta, l.Item2.phi)))
-                .FuturePlot("DeltaRLLP", "The DeltaR between two LLP in the event", 20, 0.0, 3.0)
+                .FuturePlot("DeltaRLLP", "The DeltaR between the two LLPs in the event", 20, 0.0, 3.0)
                 .Save(dir);
 
             sharedLLPs
                 .Select(l => DeltaPhi(l.Item1.phi, l.Item2.phi))
-                .FuturePlot("DeltaPhiLLP", "The DeltaPhi between two LLP in the event", 60, 0.0, PI)
+                .FuturePlot("DeltaPhiLLP", "The DeltaPhi between the two LLPs in the event", 60, 0.0, PI)
                 .Save(dir);
 
             // How many LLPs are within 0.4 of a jet?
@@ -76,12 +90,6 @@ namespace LLPInvestigations
 
             llpsCloseToJets
                 .SelectMany(jets => jets)
-                .Select(jets => jets.Count())
-                .FuturePlot("nLLPsPerJetCount", "Number of LLPs in each event with a jet", 5, 0.0, 5.0)
-                .Save(dir);
-
-            llpsCloseToJets
-                .SelectMany(jets => jets)
                 .Select(llps => llps.Where(tup => tup.Item3 < openingAngle * openingAngle).Count())
                 .FuturePlot("nLLPsCloseToJet", $"Number of LLPs with DR < {openingAngle}", 5, 0.0, 5.0)
                 .Save(dir);
@@ -90,6 +98,12 @@ namespace LLPInvestigations
                 .SelectMany(jets => jets)
                 .FuturePlot("maxDRForLLPs", "Max DR between each Jet and all LLPs in event",
                     60, 0.0, 3.0, jets => Sqrt(jets.Max(v => v.Item3)))
+                .Save(dir);
+
+            llpsCloseToJets
+                .SelectMany(jets => jets)
+                .FuturePlot("maxDPhiForLLPs", "Max DPhi between each jet and all LLPs in event",
+                    60, 0, PI, jets => jets.Max(v => v.Item4))
                 .Save(dir);
 
             llpsCloseToJets
@@ -108,12 +122,6 @@ namespace LLPInvestigations
 
             llpsCloseToJets
                 .SelectMany(jets => jets)
-                .FuturePlot("maxDPhiForLLPs", "Max DPhi between each jet and all LLPs in event",
-                    60, 0, PI, jets => jets.Max(v => v.Item4))
-                .Save(dir);
-
-            llpsCloseToJets
-                .SelectMany(jets => jets)
                 .FuturePlot("maxDPhiForLLPsZoom", "Max DPhi between each jet and all LLPs in event",
                     60, 0, 0.4, jets => jets.Max(v => v.Item4))
                 .Save(dir);
@@ -126,6 +134,51 @@ namespace LLPInvestigations
                     60, -0.5, 0.5, jet => jet.Item1.eta - jet.Item2.eta)
                 .Save(dir);
 
+            // Look at jets that pass the Run 1 cuts but don't have an associated LLP.
+            // Once we have the good and bad jets, partner them up with the closest LLP we can.
+            var jetsOnTheirOwn = from ev in llp
+                                 from j in ev.Data.Jets
+                                 where Abs(j.eta) < 2.5 && j.pT > 40.0
+                                 where j.logRatio >= IsolationTrackPtCut
+                                 where !j.LLP.IsGoodIndex()
+                                 let closeLLP = ev.Data.LLPs.OrderBy(l => DR2.Invoke(j, l)).First()
+                                 select Tuple.Create(j, closeLLP, DR2.Invoke(j, closeLLP));
+
+            var jetsWithPartner = from ev in llp
+                                 from j in ev.Data.Jets
+                                  where Abs(j.eta) < 2.5
+                                  where j.logRatio >= IsolationTrackPtCut
+                                 where j.LLP.IsGoodIndex()
+                                 let closeLLP = ev.Data.LLPs.OrderBy(l => DR2.Invoke(j, l)).First()
+                                 select Tuple.Create(j, closeLLP, Sqrt(DR2.Invoke(j, closeLLP)));
+
+            jetsOnTheirOwn
+                .Select(jinfo => jinfo.Item1)
+                .PlotBasicValues("CalRNoLLPNear", dir);
+
+            jetsWithPartner
+                .Select(jinfo => jinfo.Item1)
+                .PlotBasicValues("CalRLLPNear", dir);
+
+            jetsOnTheirOwn
+                .Select(jinfo => jinfo.Item3)
+                .FuturePlot("DRNoLLPNear", "DR to nearest LLP for lonely CalR jets", 20, 0.0, 0.5)
+                .Save(dir);
+
+            jetsWithPartner
+                .Select(jinfo => jinfo.Item3)
+                .FuturePlot("DRLLPNear", "DR to nearest LLP for CalR jets with associated LLP", 20, 0.0, 0.5)
+                .Save(dir);
+
+            jetsOnTheirOwn
+                .Select(jinfo => jinfo.Item2)
+                .PlotBasicLLPValues("NoLLPNear", dir);
+
+            jetsWithPartner
+                .Select(jinfo => jinfo.Item2)
+                .PlotBasicLLPValues("LLPNear", dir);
+#if false
+            // Lets look at llp's matched to a jet next
             var matchedLLPs = from ev in llp
                               where ev.Data.Jets.Count() >= 2
                               select from lp in ev.Data.LLPs
@@ -141,6 +194,7 @@ namespace LLPInvestigations
                 .Where(linfo => linfo.Count() == 2)
                 .Where(linfo => linfo.First().Item2 == linfo.Skip(1).First().Item2)
                 .FutureCount();
+            FutureWriteLine(() => $"  Number of events where two LLPs are closest to one jet: {eventsWithTwoMatchedJets.Value}");
 
             matchedLLPs
                 .SelectMany(linfo => linfo)
@@ -169,7 +223,7 @@ namespace LLPInvestigations
                     100, -2.0, 3.0, linfo => linfo.Item2.logRatio)
                 .Save(dir);
 
-#if false
+            // The following causes a crash b.c. we aren't properly doing optimization, I think, in LINQToTTree
             var jetsCloseToLLPs = from ev in llp
                                   select from lp in ev.Data.LLPs
                                          select from j in ev.Data.Jets
@@ -191,9 +245,6 @@ namespace LLPInvestigations
                 .Save(dir);
 
 #endif
-            // Dump some results
-            Console.WriteLine($"  Number of jets that share an LLP: {count.Value}");
-            Console.WriteLine($"  Number of events where two LLPs are closest to one jet: {eventsWithTwoMatchedJets.Value}");
         }
     }
 }

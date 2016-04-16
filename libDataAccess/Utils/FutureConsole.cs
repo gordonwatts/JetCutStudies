@@ -26,6 +26,15 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
+        /// Write a string that doesn't need to be evaluated.
+        /// </summary>
+        /// <param name="constantLine"></param>
+        public static void FutureWriteLine(string constantLine)
+        {
+            FutureWriteLine(() => constantLine);
+        }
+
+        /// <summary>
         /// Write out a line...
         /// </summary>
         /// <param name="futureString"></param>

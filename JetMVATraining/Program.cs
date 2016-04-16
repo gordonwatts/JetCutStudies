@@ -8,15 +8,16 @@ using LINQToTTreeLib;
 using ROOTNET.Interface;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using TMVAUtilities;
-using static libDataAccess.Utils.SampleUtils;
+using static libDataAccess.CutConstants;
 using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Utils.FutureConsole;
+using static libDataAccess.Utils.SampleUtils;
 using static LINQToTreeHelpers.PlottingUtils;
-using System.IO;
-using System.Text;
 
 namespace JetMVATraining
 {
@@ -117,7 +118,7 @@ namespace JetMVATraining
                 {
                     new CutInfo() {
                         Title ="Run1",
-                        Cut = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any(),
+                        Cut = js => js.JetInfo.Jet.logRatio > IsolationTrackPtCut && !js.JetInfo.Tracks.Any(),
                         CutValue = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any() ? 1.0 : 0.0
                     },
                 };
