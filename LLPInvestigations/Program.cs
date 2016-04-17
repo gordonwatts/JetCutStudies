@@ -53,6 +53,7 @@ namespace LLPInvestigations
             var sharedJets = from ev in llp
                              from j1 in ev.Data.Jets
                              from j2 in ev.Data.Jets
+                             where j1.isGoodLLP && j2.isGoodLLP
                              where j1.LLP.IsGoodIndex() && j2.LLP.IsGoodIndex()
                              where j1 != j2
                              where j1.LLP == j2.LLP
@@ -83,6 +84,7 @@ namespace LLPInvestigations
             double openingAngle = 0.4;
             var llpsCloseToJets = from ev in llp
                                   select from j in ev.Data.Jets
+                                         where j.isGoodLLP
                                          select from lp in ev.Data.LLPs
                                                 let dr = DR2.Invoke(j, lp)
                                                 let dphi = Abs(DeltaPhi(j.phi, lp.phi))
@@ -138,6 +140,7 @@ namespace LLPInvestigations
             // Once we have the good and bad jets, partner them up with the closest LLP we can.
             var jetsOnTheirOwn = from ev in llp
                                  from j in ev.Data.Jets
+                                 where j.isGoodLLP
                                  where Abs(j.eta) < 2.5 && j.pT > 40.0
                                  where j.logRatio >= IsolationTrackPtCut
                                  where !j.LLP.IsGoodIndex()
@@ -146,6 +149,7 @@ namespace LLPInvestigations
 
             var jetsWithPartner = from ev in llp
                                  from j in ev.Data.Jets
+                                  where j.isGoodLLP
                                   where Abs(j.eta) < 2.5
                                   where j.logRatio >= IsolationTrackPtCut
                                  where j.LLP.IsGoodIndex()
@@ -172,11 +176,11 @@ namespace LLPInvestigations
 
             jetsOnTheirOwn
                 .Select(jinfo => jinfo.Item2)
-                .PlotBasicLLPValues("NoLLPNear", dir);
+                .PlotBasicLLPValues("CalRNoLLPNear", dir);
 
             jetsWithPartner
                 .Select(jinfo => jinfo.Item2)
-                .PlotBasicLLPValues("LLPNear", dir);
+                .PlotBasicLLPValues("CalRLLPNear", dir);
 #if false
             // Lets look at llp's matched to a jet next
             var matchedLLPs = from ev in llp
