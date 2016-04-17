@@ -1,0 +1,12 @@
+#
+# Generate some nice(er) plots of the training results.
+#
+
+include ("common.plotlingo");
+TurnOffStatBoxes();
+
+f_llp.Get("600pi150lt9m/LLPLxyNoLLPNear")
+	.tag("600pi150lt9m")
+	.plot()
+	.size(1200,800);
+
