@@ -55,10 +55,16 @@ namespace libDataAccess.Utils
         /// Dump everything to the console.
         /// </summary>
         /// <param name="output"></param>
+        /// <remarks>Cache all the lines first, even if that is a lot of memory. Otherwise
+        /// we end up with lots of computations in between.</remarks>
         public static void DumpFutureLines(this TextWriter output)
         {
-            _lines
-                .ForEach(a => output.WriteLine(a()));
+            var lines = _lines
+                .Select(a => a())
+                .ToArray();
+
+            lines
+                .ForEach(a => output.WriteLine(a));
         }
     }
 }
