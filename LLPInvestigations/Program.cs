@@ -37,6 +37,8 @@ namespace LLPInvestigations
                     ProcessSample(s.Item2, outputHistograms.mkdir(s.Item1));
                 }
             }
+
+            FutureConsole.DumpToCout();
         }
 
         /// <summary>
@@ -198,6 +200,17 @@ namespace LLPInvestigations
                     LLPPt = i.Item2.pT / 1000.0
                 })
                 .AsCSV(new FileInfo("lonlyevents.csv"));
+
+            // And, finally, we need to count so we can have some efficiencies...
+            var jetsWithPartnerCount = jetsWithPartner.FutureCount();
+            var jetsOnTheirOwnCount = jetsOnTheirOwn.FutureCount();
+
+            var fraction = from jOnOwn in jetsOnTheirOwnCount
+                           from jPartner in jetsWithPartnerCount
+                           select jOnOwn / ((double)jOnOwn + (double)jPartner);
+
+            FutureConsole.FutureWriteLine(() => $"  Fraction of unpartnered jets: {fraction.Value}.");
+
 #if false
             // Lets look at llp's matched to a jet next
             var matchedLLPs = from ev in llp

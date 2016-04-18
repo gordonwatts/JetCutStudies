@@ -5,17 +5,39 @@
 include ("common.plotlingo");
 TurnOffStatBoxes();
 
-f_llp.Get("600pi150lt9m/LLPLxyNoLLPNear")
-	.tag("600pi150lt9m")
-	.plot()
-	.size(1200,800);
+plottypes = [
+	{title => "Lxy for CalR Jets with a LLP in DR < 0.2", xaxis => "Lxy [mm]", name => "LLPLxyCalRLLPNear"},
+	{title => "Lxy for CalR Jets with No LLP in DR < 0.2", xaxis => "Lxy [mm]", name => "LLPLxyCalRNoLLPNear"},
+	{title => "DR to LLP for CalR Jets with No LLP in DR < 0.2", xaxis => "#Delta R", name => "DRNoLLPNear"},
+	{title => "Eta to LLP for CalR Jets with No LLP in DR < 0.2", xaxis => "#eta", name => "LLPEtaCalRNoLLPNear"},
+	{title => "#p_T to LLP for CalR Jets with No LLP in DR < 0.2", xaxis => "#p_T [GeV]", name => "pTCalRNoLLPNear"}
+];
 
-f_llp.Get("600pi150lt9m/DRNoLLPNear")
-	.tag("600pi150lt9m")
-	.plot()
-	.size(1200,800);
+for (plottypes) {
+	plots = map (sample, trainingSamples) {
+		f_llp.Get("{sample}/{name}")
+			.tag(sample);
+	};
 
-f_llp.Get("600pi150lt9m/LLPEtaNoLLPNear")
-	.tag("600pi150lt9m")
-	.plot()
-	.size(1200,800);
+	plots
+		.plot()
+		.size(1200,800)
+		.xaxis(xaxis)
+		.title("{name} on all signal");
+};
+
+
+#f_llp.Get("600pi150lt9m/LLPLxyCalRNoLLPNear")
+#	.tag("600pi150lt9m")
+#	.plot()
+#	.size(1200,800);
+
+#f_llp.Get("600pi150lt9m/DRNoLLPNear")
+#	.tag("600pi150lt9m")
+#	.plot()
+#	.size(1200,800);
+
+#f_llp.Get("600pi150lt9m/LLPEtaCalRNoLLPNear")
+#	.tag("600pi150lt9m")
+#	.plot()
+#	.size(1200,800);
