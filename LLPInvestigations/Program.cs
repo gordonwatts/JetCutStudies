@@ -4,6 +4,7 @@ using libDataAccess.Utils;
 using LINQToTreeHelpers;
 using LINQToTreeHelpers.FutureUtils;
 using LINQToTTreeLib;
+using LINQToTTreeLib.Files;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ using static libDataAccess.Utils.FutureConsole;
 using static libDataAccess.CutConstants;
 using static LINQToTreeHelpers.ROOTUtils;
 using static System.Math;
+using System.IO;
 
 namespace LLPInvestigations
 {
@@ -145,7 +147,7 @@ namespace LLPInvestigations
                                  where j.logRatio >= IsolationTrackPtCut
                                  where !j.LLP.IsGoodIndex()
                                  let closeLLP = ev.Data.LLPs.OrderBy(l => DR2.Invoke(j, l)).First()
-                                 select Tuple.Create(j, closeLLP, DR2.Invoke(j, closeLLP));
+                                 select Tuple.Create(j, closeLLP, Sqrt(DR2.Invoke(j, closeLLP)), ev.Data.eventNumber);
 
             var jetsWithPartner = from ev in llp
                                  from j in ev.Data.Jets
@@ -166,12 +168,12 @@ namespace LLPInvestigations
 
             jetsOnTheirOwn
                 .Select(jinfo => jinfo.Item3)
-                .FuturePlot("DRNoLLPNear", "DR to nearest LLP for lonely CalR jets", 20, 0.0, 0.5)
+                .FuturePlot("DRNoLLPNear", "DR to nearest LLP for lonely CalR jets", 20, 0.0, 0.7)
                 .Save(dir);
 
             jetsWithPartner
                 .Select(jinfo => jinfo.Item3)
-                .FuturePlot("DRLLPNear", "DR to nearest LLP for CalR jets with associated LLP", 20, 0.0, 0.5)
+                .FuturePlot("DRLLPNear", "DR to nearest LLP for CalR jets with associated LLP", 20, 0.0, 0.7)
                 .Save(dir);
 
             jetsOnTheirOwn
@@ -181,6 +183,21 @@ namespace LLPInvestigations
             jetsWithPartner
                 .Select(jinfo => jinfo.Item2)
                 .PlotBasicLLPValues("CalRLLPNear", dir);
+
+            // Write out a small text file of the bad events so we can cross check.
+            jetsOnTheirOwn
+                .Select(i => new
+                {
+                    EventNumber = i.Item4,
+                    DR = i.Item3,
+                    JetEta = i.Item1.eta,
+                    JetPhi = i.Item1.phi,
+                    JetPt = i.Item1.pT,
+                    LLPEta = i.Item2.eta,
+                    LLPPhi = i.Item2.phi,
+                    LLPPt = i.Item2.pT / 1000.0
+                })
+                .AsCSV(new FileInfo("lonlyevents.csv"));
 #if false
             // Lets look at llp's matched to a jet next
             var matchedLLPs = from ev in llp
