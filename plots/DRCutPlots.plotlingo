@@ -10,3 +10,12 @@ f_llp.Get("600pi150lt9m/LLPLxyNoLLPNear")
 	.plot()
 	.size(1200,800);
 
+f_llp.Get("600pi150lt9m/DRNoLLPNear")
+	.tag("600pi150lt9m")
+	.plot()
+	.size(1200,800);
+
+f_llp.Get("600pi150lt9m/LLPEtaNoLLPNear")
+	.tag("600pi150lt9m")
+	.plot()
+	.size(1200,800);
