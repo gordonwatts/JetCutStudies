@@ -71,9 +71,9 @@ namespace JetMVATraining
                 // Now, do the training.
 
                 var training = flatSignalTrainingData
-                    .AsSignal()
-                    .Background(flatBackgroundTrainingData)
-                    .IgnoreVariables(t => t.JetEta);
+                    .AsSignal(isTrainingEvent: e => e.EventNumber % 2 == 1)
+                    .Background(flatBackgroundTrainingData, isTrainingEvent: e => e.EventNumber % 2 == 1)
+                    .IgnoreVariables(t => t.JetEta, t => t.EventNumber);
 
                 // Build options (like what we might like to transform.
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
@@ -118,8 +118,8 @@ namespace JetMVATraining
                 {
                     new CutInfo() {
                         Title ="Run1",
-                        Cut = js => js.JetInfo.Jet.logRatio > IsolationTrackPtCut && !js.JetInfo.Tracks.Any(),
-                        CutValue = js => js.JetInfo.Jet.logRatio > 1.2 && !js.JetInfo.Tracks.Any() ? 1.0 : 0.0
+                        Cut = js => js.JetInfo.Jet.logRatio > LogRatioCut && !js.JetInfo.Tracks.Any(),
+                        CutValue = js => js.JetInfo.Jet.logRatio > LogRatioCut && !js.JetInfo.Tracks.Any() ? 1.0 : 0.0
                     },
                 };
 
@@ -134,6 +134,7 @@ namespace JetMVATraining
                     // Calculate where we have to place the cut in order to get the same over-all background efficiency.
                     var nncut = fullBackgroundSample
                         .AsTrainingTree()
+                        .Where(e => e.EventNumber % 2 == 0)
                         .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), m);
                     FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is {m.Name} > {nncut}.");
 
@@ -170,6 +171,7 @@ namespace JetMVATraining
                     {
                         var sEvents = s.Item2
                             .AsGoodJetStream()
+                            .Where(e => e.EventNumber % 2 == 0)
                             .FilterLLPNear();
                         var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, c.CutValue, sEvents);
                         FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");

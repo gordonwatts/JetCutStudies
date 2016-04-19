@@ -32,6 +32,7 @@ namespace TMVAUtilities
         {
             public string _title;
             public IQueryable<T> _sample;
+            public Expression<Func<T, bool>> _isTrainingEvent;
         }
 
         private List<SampleInfo> _signals = new List<SampleInfo>();
@@ -112,9 +113,19 @@ namespace TMVAUtilities
         /// Add a background to our list of sources.
         /// </summary>
         /// <param name="source"></param>
-        public Training<T> Background(IQueryable<T> source, string title = "")
+        public Training<T> Background(IQueryable<T> source, string title = "", Expression<Func<T, bool>> isTrainingEvent = null)
         {
-            _backgrounds.Add(new SampleInfo() { _title = title, _sample = source });
+            // Make sure the user isn't adding a selection when no other is present. We have to have
+            // the same added all the time.
+            if (isTrainingEvent == null && _backgrounds.Where(b => b._isTrainingEvent != null).Any())
+            {
+                throw new ArgumentException("A background sample with a training event selector has already been added - you can't add one with no training selector.");
+            }
+            if (isTrainingEvent != null && _backgrounds.Where(b => b._isTrainingEvent == null).Any())
+            {
+                throw new ArgumentException("A background sample with a training event selector has not been added - you can't add one with a training selector.");
+            }
+            _backgrounds.Add(new SampleInfo() { _title = title, _sample = source, _isTrainingEvent = isTrainingEvent });
             return this;
         }
 
@@ -122,14 +133,22 @@ namespace TMVAUtilities
         /// Add a signal guy to the list we are looking at.
         /// </summary>
         /// <param name="source"></param>
-        public Training<T> Signal(IQueryable<T> source, string title = "")
+        public Training<T> Signal(IQueryable<T> source, string title = "", Expression<Func<T, bool>> isTrainingEvent = null)
         {
-            _signals.Add(new SampleInfo() { _title = title, _sample = source });
+            if (isTrainingEvent == null && _signals.Where(b => b._isTrainingEvent != null).Any())
+            {
+                throw new ArgumentException("A background sample with a training event selector has already been added - you can't add one with no training selector.");
+            }
+            if (isTrainingEvent != null && _signals.Where(b => b._isTrainingEvent == null).Any())
+            {
+                throw new ArgumentException("A background sample with a training event selector has not been added - you can't add one with a training selector.");
+            }
+            _signals.Add(new SampleInfo() { _title = title, _sample = source, _isTrainingEvent = isTrainingEvent });
             return this;
         }
 
         /// <summary>
-        /// List of methods we are going to train agains.
+        /// List of methods we are going to train against.
         /// </summary>
         private List<Method<T>> _methods = new List<Method<T>>();
 
@@ -236,13 +255,15 @@ namespace TMVAUtilities
             outf.WriteLine($"Total background events: {allBackground}");
             foreach(var s in _backgrounds.Zip(Enumerable.Range(1,_backgrounds.Count), (bs, c) => Tuple.Create(bs,c)))
             {
-                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events");
+                var trainingEventsSelection = s.Item1._isTrainingEvent == null ? "" : $" (training events when ({s.Item1._isTrainingEvent.ToString()})";
+                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events{trainingEventsSelection}");
             }
             var allSignal = _signals.Select(ms => ms._sample.Count()).Sum();
             outf.WriteLine($"Total signal events: {allSignal}");
             foreach (var s in _signals.Zip(Enumerable.Range(1, _signals.Count), (bs, c) => Tuple.Create(bs, c)))
             {
-                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events");
+                var trainingEventsSelection = s.Item1._isTrainingEvent == null ? "" : $" (training events when ({s.Item1._isTrainingEvent.ToString()})";
+                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events{trainingEventsSelection}");
             }
         }
 
@@ -258,8 +279,8 @@ namespace TMVAUtilities
                 throw new InvalidOperationException("Can't train twice!");
             }
 
-            var signals = _signals.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
-            var backgrounds = _backgrounds.SelectMany(s => s._sample.ToTTreeAndFile(s._title)).ToArray();
+            var signals = _signals.SelectMany(s => ExtractTrainingAndTestingSamples(s)).ToArray();
+            var backgrounds = _backgrounds.SelectMany(s => ExtractTrainingAndTestingSamples(s)).ToArray();
 
             var oldestInput = signals.Concat(backgrounds).Select(i => i.Item2.LastWriteTime).Max();
 
@@ -360,11 +381,37 @@ namespace TMVAUtilities
                 // Add signal and background. Each one has to be written out.
                 foreach (var sample in signals)
                 {
-                    f.AddSignalTree(sample.Item1);
+                    switch (sample.Item3)
+                    {
+                        case FileTrainingType.IsTraining:
+                            f.AddSignalTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
+                            break;
+                        case FileTrainingType.IsBoth:
+                            f.AddSignalTree(sample.Item1);
+                            break;
+                        case FileTrainingType.IsTesting:
+                            f.AddSignalTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTesting);
+                            break;
+                        default:
+                            throw new InvalidOperationException("Unknown value for FileTrainingTYpe!");
+                    }
                 }
                 foreach (var sample in backgrounds)
                 {
-                    f.AddBackgroundTree(sample.Item1);
+                    switch (sample.Item3)
+                    {
+                        case FileTrainingType.IsTraining:
+                            f.AddBackgroundTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
+                            break;
+                        case FileTrainingType.IsBoth:
+                            f.AddBackgroundTree(sample.Item1);
+                            break;
+                        case FileTrainingType.IsTesting:
+                            f.AddBackgroundTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTesting);
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 // Do the variables by looking through each item in object T.
@@ -404,6 +451,40 @@ namespace TMVAUtilities
             finally
             {
                 output.Close();
+            }
+        }
+
+        enum FileTrainingType
+        {
+            IsTraining,
+            IsBoth,
+            IsTesting
+        }
+
+        /// <summary>
+        /// Extract the samples, splitting into signal and background as needed.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private static IEnumerable<Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType>> ExtractTrainingAndTestingSamples(SampleInfo s)
+        {
+            // If we aren't to split it at all, just go through "simply".
+            if (s._isTrainingEvent == null)
+            {
+                foreach (var v in s._sample.ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsBoth)))
+                    yield return v;
+            }
+            else
+            {
+                // We need to split it into signal and background
+                foreach (var v in s._sample.Where(s._isTrainingEvent).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTraining)))
+                {
+                    yield return v;
+                }
+                foreach (var v in s._sample.Where(qevt => !s._isTrainingEvent.Invoke(qevt)).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTesting)))
+                {
+                    yield return v;
+                }
             }
         }
 
@@ -449,11 +530,12 @@ namespace TMVAUtilities
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
+        /// <param name="isTrainingEvent">Return true if this is a training event, false otherwise</param>
         /// <returns></returns>
-        public static Training<T> AsSignal<T>(this IQueryable<T> source, string title = "")
+        public static Training<T> AsSignal<T>(this IQueryable<T> source, string title = "", Expression<Func<T,bool>> isTrainingEvent = null)
         {
             var t = new Training<T>();
-            t.Signal(source, title);
+            t.Signal(source, title, isTrainingEvent);
             return t;
         }
 
@@ -462,11 +544,12 @@ namespace TMVAUtilities
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
+        /// <param name="isTrainingEvent">True if a particular event is a training event</param>
         /// <returns></returns>
-        public static Training<T> AsBackground<T>(this IQueryable<T> source, string title = "")
+        public static Training<T> AsBackground<T>(this IQueryable<T> source, string title = "", Expression<Func<T,bool>> isTrainingEvent = null)
         {
             var t = new Training<T>();
-            t.Background(source, title);
+            t.Background(source, title, isTrainingEvent);
             return t;
         }
     }

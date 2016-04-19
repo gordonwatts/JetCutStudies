@@ -36,7 +36,8 @@ namespace JetMVATraining
                     JetPt = t.JetPt,
                     MaxTrackPt = t.MaxTrackPt,
                     NTracks = t.NTracks,
-                    SumPtOfAllTracks = t.SumPtOfAllTracks
+                    SumPtOfAllTracks = t.SumPtOfAllTracks,
+                    EventNumber = t.EventNumber
                 });
 
             r
