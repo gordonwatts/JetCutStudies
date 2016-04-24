@@ -29,6 +29,7 @@ namespace JetMVATraining
         public double SumPtOfAllTracks;
         public double MaxTrackPt;
         public int EventNumber;
+        public double JetET;
     }
 
     /// <summary>
@@ -47,6 +48,7 @@ namespace JetMVATraining
                 SumPtOfAllTracks = i.JetInfo.AllTracks.Sum(t => t.pT),
                 MaxTrackPt = CalcMaxPt.Invoke(i.JetInfo.AllTracks),
                 EventNumber = i.EventNumber,
+                JetET = i.JetInfo.Jet.ET,
             };
 
         /// <summary>

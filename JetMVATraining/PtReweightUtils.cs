@@ -21,14 +21,27 @@ namespace JetMVATraining
         /// <returns></returns>
         public static IQueryable<TrainingTree> FlattenPtSpectra (this IQueryable<TrainingTree> source, FutureTDirectory output, string samplePrefix)
         {
+            return FlattenBySpectra(source, t => t.JetPt, output, samplePrefix);
+        }
+
+        /// <summary>
+        /// Re weight a training tree by some given variable.
+        /// </summary>
+        /// <param name="source">Source of events</param>
+        /// <param name="toFlattenBy">The expression we will flatten by.</param>
+        /// <param name="output">Where we can put a plot showing what we have done</param>
+        /// <param name="samplePrefix">How to name what we put out there</param>
+        /// <returns></returns>
+        public static IQueryable<TrainingTree> FlattenBySpectra(this IQueryable<TrainingTree> source, Expression<Func<TrainingTree, double>> toFlattenBy, FutureTDirectory output, string samplePrefix)
+        {
             // Make a before plot of the pT spectra.
             source
-                .Select(j => Tuple.Create(j.JetPt, j.Weight))
+                .Select(j => Tuple.Create(toFlattenBy.Invoke(j), j.Weight))
                 .FuturePlot<double>(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlotRaw, samplePrefix)
                 .Save(output);
 
             var r = source
-                .ReweightToFlat(JetPtPlotRaw, t => t.JetPt, t => t.Weight, (t, w) => new TrainingTree()
+                .ReweightToFlat(JetPtPlotRaw, t => toFlattenBy.Invoke(t), t => t.Weight, (t, w) => new TrainingTree()
                 {
                     Weight = w,
                     CalRatio = t.CalRatio,
@@ -37,16 +50,16 @@ namespace JetMVATraining
                     MaxTrackPt = t.MaxTrackPt,
                     NTracks = t.NTracks,
                     SumPtOfAllTracks = t.SumPtOfAllTracks,
-                    EventNumber = t.EventNumber
+                    EventNumber = t.EventNumber,
+                    JetET = t.JetET,
                 });
 
             r
-                .Select(j => Tuple.Create(j.JetPt, j.Weight))
+                .Select(j => Tuple.Create(toFlattenBy.Invoke(j), j.Weight))
                 .FuturePlot(JetPtPlot.NameFormat, JetPtPlot.TitleFormat, JetPtPlotRaw, $"{samplePrefix}flat")
                 .Save(output);
 
             return r;
-
         }
 
         private static int _plotIndex = 0;

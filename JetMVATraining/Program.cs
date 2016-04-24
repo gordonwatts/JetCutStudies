@@ -54,11 +54,11 @@ namespace JetMVATraining
             {
                 // Create the training data and flatten the pT spectra.
                 var flatBackgroundTrainingData = backgroundTrainingTree
-                    .FlattenPtSpectra(outputHistograms, "background")
+                    .FlattenBySpectra(t => t.JetET, outputHistograms, "background")
                     ;
                 var flatSignalTrainingData = signalInCalOnly
                     .AsTrainingTree()
-                    .FlattenPtSpectra(outputHistograms, "signal")
+                    .FlattenBySpectra(t => t.JetET, outputHistograms, "signal")
                     ;
 
                 // Finally, plots of all the training input variables.
@@ -73,7 +73,7 @@ namespace JetMVATraining
                 var training = flatSignalTrainingData
                     .AsSignal(isTrainingEvent: e => e.EventNumber % 2 == 1)
                     .Background(flatBackgroundTrainingData, isTrainingEvent: e => e.EventNumber % 2 == 1)
-                    .IgnoreVariables(t => t.JetEta, t => t.EventNumber);
+                    .UseVariables(t => t.JetET, t => t.CalRatio, t => t.MaxTrackPt, t => t.NTracks, t => t.SumPtOfAllTracks);
 
                 // Build options (like what we might like to transform.
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
