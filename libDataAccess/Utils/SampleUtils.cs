@@ -73,5 +73,27 @@ namespace libDataAccess.Utils
             return source
                 .Where(j => j.JetInfo.Jet.LLP.IsGoodIndex());
         }
+
+        /// <summary>
+        /// Return only training events
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<JetStream> FilterTrainingEvents(this IQueryable<JetStream> source)
+        {
+            return source
+                .Where(j => j.EventNumber % 2 == 1);
+        }
+
+        /// <summary>
+        /// Filter for non-training events
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<JetStream> FilterNonTrainingEvents(this IQueryable<JetStream> source)
+        {
+            return source
+                .Where(j => j.EventNumber % 2 == 0);
+        }
     }
 }

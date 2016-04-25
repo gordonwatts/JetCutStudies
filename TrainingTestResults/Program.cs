@@ -78,14 +78,14 @@ namespace TrainingTestResults
                     foreach (var s in allBackgrounds)
                     {
                         var sampleD = d.mkdir(s.Item1);
-                        PlotMVAResult(s.Item2.AsGoodJetStream(), sampleD, mvaValue);
+                        PlotMVAResult(s.Item2.AsGoodJetStream().FilterNonTrainingEvents(), sampleD, mvaValue);
                     }
 
                     // And now we can make the plots for signal
                     foreach (var s in allSources)
                     {
                         var sampleD = d.mkdir(s.Item1);
-                        PlotMVAResult(s.Item2.AsGoodJetStream().FilterLLPNear(), sampleD, mvaValue);
+                        PlotMVAResult(s.Item2.AsGoodJetStream().FilterNonTrainingEvents().FilterLLPNear(), sampleD, mvaValue);
                     }
                 }
             }
