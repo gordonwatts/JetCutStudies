@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E7727AF8-3E1D-40F8-9A1B-D18FBB911C88}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{FECD7AD5-7CAE-44F2-8225-4B66AF61D7B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TrainingTestResults</RootNamespace>
-    <AssemblyName>TrainingTestResults</AssemblyName>
+    <RootNamespace>CalRatioTMVAUtilities</RootNamespace>
+    <AssemblyName>CalRatioTMVAUtilities</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -23,7 +22,6 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -33,7 +31,6 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Doddle.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=183ffec7490b24a9, processorArchitecture=MSIL">
@@ -138,21 +135,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TrainingUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="ConfigData\default.classmethodmappings">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\JenkinsAccess\JenkinsAccess.csproj">
-      <Project>{c914fce5-046b-4e3f-9987-c5c6ce7a3e87}</Project>
-      <Name>JenkinsAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\libDataAccess\libDataAccess.csproj">
       <Project>{8694cc04-fbe1-4a4a-88d2-910d02941248}</Project>
       <Name>libDataAccess</Name>
@@ -161,6 +147,12 @@
       <Project>{c6bde3ed-5f55-4a35-bbc6-43b299017669}</Project>
       <Name>TMVAUtilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ConfigData\default.classmethodmappings">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\TSelectorTemplate.cxx">

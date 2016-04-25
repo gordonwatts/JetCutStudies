@@ -4,17 +4,14 @@ using LINQToTreeHelpers.FutureUtils;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using static libDataAccess.Utils.SampleUtils;
 using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
-using LINQToTTreeLib.CodeAttributes;
 using LinqToTTreeInterfacesLib;
-using System.IO;
 using ROOTNET;
 using libDataAccess.Utils;
 using TMVAUtilities;
 
-namespace JetMVATraining
+namespace CalRatioTMVAUtilities
 {
     /// <summary>
     /// The info we will hand to the training
@@ -37,7 +34,7 @@ namespace JetMVATraining
     /// </summary>
     public static class TrainingUtils
     {
-        internal static Expression<Func<JetStream, TrainingTree>> TrainingTreeConverter = i
+        public static Expression<Func<JetStream, TrainingTree>> TrainingTreeConverter = i
             => new TrainingTree()
             {
                 Weight = i.Weight,
@@ -57,7 +54,7 @@ namespace JetMVATraining
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        internal static IQueryable<TrainingTree> AsTrainingTree(this IQueryable<JetStream> source)
+        public static IQueryable<TrainingTree> AsTrainingTree(this IQueryable<JetStream> source)
         {
             return source
                 .Where(j => j.JetInfo.Jet.pT < 400.0)
@@ -89,7 +86,7 @@ namespace JetMVATraining
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        internal static IQueryable<TrainingTree> PlotTrainingVariables (this IQueryable<TrainingTree> source, FutureTDirectory dir, string tag)
+        public static IQueryable<TrainingTree> PlotTrainingVariables (this IQueryable<TrainingTree> source, FutureTDirectory dir, string tag)
         {
             // Plots of all the items
             foreach (var p in _plotters)
@@ -116,7 +113,7 @@ namespace JetMVATraining
         /// <param name="passFraction"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        internal static double FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, Method<TrainingTree> m)
+        public static double FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, Method<TrainingTree> m)
         {
             if (passFraction < 0 || passFraction > 1.0)
             {
