@@ -13,6 +13,10 @@ plottypes = [
 	{title => "Eff vs Lxy", xaxis => "Lxy [m]", name => "Lxyefficiency"}
 ];
 
+plotTypes2D = [
+	{title => "Eff as a function of jet pT and L_{xy}", xaxis => "Jet p_{T} [GeV]", yaxis => "L_{xy} [mm]", name => "pTvsLxyefficiency"}
+];
+
 trainings = ["BDT", "Run1"];
 Legend("Run1" => {Color => 1, Title => "Run 1"});
 Legend("BDT" => {Color => 2, Title => "BDT"});
@@ -26,6 +30,27 @@ Legend("BDT" => {Color => 2, Title => "BDT"});
 
 
 ##NormalizePlots();
+TurnOffStatBoxes();
+
+#
+# 2D plots - these are simple since we have to do them one at a time.
+#
+
+for (t, trainings) {
+  for (p, plotTypes2D) {
+    for (s, trainingSamples) {
+	  name = p["name"];
+      f_training.Get("{t}/{s}/{name}")
+		.tag(s)
+		.plot()
+		.addDrawOption("COLZ")
+		.xaxis(p["xaxis"])
+		.yaxis(p["yaxis"])
+		.title("{t} - {s} - {name}")
+		.size(1200,800);
+	};
+  };
+};
 
 #
 # Plots of CalR vs pT per sample for the signal.
