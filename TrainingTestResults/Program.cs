@@ -1,14 +1,16 @@
-﻿using CalRatioTMVAUtilities;
-using JenkinsAccess;
+﻿using JenkinsAccess;
+using libDataAccess;
 using libDataAccess.Utils;
+using LINQToTreeHelpers;
 using LINQToTreeHelpers.FutureUtils;
+using LINQToTTreeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TMVAUtilities;
 using System.Linq.Expressions;
+using TMVAUtilities;
+using CalRatioTMVAUtilities;
+using static libDataAccess.PlotSpecifications;
 
 namespace TrainingTestResults
 {
@@ -36,6 +38,21 @@ namespace TrainingTestResults
             // Parse the arguments.
             CommandLineUtils.Parse(args);
 
+            // Get all the samples we want to look at, and turn them into
+            // jets with the proper weights attached for later use.
+
+            var backgroundJets = CommandLineUtils.GetRequestedBackground();
+            var allBackgrounds = new List<Tuple<string, IQueryable<Files.MetaData>>>()
+            {
+                Tuple.Create("QCD", backgroundJets),
+            };
+
+            var allSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
+                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
+                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
+                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
+            };
+
             // List the artifacts that we are going to be using.
             var mvaResults = new MVAInfo[]
             {
@@ -57,15 +74,36 @@ namespace TrainingTestResults
                     // Now, create the MVA value from the weight file
                     var mvaValue = MVAWeightFileUtils.MVAFromWeightFile<TrainingTree>(weights);
 
-                    // And now we can make the plots we need!
-                    PlotMVAResult(d, mvaValue);
+                    // Do the backgrounds (e.g. ones where we don't filter for signal).
+                    foreach (var s in allBackgrounds)
+                    {
+                        var sampleD = d.mkdir(s.Item1);
+                        PlotMVAResult(s.Item2.AsGoodJetStream(), sampleD, mvaValue);
+                    }
+
+                    // And now we can make the plots for signal
+                    foreach (var s in allSources)
+                    {
+                        var sampleD = d.mkdir(s.Item1);
+                        PlotMVAResult(s.Item2.AsGoodJetStream().FilterLLPNear(), sampleD, mvaValue);
+                    }
                 }
             }
         }
 
-        private static void PlotMVAResult(FutureTDirectory d, Expression<Func<TrainingTree, double>> mvaValue)
+        /// <summary>
+        /// Generate plots for the signal
+        /// </summary>
+        /// <param name="queryable"></param>
+        /// <param name="sampleD"></param>
+        /// <param name="mvaValue"></param>
+        private static void PlotMVAResult(IQueryable<JetStream> source, FutureTDirectory dir, Expression<Func<TrainingTree, double>> mvaValue)
         {
-            throw new NotImplementedException();
+            source
+                .Select(j => TrainingUtils.TrainingTreeConverter.Invoke(j))
+                .Select(j => Tuple.Create(mvaValue.Invoke(j), j.Weight))
+                .FuturePlot(TrainingEventWeight.NameFormat, TrainingEventWeight.TitleFormat, TrainingEventWeight, "ForJetsWithLLPNear")
+                .Save(dir);
         }
     }
 }
