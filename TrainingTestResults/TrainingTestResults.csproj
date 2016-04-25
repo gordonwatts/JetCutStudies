@@ -149,6 +149,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CalRatioTMVAUtilities\CalRatioTMVAUtilities.csproj">
+      <Project>{FECD7AD5-7CAE-44F2-8225-4B66AF61D7B5}</Project>
+      <Name>CalRatioTMVAUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JenkinsAccess\JenkinsAccess.csproj">
       <Project>{c914fce5-046b-4e3f-9987-c5c6ce7a3e87}</Project>
       <Name>JenkinsAccess</Name>

@@ -76,21 +76,7 @@ namespace TMVAUtilities
 
             // We are going to build up a lambda expression that takes T as an argument and returns a
             // double.
-            Expression<Func<T, double>> r = myT => code.MVAResultValue(1.0);
-
-            var myTArgParam = Expression.Parameter(typeof(T));
-            var args = pnames
-                .Select(p => typeof(T).GetField(p))
-                .Select(pf => Expression.Field(myTArgParam, pf))
-                .Select(fa => (fa.Type != typeof(double)) ? Expression.Convert(fa, typeof(double)) as Expression : fa);
-
-            var argTypes = pnames.Select(_ => typeof(double)).ToArray();
-            var method = code.GetType().GetMethod("MVAResultValue", argTypes);
-            var call = Expression.Call(Expression.Constant(code), method, args.ToArray());
-
-            var lambda = Expression.Lambda<Func<T, double>>(call, myTArgParam);
-
-            return lambda;
+            return ExpressionUtils.BuildLambdaExpression(pnames, code);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using JenkinsAccess;
+﻿using CalRatioTMVAUtilities;
+using JenkinsAccess;
 using libDataAccess.Utils;
 using LINQToTreeHelpers.FutureUtils;
 using System;
@@ -6,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMVAUtilities;
+using System.Linq.Expressions;
 
 namespace TrainingTestResults
 {
@@ -49,11 +52,20 @@ namespace TrainingTestResults
                     var d = f.mkdir(mva.Name);
 
                     // Get the weight file.
-                    var weights = ArtifactAccess.GetArtifactFile(mva.Artifact);
+                    var weights = ArtifactAccess.GetArtifactFile(mva.Artifact).Result;
 
-                    // Now, create the mva value from the weight file
+                    // Now, create the MVA value from the weight file
+                    var mvaValue = MVAWeightFileUtils.MVAFromWeightFile<TrainingTree>(weights);
+
+                    // And now we can make the plots we need!
+                    PlotMVAResult(d, mvaValue);
                 }
             }
+        }
+
+        private static void PlotMVAResult(FutureTDirectory d, Expression<Func<TrainingTree, double>> mvaValue)
+        {
+            throw new NotImplementedException();
         }
     }
 }
