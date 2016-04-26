@@ -112,11 +112,15 @@ namespace TrainingTestResults
 
             var mvaWeithedJetStream = source
                 .Select(j => Tuple.Create(j, j.Weight * mvaValue.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(j))));
+            var weithedJetStream = source
+                .Select(j => Tuple.Create(j, j.Weight));
 
             mvaWeithedJetStream
                 .FuturePlot(JetPtPlotLocal, "MVA")
                 .Save(dir);
-
+            weithedJetStream
+                .FuturePlot(JetPtPlotLocal, "")
+                .Save(dir);
         }
     }
 }
