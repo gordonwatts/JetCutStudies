@@ -111,6 +111,7 @@ namespace TrainingTestResults
             var plotsFromJS = new IPlotSpec<JetStream>[]
             {
                 JetPtPlotJetStream,
+                JetETPlotJetStream,
                 JetEtaPlotJetStream,
                 JetLxyPlotJetStream,
                 JetCalRPlotJetStream,

@@ -49,6 +49,11 @@ namespace libDataAccess
         /// <remarks>Initialized below</remarks>
         public static IPlotSpec<JetInfoExtra> JetExtraPtPlot;
 
+        public static IPlotSpec<double> JetETPlotRaw =
+            MakePlotterSpec<double>(150, 0.0, 750.0, j => j, "ET{0}", "ET of {0} jets; ET [GeV]");
+        public static IPlotSpec<recoTreeJets> JetETPlot;
+        public static IPlotSpec<JetStream> JetETPlotJetStream;
+
         /// <summary>
         /// 1D plot of jet eta
         /// </summary>
@@ -297,6 +302,7 @@ namespace libDataAccess
         static PlotSpecifications()
         {
             JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
+            JetETPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.ET);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
@@ -306,6 +312,7 @@ namespace libDataAccess
             LLPPtPlot = LLPPtPlotRaw.FromType<double, recoTreeLLPs>(j => j.pT / 1000.0);
 
             JetPtPlotJetStream = JetPtPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+            JetETPlotJetStream = JetETPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetEtaPlotJetStream = JetEtaPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j=> j.Weight);
             JetLxyPlotJetStream = JetLxyPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetCalRPlotJetStream = JetCalRPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
