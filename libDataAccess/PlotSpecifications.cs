@@ -59,6 +59,7 @@ namespace libDataAccess
         /// 1D plot of jet eta
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetEtaPlot;
+        public static IPlotSpec<JetStream> JetEtaPlotJetStream;
 
         /// <summary>
         /// Plot the number of tracks.
@@ -148,6 +149,7 @@ namespace libDataAccess
         /// 1D plot of cal ratio jets
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetCalRPlot;
+        public static IPlotSpec<JetStream> JetCalRPlotJetStream;
 
         /// <summary>
         /// 1D plot of cal ratio jets
@@ -184,6 +186,7 @@ namespace libDataAccess
         /// Plot from recoTreeJets
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetLxyPlot;
+        public static IPlotSpec<JetStream> JetLxyPlotJetStream;
 
         /// <summary>
         /// Plot of CalR vs Jet Pt
@@ -294,16 +297,21 @@ namespace libDataAccess
         static PlotSpecifications()
         {
             JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
-            JetPtPlotJetStream = JetPtPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
+
             NTrackPlot = NTrackPlotRaw.FromType<double, IEnumerable<recoTreeTracks>>(tks => tks.Count());
-            SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));
-            MaxTrackPtPlot = MaxTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => CalcMaxPt.Invoke(j.AllTracks));
 
             LLPPtPlot = LLPPtPlotRaw.FromType<double, recoTreeLLPs>(j => j.pT / 1000.0);
 
+            JetPtPlotJetStream = JetPtPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+            JetEtaPlotJetStream = JetEtaPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j=> j.Weight);
+            JetLxyPlotJetStream = JetLxyPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+            JetCalRPlotJetStream = JetCalRPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+
+            SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));
+            MaxTrackPtPlot = MaxTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => CalcMaxPt.Invoke(j.AllTracks));
             JetExtraPtPlot = JetPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraCalRPlot = JetCalRPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);

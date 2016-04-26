@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using TMVAUtilities;
 using CalRatioTMVAUtilities;
 using static libDataAccess.PlotSpecifications;
+using static LINQToTreeHelpers.PlottingUtils;
 
 namespace TrainingTestResults
 {
@@ -107,20 +108,33 @@ namespace TrainingTestResults
                 .Save(dir);
 
             // Next, let plot lots of kinematic plots so we can see what they look like.
+            var plotsFromJS = new IPlotSpec<JetStream>[]
+            {
+                JetPtPlotJetStream,
+                JetEtaPlotJetStream,
+                JetLxyPlotJetStream,
+                JetCalRPlotJetStream,
+            };
 
-            var JetPtPlotLocal = JetPtPlotJetStream.FromType<JetStream, Tuple<JetStream, double>>(jinfo => jinfo.Item1, weight: jinfo => jinfo.Item2 * jinfo.Item1.Weight);
+            var plots = plotsFromJS
+                .Select(myp => myp.FromType<JetStream, Tuple<JetStream, double>>(jinfo => jinfo.Item1, weight: jinfo => jinfo.Item2 * jinfo.Item1.Weight));
 
+            // We want weighted and unweighted plots here.
             var mvaWeithedJetStream = source
                 .Select(j => Tuple.Create(j, j.Weight * mvaValue.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(j))));
             var weithedJetStream = source
                 .Select(j => Tuple.Create(j, j.Weight));
 
-            mvaWeithedJetStream
-                .FuturePlot(JetPtPlotLocal, "MVA")
-                .Save(dir);
-            weithedJetStream
-                .FuturePlot(JetPtPlotLocal, "")
-                .Save(dir);
+            // And run through each plot
+            foreach (var p in plots)
+            {
+                mvaWeithedJetStream
+                    .FuturePlot(p, "MVA")
+                    .Save(dir);
+                weithedJetStream
+                    .FuturePlot(p, "")
+                    .Save(dir);
+            }
         }
     }
 }
