@@ -12,6 +12,13 @@ trainings = [
 	{title => "Default JetPt", name => "FirstPt"}
 ];
 
+MVAPlots = [
+	{mvaName => "weightForJetsWithLLPNear"},
+	{mvaName => "CalR"}
+];
+Legend("weightForJetsWithLLPNear" => {Color => 1, Title => "MVA"});
+Legend("CalR" => {Color => 2, Title => "CalRatio"});
+
 background = "QCD";
 Legend("QCD" => {Color => 4, Title => "QCD"});
 
@@ -19,33 +26,61 @@ Legend("QCD" => {Color => 4, Title => "QCD"});
 # Generate ROC plots
 #
 
+for (MVAPlots) {
+	for (trainings) {
+		# Get the MVA background
+		nnBackground = f_mvaTest.Get("{name}/{background}/{mvaName}").tag("QCD").normalize();
+
+		# Do the MVA output all on one plot
+
+		plots = map(sample, trainingSamples) {
+			f_mvaTest.Get("{name}/{sample}/{mvaName}").tag(sample).normalize();
+		};
+		plots = plots + [nnBackground];
+		plots
+			.plot()
+			.size(1200,800)
+			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
+			.title("MVA {title} ({mvaName})");
+
+		# Next, look at the ROC curves
+
+		rocPlots = map (sample, trainingSamples) {
+			nnSignal = f_mvaTest.Get("{name}/{sample}/{mvaName}").tag(sample);
+			asROC(nnSignal, nnBackground, false, false);
+		};
+
+		rocPlots
+			.draw()
+			.logy()
+			.size(1200,800)
+			.yaxis("Efficiency (J2-J4)")
+			.LegendOptions({drawbox => "false", scale => 0.8})
+			.title("ROC - MVA {title} ({mvaName})");
+	};
+};
+
+// Compare simple CalR performance to MVA performance
 for (trainings) {
-    nnBackground = f_mvaTest.Get("{name}/{background}/weightForJetsWithLLPNear").tag("QCD").normalize();
+	for(sample, trainingSamples) {
+		# Get the MVA backgrounds and signal
+		plotPairs = map(MVAPlots) {
+			b = f_mvaTest.Get("{name}/{background}/{mvaName}").normalize();
+			s = f_mvaTest.Get("{name}/{sample}/{mvaName}").normalize().tag(mvaName);
+			{"s" => s, "b" => b};
+		};
 
-	# Do the MVA output all on one plot
+		# Create a series of ROC plots
+		rocPlots = map(p, plotPairs) {
+			asROC(p["s"], p["b"], false, false);
+		};
 
-	plots = map(sample, trainingSamples) {
-		f_mvaTest.Get("{name}/{sample}/weightForJetsWithLLPNear").tag(sample).normalize();
+		# and draw them
+		rocPlots
+			.draw()
+			.logy()
+			.size(1200,800)
+			.LegendOptions({placement => "UpperLeft", drawbox => "false", scale => 0.8, xmarg => 0.12, scale => 0.8})
+			.title("ROC - CalR vs {title} - {sample}");
 	};
-	plots = plots + [nnBackground];
-	plots
-		.plot()
-		.size(1200,800)
-		.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
-		.title("MVA {title}");
-
-	# Next, look at the ROC curves
-
-    rocPlots = map (sample, trainingSamples) {
-		nnSignal = f_mvaTest.Get("{name}/{sample}/weightForJetsWithLLPNear").tag(sample);
-		asROC(nnSignal, nnBackground, false, false);
-	};
-
-	rocPlots
-		.draw()
-		.logy()
-		.size(1200,800)
-		.yaxis("Efficiency (J2-J4)")
-		.LegendOptions({drawbox => "false", scale => 0.8})
-		.title("ROC - MVA {title}");
 };
