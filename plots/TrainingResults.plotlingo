@@ -43,6 +43,16 @@ for (MVAPlots) {
 			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
 			.title("MVA {title} ({mvaName})");
 
+		integralPlots = map(p, plots) {
+			p.asIntegral();
+		};
+		integralPlots
+			.plot()
+			.size(1200,800)
+			.yaxis("Efficiency (signal)")
+			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
+			.title("MVA Integral {title} ({mvaName})");
+
 		# Next, look at the ROC curves
 
 		rocPlots = map (sample, trainingSamples) {
