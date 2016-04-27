@@ -104,7 +104,7 @@ namespace TrainingTestResults
             source
                 .Select(j => TrainingUtils.TrainingTreeConverter.Invoke(j))
                 .Select(j => Tuple.Create(mvaValue.Invoke(j), j.Weight))
-                .FuturePlot(TrainingEventWeight.NameFormat, TrainingEventWeight.TitleFormat, TrainingEventWeight, "ForJetsWithLLPNear")
+                .FuturePlot(TrainingEventWeightFine.NameFormat, TrainingEventWeightFine.TitleFormat, TrainingEventWeightFine, "All")
                 .Save(dir);
 
             // Next, let plot lots of kinematic plots so we can see what they look like.
