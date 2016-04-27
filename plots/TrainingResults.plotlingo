@@ -9,19 +9,43 @@ TurnOffStatBoxes();
 
 trainings = [
 	{title => "Default JetET", name => "FirstET"},
-	{title => "Default JetET", name => "FirstPt"}
+	{title => "Default JetPt", name => "FirstPt"}
 ];
 
-samples = trainingSamples;
+background = "QCD";
+Legend("QCD" => {Color => 4, Title => "QCD"});
 
 #
-# Do the straing up efficiency plots from the NN turn on plots
+# Generate ROC plots
 #
 
 for (trainings) {
-    for (sample, samples) {
-		nnraw = f_mvaTest.Get("{name}/{sample}/weightForJetsWithLLPNear");
-		nnraw
-			.plot();
+    nnBackground = f_mvaTest.Get("{name}/{background}/weightForJetsWithLLPNear").tag("QCD").normalize();
+
+	# Do the MVA output all on one plot
+
+	plots = map(sample, trainingSamples) {
+		f_mvaTest.Get("{name}/{sample}/weightForJetsWithLLPNear").tag(sample).normalize();
 	};
+	plots = plots + [nnBackground];
+	plots
+		.plot()
+		.size(1200,800)
+		.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
+		.title("MVA {title}");
+
+	# Next, look at the ROC curves
+
+    rocPlots = map (sample, trainingSamples) {
+		nnSignal = f_mvaTest.Get("{name}/{sample}/weightForJetsWithLLPNear").tag(sample);
+		asROC(nnSignal, nnBackground, false, false);
+	};
+
+	rocPlots
+		.draw()
+		.logy()
+		.size(1200,800)
+		.yaxis("Efficiency (J2-J4)")
+		.LegendOptions({drawbox => "false", scale => 0.8})
+		.title("ROC - MVA {title}");
 };
