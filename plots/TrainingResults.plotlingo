@@ -1,0 +1,27 @@
+#
+# We compare several different trainings along with the Run 1 results
+#
+
+include ("common.plotlingo");
+TurnOffStatBoxes();
+
+# The various trainings that we are looking at
+
+trainings = [
+	{title => "Default JetET", name => "FirstET"},
+	{title => "Default JetET", name => "FirstPt"}
+];
+
+samples = trainingSamples;
+
+#
+# Do the straing up efficiency plots from the NN turn on plots
+#
+
+for (trainings) {
+    for (sample, samples) {
+		nnraw = f_mvaTest.Get("{name}/{sample}/weightForJetsWithLLPNear");
+		nnraw
+			.plot();
+	};
+};
