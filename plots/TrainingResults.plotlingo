@@ -13,10 +13,10 @@ trainings = [
 ];
 
 MVAPlots = [
-	{mvaName => "weightForJetsWithLLPNear"},
+	{mvaName => "weightAll"},
 	{mvaName => "CalR"}
 ];
-Legend("weightForJetsWithLLPNear" => {Color => 1, Title => "MVA"});
+Legend("weightAll" => {Color => 1, Title => "MVA"});
 Legend("CalR" => {Color => 2, Title => "CalRatio"});
 
 background = "QCD";
@@ -37,7 +37,11 @@ for (MVAPlots) {
 			f_mvaTest.Get("{name}/{sample}/{mvaName}").tag(sample).normalize();
 		};
 		plots = plots + [nnBackground];
-		plots
+
+		reBinPlots = map(p, plots) {
+			p.rebinTo(200);
+		};
+		reBinPlots
 			.plot()
 			.size(1200,800)
 			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
@@ -63,9 +67,10 @@ for (MVAPlots) {
 		rocPlots
 			.draw()
 			.logy()
+			.grid()
 			.size(1200,800)
 			.yaxis("Efficiency (J2-J4)")
-			.LegendOptions({drawbox => "false", scale => 0.8})
+			.LegendOptions({drawbox => "true", scale => 0.8, placement => "LowerRight", ymarg => 0.14, scale => 0.8})
 			.title("ROC - MVA {title} ({mvaName})");
 	};
 };
@@ -89,8 +94,9 @@ for (trainings) {
 		rocPlots
 			.draw()
 			.logy()
+			.grid()
 			.size(1200,800)
-			.LegendOptions({placement => "UpperLeft", drawbox => "false", scale => 0.8, xmarg => 0.12, scale => 0.8})
+			.LegendOptions({placement => "LowerRight", drawbox => "true", scale => 0.8, ymarg => 0.14, scale => 0.8})
 			.title("ROC - CalR vs {title} - {sample}");
 	};
 };
