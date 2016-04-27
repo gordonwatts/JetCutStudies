@@ -115,6 +115,7 @@ namespace TrainingTestResults
                 JetEtaPlotJetStream,
                 JetLxyPlotJetStream,
                 JetCalRPlotJetStream,
+                JetCalRPlotFineJetStream,
             };
 
             var plots = plotsFromJS

@@ -152,12 +152,14 @@ namespace libDataAccess
         public static IPlotSpec<double> JetCalRPlotRaw =
             MakePlotterSpec<double>(50, -3.0, 4.0, j => NormalizeCalRatio.Invoke(j),
                 "CalR{0}", "Log Ratio of {0} jets; logR");
-
-        /// <summary>
-        /// 1D plot of cal ratio jets
-        /// </summary>
         public static IPlotSpec<recoTreeJets> JetCalRPlot;
         public static IPlotSpec<JetStream> JetCalRPlotJetStream;
+
+        public static IPlotSpec<double> JetCalRPlotFineRaw =
+            MakePlotterSpec<double>(10000, -3.0, 4.0, j => NormalizeCalRatio.Invoke(j),
+                "CalRF{0}", "Log Ratio of {0} jets (finely binned); logR");
+        public static IPlotSpec<recoTreeJets> JetCalRPlotFine;
+        public static IPlotSpec<JetStream> JetCalRPlotFineJetStream;
 
         /// <summary>
         /// 1D plot of cal ratio jets
@@ -309,6 +311,7 @@ namespace libDataAccess
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
+            JetCalRPlotFine = JetCalRPlotFineRaw.FromType<double, recoTreeJets>(j => j.logRatio);
 
             NTrackPlot = NTrackPlotRaw.FromType<double, IEnumerable<recoTreeTracks>>(tks => tks.Count());
 
@@ -319,6 +322,7 @@ namespace libDataAccess
             JetEtaPlotJetStream = JetEtaPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j=> j.Weight);
             JetLxyPlotJetStream = JetLxyPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetCalRPlotJetStream = JetCalRPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+            JetCalRPlotFineJetStream = JetCalRPlotFine.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
 
             SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));
             MaxTrackPtPlot = MaxTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => CalcMaxPt.Invoke(j.AllTracks));
