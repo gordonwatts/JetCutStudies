@@ -23,6 +23,12 @@ namespace libDataAccess
         public static bool VerboseFileFetch = false;
 
         /// <summary>
+        /// Set when we want to use (or not use) the code optimizer when generating
+        /// our C++. Usually only set for debugging the underlying library.
+        /// </summary>
+        public static bool UseCodeOptimizer = true;
+
+        /// <summary>
         /// Return a dataset list given the name of the dataset.
         /// </summary>
         /// <param name="dsname"></param>
@@ -89,7 +95,7 @@ namespace libDataAccess
             var backgroundFiles = GetFileList(sample);
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             //backgroundEvents.IgnoreQueryCache = true;
-            //backgroundEvents.UseStatementOptimizer = false;
+            backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
 
             // fetch the cross section weight
             double xSectionWeight = 1.0;
@@ -176,7 +182,7 @@ namespace libDataAccess
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
             //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
+            sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             return sigEvents;
         }
 
@@ -185,7 +191,7 @@ namespace libDataAccess
             var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
             //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
+            sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             return sigEvents;
         }
 
@@ -194,7 +200,7 @@ namespace libDataAccess
             var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
             //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
+            sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             return sigEvents;
         }
     }

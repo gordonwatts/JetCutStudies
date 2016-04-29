@@ -44,6 +44,9 @@ namespace libDataAccess.Utils
 
             [Option("VariableTransform", Default = "")]
             public string VariableTransform { get; set; }
+
+            [Option("UseCPPOptimizer", Default = 1)]
+            public int UseCPPOptimizer { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -145,6 +148,7 @@ namespace libDataAccess.Utils
                 options => {
                     Files.NFiles = options.UseFullDataset ? 0 : 1;
                     Files.VerboseFileFetch = options.VerboseFileFetch;
+                    Files.UseCodeOptimizer = options.UseCPPOptimizer != 0;
                     if (options.BackgroundAll) RequstedBackgroundSample = BackgroundSampleEnum.All;
                     if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
                     if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
