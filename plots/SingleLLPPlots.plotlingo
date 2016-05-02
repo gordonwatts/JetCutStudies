@@ -1,0 +1,21 @@
+#
+# What do LLP's look like?
+#
+
+include ("common.plotlingo");
+
+# Do the Lxy per sample.
+lxyPlots = ["LLPLxyall", "LLPLxywithJet", "LLPLxywithGoodJet"];
+Legend("LLPLxyall" => {Color => 1, Title => "All LLPs"});
+Legend("LLPLxywithJet" => {Color => 2, Title => "LLP Associated with jet"});
+Legend("LLPLxywithGoodJet" => {Color => 3, Title => "LLP Associated with good jet"});
+
+for (s, trainingSamples) {
+
+	plots = map(p,lxyPlots) {
+	  f_llp.Get("{s}/{p}").tag(p);
+	};
+
+	plots.plot()
+		.title("{s} - Lxy Evolution");
+};
