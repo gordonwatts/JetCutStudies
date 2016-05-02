@@ -53,6 +53,19 @@ namespace LLPInvestigations
             llpStream
                 .PlotBasicLLPValues("all", dir);
 
+            // Next, for LLP's with a jet near them.
+            var llpStreamWithJets = llp.SelectMany(ev => ev.Data.Jets)
+                .Where(j => j.LLP.IsGoodIndex());
+            llpStreamWithJets
+                .Select(j => j.LLP)
+                .PlotBasicLLPValues("withJet", dir);
+            var llpStreamWithGoodJets = llpStreamWithJets
+                .Where(j => j.ET > 40.0 && Math.Abs(j.eta) < 2.4);
+            llpStreamWithGoodJets
+                .Select(j => j.LLP)
+                .PlotBasicLLPValues("withGoodJet", dir);
+
+
             // Look at the number of times sharing occurs (should never happen)
             var sharedJets = from ev in llp
                              from j1 in ev.Data.Jets
