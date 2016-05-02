@@ -14,10 +14,11 @@ trainings = [
 
 MVAPlots = [
 	{mvaName => "weightAll"},
-	{mvaName => "CalR"}
+	{mvaName => "CalRF"}
 ];
 Legend("weightAll" => {Color => 1, Title => "MVA"});
 Legend("CalR" => {Color => 2, Title => "CalRatio"});
+Legend("CalRF" => {Color => 2, Title => "CalRatio"});
 
 background = "QCD";
 Legend("QCD" => {Color => 4, Title => "QCD"});
