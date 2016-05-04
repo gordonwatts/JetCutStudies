@@ -50,6 +50,12 @@ namespace libDataAccess.Utils
 
             [Option("TrainingVariableSet", Default = TrainingVariableSet.Default5pT)]
             public TrainingVariableSet TrainingVariableSet { get; set; }
+
+            [Option("DropVariable")]
+            public IEnumerable<TrainingVariables> DropVariable { get; set; }
+
+            [Option("AddVariable")]
+            public IEnumerable<TrainingVariables> AddVariable { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -168,6 +174,16 @@ namespace libDataAccess.Utils
         public static TrainingVariableSet TrainingVariableSetList { get; private set; }
 
         /// <summary>
+        /// List of additional variables to add
+        /// </summary>
+        public static TrainingVariables[] AdditionalVariables { get; private set; }
+
+        /// <summary>
+        /// List of Variables to drop
+        /// </summary>
+        public static TrainingVariables[] DropVaribles { get; private set; }
+
+        /// <summary>
         /// Parse the command line arguments, and deal with their execution.
         /// </summary>
         /// <param name="args"></param>
@@ -185,6 +201,8 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
                     TrainingVariableSetList = options.TrainingVariableSet;
+                    AdditionalVariables = options.AddVariable.ToArray();
+                    DropVaribles = options.DropVariable.ToArray();
                     MaxBDTDepth = options.BDTMaxDepth;
                     BDTLeafMinFraction = options.BDTLeafMinFraction;
                     TrainingVariableTransform = options.VariableTransform;
