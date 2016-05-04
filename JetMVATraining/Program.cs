@@ -16,6 +16,7 @@ using System.Text;
 using TMVAUtilities;
 using static libDataAccess.CutConstants;
 using static libDataAccess.PlotSpecifications;
+using static libDataAccess.Utils.CommandLineUtils;
 using static libDataAccess.Utils.FutureConsole;
 using static libDataAccess.Utils.SampleUtils;
 using static LINQToTreeHelpers.PlottingUtils;
@@ -69,12 +70,14 @@ namespace JetMVATraining
                 flatSignalTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal");
 
-                // Now, do the training.
+                // Get the list of variables we want to use
+                var varList = GetTrainingVariables();
 
+                // Setup the training
                 var training = flatSignalTrainingData
                     .AsSignal(isTrainingEvent: e => e.EventNumber % 2 == 1)
                     .Background(flatBackgroundTrainingData, isTrainingEvent: e => e.EventNumber % 2 == 1)
-                    .UseVariables(t => t.JetET, t => t.CalRatio, t => t.MaxTrackPt, t => t.NTracks, t => t.SumPtOfAllTracks);
+                    .UseVariables(varList);
 
                 // Build options (like what we might like to transform.
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
@@ -185,6 +188,76 @@ namespace JetMVATraining
                 Console.Out.DumpFutureLines();
             }
 
+        }
+
+        /// <summary>
+        /// Return a list of the training variables that we get by looking at command line options.
+        /// </summary>
+        /// <returns></returns>
+        private static Expression<Func<TrainingTree, double>>[] GetTrainingVariables()
+        {
+            var varsToUse = new Dictionary<string,Expression<Func<TrainingTree, double>>>();
+
+            // Start with the "adds"
+            switch (CommandLineUtils.TrainingVariableSetList)
+            {
+                case CommandLineUtils.TrainingVariableSet.Default5pT:
+                    varsToUse.Add(TrainingVariables.JetPt.ToString(), DictionaryPairForVariable(TrainingVariables.JetPt));
+                    varsToUse.Add(TrainingVariables.CalRatio.ToString(), DictionaryPairForVariable(TrainingVariables.CalRatio));
+                    varsToUse.Add(TrainingVariables.NTracks.ToString(), DictionaryPairForVariable(TrainingVariables.NTracks));
+                    varsToUse.Add(TrainingVariables.SumPtOfAllTracks.ToString(), DictionaryPairForVariable(TrainingVariables.SumPtOfAllTracks));
+                    varsToUse.Add(TrainingVariables.MaxTrackPt.ToString(), DictionaryPairForVariable(TrainingVariables.MaxTrackPt));
+                    break;
+
+                case CommandLineUtils.TrainingVariableSet.Default5ET:
+                    varsToUse.Add(TrainingVariables.JetET.ToString(), DictionaryPairForVariable(TrainingVariables.JetET));
+                    varsToUse.Add(TrainingVariables.CalRatio.ToString(), DictionaryPairForVariable(TrainingVariables.CalRatio));
+                    varsToUse.Add(TrainingVariables.NTracks.ToString(), DictionaryPairForVariable(TrainingVariables.NTracks));
+                    varsToUse.Add(TrainingVariables.SumPtOfAllTracks.ToString(), DictionaryPairForVariable(TrainingVariables.SumPtOfAllTracks));
+                    varsToUse.Add(TrainingVariables.MaxTrackPt.ToString(), DictionaryPairForVariable(TrainingVariables.MaxTrackPt));
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return varsToUse.Select(t => t.Value).ToArray();
+        }
+
+        /// <summary>
+        /// Turn a particular type into an expression.
+        /// </summary>
+        /// <param name="jetPt"></param>
+        /// <returns></returns>
+        private static Expression<Func<TrainingTree, double>> DictionaryPairForVariable(TrainingVariables varName)
+        {
+            switch (varName)
+            {
+                case TrainingVariables.JetPt:
+                    return t => t.JetPt;
+
+                case TrainingVariables.CalRatio:
+                    return t => t.CalRatio;
+
+                case TrainingVariables.JetEta:
+                    return t => t.JetEta;
+
+                case TrainingVariables.NTracks:
+                    return t => t.NTracks;
+
+                case TrainingVariables.SumPtOfAllTracks:
+                    return t => t.SumPtOfAllTracks;
+
+                case TrainingVariables.MaxTrackPt:
+                    return t => t.MaxTrackPt;
+
+                case TrainingVariables.JetET:
+                    return t => t.JetET;
+
+                default:
+                    throw new NotImplementedException();
+                    break;
+            }
         }
 
         /// <summary>

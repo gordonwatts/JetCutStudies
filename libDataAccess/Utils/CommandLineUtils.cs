@@ -47,11 +47,37 @@ namespace libDataAccess.Utils
 
             [Option("UseCPPOptimizer", Default = 1)]
             public int UseCPPOptimizer { get; set; }
+
+            [Option("TrainingVariableSet", Default = TrainingVariableSet.Default5pT)]
+            public TrainingVariableSet TrainingVariableSet { get; set; }
         }
 
         enum BackgroundSampleEnum
         {
             All, JZ2, JZ3, JZ4
+        }
+
+        /// <summary>
+        /// Possible variables for training dataset
+        /// </summary>
+        public enum TrainingVariableSet
+        {
+            Default5pT,
+            Default5ET
+        }
+
+        /// <summary>
+        /// All possible training variables
+        /// </summary>
+        public enum TrainingVariables
+        {
+            JetPt,
+            CalRatio,
+            JetEta,
+            NTracks,
+            SumPtOfAllTracks,
+            MaxTrackPt,
+            JetET,
         }
 
         /// <summary>
@@ -137,6 +163,11 @@ namespace libDataAccess.Utils
         public static int TrainingEvents = 500000;
 
         /// <summary>
+        /// Which set list are we going to use?
+        /// </summary>
+        public static TrainingVariableSet TrainingVariableSetList { get; private set; }
+
+        /// <summary>
         /// Parse the command line arguments, and deal with their execution.
         /// </summary>
         /// <param name="args"></param>
@@ -153,6 +184,7 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
                     if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
+                    TrainingVariableSetList = options.TrainingVariableSet;
                     MaxBDTDepth = options.BDTMaxDepth;
                     BDTLeafMinFraction = options.BDTLeafMinFraction;
                     TrainingVariableTransform = options.VariableTransform;
