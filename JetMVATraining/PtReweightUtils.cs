@@ -13,17 +13,6 @@ namespace JetMVATraining
     static class PtReweightUtils
     {
         /// <summary>
-        /// Return a stream that is flattened in pT. Produce some before and after plots.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        public static IQueryable<TrainingTree> FlattenPtSpectra (this IQueryable<TrainingTree> source, FutureTDirectory output, string samplePrefix)
-        {
-            return FlattenBySpectra(source, t => t.JetPt, output, samplePrefix);
-        }
-
-        /// <summary>
         /// Re weight a training tree by some given variable.
         /// </summary>
         /// <param name="source">Source of events</param>
