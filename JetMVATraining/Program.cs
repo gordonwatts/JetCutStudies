@@ -321,8 +321,6 @@ namespace JetMVATraining
         /// <param name="cut"></param>
         private static IFutureValue<double> GenerateEfficiencyPlots(FutureTDirectory outh, Expression<Func<JetStream, bool>> cut, Expression<Func<JetStream, double>> cVal, IQueryable<JetStream> source)
         {
-            Console.WriteLine(source.PrettyPrintQuery());
-
             // Initialize everything the plotters and lists of plots. Sadly, order is important here.
             if (JetStreamPtVsLXYPlot == null)
             {
