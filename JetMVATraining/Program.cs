@@ -289,6 +289,7 @@ namespace JetMVATraining
         /// </summary>
         public static IPlotSpec<JetStream> JetStreamPtVsLXYPlot = null;
         public static IPlotSpec<JetStream> JetStreamPtPlot = null;
+        public static IPlotSpec<JetStream> JetStreamETPlot = null;
         public static IPlotSpec<JetStream> JetStreamEtaPlot = null;
         public static IPlotSpec<JetStream> JetStreamLxyPlot = null;
 
