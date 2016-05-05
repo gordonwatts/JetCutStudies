@@ -54,13 +54,23 @@ namespace JetMVATraining
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
             {
-                // Create the training data and flatten the pT spectra.
+                // Create the training data and flatten the pT/eta spectra.
+                Expression<Func<TrainingTree, double>> toMakeFlat = null;
+                if (UsingJetPt())
+                {
+                    toMakeFlat = t => t.JetPt;
+                    FutureWriteLine("Reweighting to flatten as a function of JetPt");
+                } else
+                {
+                    toMakeFlat = t => t.JetET;
+                    FutureWriteLine("Reweighting to flatten as a function of JetEt");
+                }
                 var flatBackgroundTrainingData = backgroundTrainingTree
-                    .FlattenBySpectra(t => t.JetET, outputHistograms, "background")
+                    .FlattenBySpectra(toMakeFlat, outputHistograms, "background")
                     ;
                 var flatSignalTrainingData = signalInCalOnly
                     .AsTrainingTree()
-                    .FlattenBySpectra(t => t.JetET, outputHistograms, "signal")
+                    .FlattenBySpectra(toMakeFlat, outputHistograms, "signal")
                     ;
 
                 // Finally, plots of all the training input variables.
@@ -191,52 +201,25 @@ namespace JetMVATraining
         }
 
         /// <summary>
+        /// Return true if we are using JetPt as part of our list of variables.
+        /// </summary>
+        /// <returns></returns>
+        private static bool UsingJetPt()
+        {
+            return CommandLineUtils.GetListOfVariablesToUse()
+                .Where(v => v == TrainingVariables.JetPt)
+                .Any();
+        }
+
+        /// <summary>
         /// Return a list of the training variables that we get by looking at command line options.
         /// </summary>
         /// <returns></returns>
         private static Expression<Func<TrainingTree, double>>[] GetTrainingVariables()
         {
-            var varsToUse = new Dictionary<TrainingVariables, Expression<Func<TrainingTree, double>>>();
-
-            // Start with the "adds"
-            switch (CommandLineUtils.TrainingVariableSetList)
-            {
-                case CommandLineUtils.TrainingVariableSet.Default5pT:
-                    varsToUse.Add(TrainingVariables.JetPt, DictionaryPairForVariable(TrainingVariables.JetPt));
-                    varsToUse.Add(TrainingVariables.CalRatio, DictionaryPairForVariable(TrainingVariables.CalRatio));
-                    varsToUse.Add(TrainingVariables.NTracks, DictionaryPairForVariable(TrainingVariables.NTracks));
-                    varsToUse.Add(TrainingVariables.SumPtOfAllTracks, DictionaryPairForVariable(TrainingVariables.SumPtOfAllTracks));
-                    varsToUse.Add(TrainingVariables.MaxTrackPt, DictionaryPairForVariable(TrainingVariables.MaxTrackPt));
-                    break;
-
-                case CommandLineUtils.TrainingVariableSet.Default5ET:
-                    varsToUse.Add(TrainingVariables.JetET, DictionaryPairForVariable(TrainingVariables.JetET));
-                    varsToUse.Add(TrainingVariables.CalRatio, DictionaryPairForVariable(TrainingVariables.CalRatio));
-                    varsToUse.Add(TrainingVariables.NTracks, DictionaryPairForVariable(TrainingVariables.NTracks));
-                    varsToUse.Add(TrainingVariables.SumPtOfAllTracks, DictionaryPairForVariable(TrainingVariables.SumPtOfAllTracks));
-                    varsToUse.Add(TrainingVariables.MaxTrackPt, DictionaryPairForVariable(TrainingVariables.MaxTrackPt));
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            // Do the add
-            var vToAdd = CommandLineUtils.AdditionalVariables
-                .Where(v => !varsToUse.ContainsKey(v));
-            foreach (var vb in vToAdd)
-            {
-                varsToUse.Add(vb, DictionaryPairForVariable(vb));
-            }
-
-            // And drop anything we are asked to drop.
-            var vToRemove = CommandLineUtils.DropVaribles
-                .Where(v => varsToUse.ContainsKey(v));
-            foreach (var vb in vToRemove)
-            {
-                varsToUse.Remove(vb);
-            }
-            return varsToUse.Select(t => t.Value).ToArray();
+            return CommandLineUtils.GetListOfVariablesToUse()
+                .Select(v => DictionaryPairForVariable(v))
+                .ToArray();
         }
 
         /// <summary>

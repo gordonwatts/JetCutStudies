@@ -171,17 +171,63 @@ namespace libDataAccess.Utils
         /// <summary>
         /// Which set list are we going to use?
         /// </summary>
-        public static TrainingVariableSet TrainingVariableSetList { get; private set; }
+        private static TrainingVariableSet TrainingVariableSetList { get; set; }
 
         /// <summary>
         /// List of additional variables to add
         /// </summary>
-        public static TrainingVariables[] AdditionalVariables { get; private set; }
+        private static TrainingVariables[] AdditionalVariables { get; set; }
 
         /// <summary>
         /// List of Variables to drop
         /// </summary>
-        public static TrainingVariables[] DropVaribles { get; private set; }
+        private static TrainingVariables[] DropVaribles { get; set; }
+
+        /// <summary>
+        /// Return a list of all variables that we are using.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<TrainingVariables> GetListOfVariablesToUse()
+        {
+            var result = new HashSet<TrainingVariables>();
+
+            // First take care of the sets
+            switch (TrainingVariableSetList)
+            {
+                case CommandLineUtils.TrainingVariableSet.Default5pT:
+                    result.Add(TrainingVariables.JetPt);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    break;
+
+                case CommandLineUtils.TrainingVariableSet.Default5ET:
+                    result.Add(TrainingVariables.JetET);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            // Additional variables
+            foreach (var v in AdditionalVariables)
+            {
+                result.Add(v);
+            }
+
+            // Remove any that we want to drop
+            foreach (var v in DropVaribles)
+            {
+                result.Remove(v);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Parse the command line arguments, and deal with their execution.

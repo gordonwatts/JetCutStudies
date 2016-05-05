@@ -1,0 +1,54 @@
+#
+# We compare several different trainings from different jobs
+#
+include ("common.plotlingo");
+TurnOffStatBoxes();
+
+#
+# Setup the jobs we are going to compare
+#
+
+jobs = [
+	#{jobTitle => "Old Standard", jobNumber=>372, JobColor => 1 },
+	{jobTitle => "No NTracks", jobNumber=>394, JobColor => 1 },
+	{jobTitle => "New Standard", jobNumber=>393, JobColor => 2 }
+];
+
+#
+# The plots we are going to look at
+#
+
+plottypes = [
+	{title => "Eff vs jet pT", xaxis => "Jet [GeV]", name => "pTefficiency"},
+	{title => "Eff vs Lxy", xaxis => "Lxy [m]", name => "Lxyefficiency"},
+	{title => "NN weights", xaxis => "MVA Output", name => "weightForJetsWithLLPNear"}
+];
+
+# Which classifier should we look at?
+training="BDT";
+
+##################################
+# Set up the legend
+for(jobs) {
+  Legend("{jobNumber}" => {Color => JobColor, Title => jobTitle});
+};
+
+# Generate a "title" string so it is easy to figure out what is what here
+jobList = "";
+for(jobs) {
+  jobList = jobList + "{jobNumber} - ";
+};
+
+# Do the 1D plots
+for (plottypes) {
+	for (sample, trainingSamples) {
+		plots = map(jobs) {
+			f = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-JetMVATraining/{jobNumber}/artifact/JetMVATraining.root");
+			f.Get("{training}/{sample}/{name}").tag("{jobNumber}");
+		};
+
+		plots
+			.plot()
+			.title("{jobList}{sample} - {name} - {training}");
+	};
+};
