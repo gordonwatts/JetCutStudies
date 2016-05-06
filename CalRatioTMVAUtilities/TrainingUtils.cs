@@ -73,6 +73,7 @@ namespace CalRatioTMVAUtilities
         private static PlotInfo[] _plotters = new PlotInfo[]
         {
             new PlotInfo() { Plotter = JetPtPlotRaw, ValueGetter = tu => tu.JetPt },
+            new PlotInfo() { Plotter = JetETPlotRaw, ValueGetter = tu => tu.JetET },
             new PlotInfo() { Plotter = JetEtaPlotRaw, ValueGetter = tu => tu.JetEta },
             new PlotInfo() { Plotter = JetCalRPlotRaw, ValueGetter = tu => tu.CalRatio },
             new PlotInfo() { Plotter = TrainingEventWeight, ValueGetter = tu => tu.Weight },
