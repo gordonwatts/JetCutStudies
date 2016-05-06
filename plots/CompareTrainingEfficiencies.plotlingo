@@ -9,9 +9,10 @@ TurnOffStatBoxes();
 #
 
 jobs = [
-	#{jobTitle => "Old Standard", jobNumber=>372, JobColor => 1 },
-	{jobTitle => "No NTracks", jobNumber=>394, JobColor => 1 },
-	{jobTitle => "New Standard", jobNumber=>393, JobColor => 2 }
+	{jobTitle => "Old Standard", jobNumber=>372, JobColor => 1 },
+	//{jobTitle => "No NTracks", jobNumber=>394, JobColor => 1 },
+	{jobTitle => "New Standard", jobNumber=>397, JobColor => 2 },
+	{jobTitle => "New Standard ET Flat", jobNumber=>395, JobColor => 3 }
 ];
 
 #
@@ -30,7 +31,7 @@ training="BDT";
 ##################################
 # Set up the legend
 for(jobs) {
-  Legend("{jobNumber}" => {Color => JobColor, Title => jobTitle});
+  Legend("{jobNumber}" => {Color => JobColor, Title => "{jobTitle} - {jobNumber}" });
 };
 
 # Generate a "title" string so it is easy to figure out what is what here
