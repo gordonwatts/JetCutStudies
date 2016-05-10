@@ -18,6 +18,11 @@ namespace libDataAccess
         public static int NFiles = 1;
 
         /// <summary>
+        /// Set to true if we should ignore all queries
+        /// </summary>
+        public static bool IgnoreQueires = false;
+
+        /// <summary>
         /// Set to true to get a complete dump of what is going on during grid file access.
         /// </summary>
         public static bool VerboseFileFetch = false;
@@ -94,8 +99,8 @@ namespace libDataAccess
             // Build the query tree
             var backgroundFiles = GetFileList(sample);
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
-            //backgroundEvents.IgnoreQueryCache = true;
             backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
+            backgroundEvents.IgnoreQueryCache = IgnoreQueires;
 
             // fetch the cross section weight
             double xSectionWeight = 1.0;
@@ -181,7 +186,7 @@ namespace libDataAccess
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
+            sigEvents.IgnoreQueryCache = IgnoreQueires;
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             return sigEvents;
         }
@@ -190,8 +195,8 @@ namespace libDataAccess
         {
             var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
+            sigEvents.IgnoreQueryCache = IgnoreQueires;
             return sigEvents;
         }
 
@@ -199,8 +204,8 @@ namespace libDataAccess
         {
             var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
+            sigEvents.IgnoreQueryCache = IgnoreQueires;
             return sigEvents;
         }
     }

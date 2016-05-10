@@ -48,6 +48,9 @@ namespace libDataAccess.Utils
             [Option("UseCPPOptimizer", Default = 1)]
             public int UseCPPOptimizer { get; set; }
 
+            [Option("IgnoreQueryCache", Default = 0)]
+            public int IgnoreQueryCache { get; set; }
+
             [Option("TrainingVariableSet", Default = TrainingVariableSet.Default5pT)]
             public TrainingVariableSet TrainingVariableSet { get; set; }
 
@@ -242,6 +245,7 @@ namespace libDataAccess.Utils
                     Files.NFiles = options.UseFullDataset ? 0 : 1;
                     Files.VerboseFileFetch = options.VerboseFileFetch;
                     Files.UseCodeOptimizer = options.UseCPPOptimizer != 0;
+                    Files.IgnoreQueires = options.IgnoreQueryCache != 0;
                     if (options.BackgroundAll) RequstedBackgroundSample = BackgroundSampleEnum.All;
                     if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
                     if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
