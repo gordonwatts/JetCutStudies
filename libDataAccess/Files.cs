@@ -17,6 +17,8 @@ namespace libDataAccess
         /// </summary>
         public static int NFiles = 1;
 
+        public static bool IgnoreQueires = true;
+
         /// <summary>
         /// Set to true to get a complete dump of what is going on during grid file access.
         /// </summary>
@@ -88,7 +90,7 @@ namespace libDataAccess
             // Build the query tree
             var backgroundFiles = GetFileList(sample);
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
-            //backgroundEvents.IgnoreQueryCache = true;
+            backgroundEvents.IgnoreQueryCache = IgnoreQueires;
             //backgroundEvents.UseStatementOptimizer = false;
 
             // fetch the cross section weight
@@ -175,7 +177,7 @@ namespace libDataAccess
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
+            sigEvents.IgnoreQueryCache = IgnoreQueires;
             //sigEvents.UseStatementOptimizer = false;
             return sigEvents;
         }
@@ -184,7 +186,7 @@ namespace libDataAccess
         {
             var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
+            sigEvents.IgnoreQueryCache = IgnoreQueires;
             //sigEvents.UseStatementOptimizer = false;
             return sigEvents;
         }
@@ -193,7 +195,7 @@ namespace libDataAccess
         {
             var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
             var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
+            sigEvents.IgnoreQueryCache = IgnoreQueires;
             //sigEvents.UseStatementOptimizer = false;
             return sigEvents;
         }
