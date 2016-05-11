@@ -41,7 +41,7 @@ namespace JetMVATraining
                 .Save(output);
 
             var r = source
-                .ReweightToFlat(JetPtPlotRaw, t => toFlattenBy.Invoke(t), t => t.Weight, (t, w) => new TrainingTree()
+                .ReweightToFlat(JetPtPlotRaw, t => t.JetPt, t => t.Weight, (t, w) => new TrainingTree()
                 {
                     Weight = w,
                     CalRatio = t.CalRatio,
