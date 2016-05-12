@@ -479,6 +479,9 @@ namespace TMVAUtilities
         /// </summary>
         /// <param name="parameters_names"></param>
         /// <returns></returns>
+        /// <remarks>
+        /// The weight is always pulled out as "Weight".
+        /// </remarks>
         private Tuple<string, List<string>> GetParameterAndWeightNames()
         {
             var parameter_names = new List<string>();
@@ -486,15 +489,15 @@ namespace TMVAUtilities
             foreach (var field in typeof(T).GetFields().OrderBy(f => f.MetadataToken))
             {
                 var name = field.Name;
-                if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
+                if (name == "Weight")
                 {
-                    if (!_ignore_variables.Contains(name))
+                    weight_name = name;
+                }
+                else
+                {
+                    if (_use_variables.Count == 0 || (_use_variables.Contains(name)))
                     {
-                        if (name == "Weight")
-                        {
-                            weight_name = name;
-                        }
-                        else
+                        if (!_ignore_variables.Contains(name))
                         {
                             parameter_names.Add(name);
                         }
