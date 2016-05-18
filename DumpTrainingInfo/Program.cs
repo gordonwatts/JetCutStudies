@@ -53,8 +53,8 @@ namespace DumpTrainingInfo
             // Filter by event number
             var jsGood = from j in js
                           let evt = j.EventNumber
-                          where evt == 204133
-                          select j;
+                          where evt == 455678
+                         select j;
 
             var jsWithTrainingInfo = from j in jsGood
                                      let trainingInfo = TrainingUtils.TrainingTreeConverter.Invoke(j)
