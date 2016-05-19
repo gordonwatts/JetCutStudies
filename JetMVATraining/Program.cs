@@ -254,7 +254,6 @@ namespace JetMVATraining
 
                 default:
                     throw new NotImplementedException();
-                    break;
             }
         }
 

@@ -50,16 +50,23 @@ namespace DumpTrainingInfo
                 .AsGoodJetStream()
                 .FilterNonTrainingEvents();
 
-            // Filter by event number
-            var jsGood = from j in js
-                          let evt = j.EventNumber
-                          where evt == 455678
-                         select j;
+            // Filter by event number and run number
+            var runAndEvent = CommandLineUtils.RunAndEventNumber;
+            var jsGood = js;
+            if (runAndEvent.Item1 != 0)
+            {
+
+            }
+            if (runAndEvent.Item2 != 0)
+            {
+                jsGood = jsGood.Where(j => j.EventNumber == runAndEvent.Item2);
+            }
 
             var jsWithTrainingInfo = from j in jsGood
                                      let trainingInfo = TrainingUtils.TrainingTreeConverter.Invoke(j)
                                      select new
                                      {
+                                         RunNumber = j.RunNumber,
                                          EventNumber = j.EventNumber,
                                          TrainingInfo = trainingInfo,
                                          MVAValue = mvaValue.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(j)),

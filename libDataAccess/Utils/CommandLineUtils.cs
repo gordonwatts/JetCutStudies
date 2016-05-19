@@ -59,6 +59,12 @@ namespace libDataAccess.Utils
 
             [Option("AddVariable")]
             public IEnumerable<TrainingVariables> AddVariable { get; set; }
+
+            [Option("RunNumber", Default = 0)]
+            public int RunNumber { get; set; }
+
+            [Option("EventNumber", Default = 0)]
+            public int EventNumber { get; set; }
         }
 
         enum BackgroundSampleEnum
@@ -186,6 +192,8 @@ namespace libDataAccess.Utils
         /// </summary>
         private static TrainingVariables[] DropVaribles { get; set; }
 
+        public static Tuple<int, int> RunAndEventNumber { get; private set; }
+
         /// <summary>
         /// Return a list of all variables that we are using.
         /// </summary>
@@ -257,6 +265,7 @@ namespace libDataAccess.Utils
                     BDTLeafMinFraction = options.BDTLeafMinFraction;
                     TrainingVariableTransform = options.VariableTransform;
                     TrainingEvents = options.EventsToUseForTrainingAndTesting;
+                    RunAndEventNumber = Tuple.Create(options.RunNumber, options.EventNumber);
                     return 0;
                 },
                 errors => {
