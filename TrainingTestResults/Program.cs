@@ -101,7 +101,7 @@ namespace TrainingTestResults
         private static void PlotMVAResult(IQueryable<JetStream> source, FutureTDirectory dir, Expression<Func<TrainingTree, double>> mvaValue)
         {
             // Plot the weights. This can be used to plot signal vs background, ROC curves, etc.
-            source
+            var weights = source
                 .Select(j => TrainingUtils.TrainingTreeConverter.Invoke(j))
                 .Select(j => Tuple.Create(mvaValue.Invoke(j), j.Weight))
                 .FuturePlot(TrainingEventWeightFine.NameFormat, TrainingEventWeightFine.TitleFormat, TrainingEventWeightFine, "All")
@@ -121,9 +121,13 @@ namespace TrainingTestResults
             var plots = plotsFromJS
                 .Select(myp => myp.FromType<JetStream, Tuple<JetStream, double>>(jinfo => jinfo.Item1, weight: jinfo => jinfo.Item2 * jinfo.Item1.Weight));
 
-            // We want weighted and unweighted plots here.
+            // We want weighted and unweighted plots here. We first have to normalize the weighting to be from 0 to 1.
+            var firstNonZeroBinValue = weights.Value.FindNonZeroBinValue();
+            var lastNonZeroBinValue = weights.Value.FindNonZeroBinValue(HistogramUtils.BinSearchOrder.HighestBin);
+            var scaleing = 1.0 / (lastNonZeroBinValue - firstNonZeroBinValue);
+
             var mvaWeithedJetStream = source
-                .Select(j => Tuple.Create(j, j.Weight * mvaValue.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(j))));
+                .Select(j => Tuple.Create(j, j.Weight * (mvaValue.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(j)) - firstNonZeroBinValue)*scaleing));
             var weithedJetStream = source
                 .Select(j => Tuple.Create(j, j.Weight));
 
