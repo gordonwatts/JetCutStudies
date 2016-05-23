@@ -76,7 +76,10 @@ for (MVAPlots) {
 	};
 };
 
+//
 // Compare simple CalR performance to MVA performance
+//
+
 for (trainings) {
 	for(sample, trainingSamples) {
 		# Get the MVA backgrounds and signal
@@ -99,5 +102,32 @@ for (trainings) {
 			.size(1200,800)
 			.LegendOptions({placement => "LowerRight", drawbox => "true", scale => 0.8, ymarg => 0.14, scale => 0.8})
 			.title("ROC - CalR vs {title} - {sample}");
+	};
+};
+
+//
+// Generate input variable plots - where we calculate efficiencies by each input variable.
+//
+
+inputVariables = [
+	{vname => "pT", title => "pT", rebin => 20},
+	{vname => "eta", title => "Eta", rebin => 20},
+	{vname => "eta", title => "CalR", rebin => 20},
+	{vname => "Lxy", title => "Lxy", rebin => 20}
+];
+
+allSamples = trainingSamples + ["QCD"];
+
+for (trainings) {
+	for (inputVariables) {
+		sampleEff = map(sample, allSamples) {
+			denom = f_mvaTest.Get("{name}/{sample}/{vname}").rebinTo(rebin).tag(sample);
+			num = f_mvaTest.Get("{name}/{sample}/{vname}MVA").rebinTo(rebin).tag(sample);
+			num / denom;
+		};
+
+		sampleEff
+			.plot()
+			.title("{name} - {vname} Efficiency");
 	};
 };
