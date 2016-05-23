@@ -67,6 +67,22 @@ namespace libDataAccess
         public static IPlotSpec<JetStream> JetEtaPlotJetStream;
 
         /// <summary>
+        /// Plot of MaxPt
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraSumPt =
+            MakePlotterSpec<JetInfoExtra>(40, 0.0, 40.0, j => j.AllTracks.Sum(t => t.pT),
+                "SumPt{0}", "Track Sum Pt for {0}");
+        public static IPlotSpec<JetStream> JetStreamSumPt;
+
+        /// <summary>
+        /// The max track pT
+        /// </summary>
+        public static IPlotSpec<JetInfoExtra> JetExtraMaxPt =
+            MakePlotterSpec<JetInfoExtra>(40, 0.0, 40.0, j => CalcMaxPt.Invoke(j.AllTracks),
+                "SumPt{0}", "Track Sum Pt for {0}");
+        public static IPlotSpec<JetStream> JetStreamMaxPt;
+
+        /// <summary>
         /// Plot the number of tracks.
         /// </summary>
         public static IPlotSpec<double> NTrackPlotRaw =
@@ -323,6 +339,8 @@ namespace libDataAccess
             JetLxyPlotJetStream = JetLxyPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetCalRPlotJetStream = JetCalRPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetCalRPlotFineJetStream = JetCalRPlotFine.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+            JetStreamSumPt = JetExtraSumPt.FromType<JetInfoExtra, JetStream>(j => j.JetInfo, weight: j => j.Weight);
+            JetStreamMaxPt = JetExtraMaxPt.FromType<JetInfoExtra, JetStream>(j => j.JetInfo, weight: j => j.Weight);
 
             SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));
             MaxTrackPtPlot = MaxTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => CalcMaxPt.Invoke(j.AllTracks));
