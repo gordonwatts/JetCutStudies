@@ -93,6 +93,8 @@ namespace libDataAccess.Utils
             SumPtOfAllTracks,
             MaxTrackPt,
             JetET,
+            JetWidth,
+            JetTrackDR,
         }
 
         /// <summary>

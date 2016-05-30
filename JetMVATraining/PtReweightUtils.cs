@@ -40,6 +40,8 @@ namespace JetMVATraining
                     SumPtOfAllTracks = t.SumPtOfAllTracks,
                     EventNumber = t.EventNumber,
                     JetET = t.JetET,
+                    JetWidth = t.JetWidth,
+                    JetDRTo2GeVTrack = t.JetDRTo2GeVTrack,
                 });
 
             r

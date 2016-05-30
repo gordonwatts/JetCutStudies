@@ -10,6 +10,7 @@ using LinqToTTreeInterfacesLib;
 using ROOTNET;
 using libDataAccess.Utils;
 using TMVAUtilities;
+using libDataAccess;
 
 namespace CalRatioTMVAUtilities
 {
@@ -27,6 +28,8 @@ namespace CalRatioTMVAUtilities
         public double MaxTrackPt;
         public int EventNumber;
         public double JetET;
+        public double JetWidth;
+        public double JetDRTo2GeVTrack;
     }
 
     /// <summary>
@@ -46,6 +49,8 @@ namespace CalRatioTMVAUtilities
                 MaxTrackPt = CalcMaxPt.Invoke(i.JetInfo.AllTracks),
                 EventNumber = i.EventNumber,
                 JetET = i.JetInfo.Jet.ET,
+                JetWidth = i.JetInfo.Jet.width,
+                JetDRTo2GeVTrack = PlotSpecifications.CalcDR2GeVTrack.Invoke(i.JetInfo.AllTracks, i.JetInfo.Jet),
             };
 
         /// <summary>
@@ -80,6 +85,8 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = NTrackPlotRaw, ValueGetter = tu => tu.NTracks },
             new PlotInfo() { Plotter = SumTrackPtPlotRaw, ValueGetter = tu => tu.SumPtOfAllTracks },
             new PlotInfo() { Plotter = MaxTrackPtPlotRaw, ValueGetter = tu => tu.MaxTrackPt },
+            new PlotInfo() { Plotter = JetWidthPlotRaw, ValueGetter = tu => tu.JetWidth },
+            new PlotInfo() { Plotter = DeltaROfCloseTrackPlotRaw, ValueGetter = tu => tu.JetDRTo2GeVTrack },
         };
 
         /// <summary>

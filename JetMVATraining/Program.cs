@@ -252,6 +252,12 @@ namespace JetMVATraining
                 case TrainingVariables.JetET:
                     return t => t.JetET;
 
+                case TrainingVariables.JetWidth:
+                    return t => t.JetWidth;
+
+                case TrainingVariables.JetTrackDR:
+                    return t => t.JetDRTo2GeVTrack;
+
                 default:
                     throw new NotImplementedException();
             }
