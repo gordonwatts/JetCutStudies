@@ -44,6 +44,14 @@ namespace GenericPerformancePlots
                 .FuturePlot(TrackPtExtraPlot, nameAddition)
                 .Save(saveDir);
 
+            jets
+                .FuturePlot(JetWidthPlotExtra, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(DeltaROfCloseTrackPlotExtra, nameAddition)
+                .Save(saveDir);
+
             // TODO: Running this loop takes waaay too long. What are we doing
             // wrong (if anything)?
             jets
