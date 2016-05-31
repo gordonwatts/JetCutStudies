@@ -78,7 +78,8 @@ namespace libDataAccess.Utils
         public enum TrainingVariableSet
         {
             Default5pT,
-            Default5ET
+            Default5ET,
+            None
         }
 
         /// <summary>
@@ -221,6 +222,9 @@ namespace libDataAccess.Utils
                     result.Add(TrainingVariables.NTracks);
                     result.Add(TrainingVariables.SumPtOfAllTracks);
                     result.Add(TrainingVariables.MaxTrackPt);
+                    break;
+
+                case CommandLineUtils.TrainingVariableSet.None:
                     break;
 
                 default:
