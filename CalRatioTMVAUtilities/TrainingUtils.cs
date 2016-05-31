@@ -37,6 +37,9 @@ namespace CalRatioTMVAUtilities
     /// </summary>
     public static class TrainingUtils
     {
+        /// <summary>
+        /// Converter expression that can be used in our LINQ queries
+        /// </summary>
         public static Expression<Func<JetStream, TrainingTree>> TrainingTreeConverter = i
             => new TrainingTree()
             {
@@ -52,6 +55,26 @@ namespace CalRatioTMVAUtilities
                 JetWidth = i.JetInfo.Jet.width,
                 JetDRTo2GeVTrack = PlotSpecifications.CalcDR2GeVTrack.Invoke(i.JetInfo.AllTracks, i.JetInfo.Jet),
             };
+
+        /// <summary>
+        /// Remove training events
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<TrainingTree> FilterNonTrainingEvents (this IQueryable<TrainingTree> source)
+        {
+            return source.Where(t => t.EventNumber % 2 == 0);
+        }
+
+        /// <summary>
+        /// Keep only the training events
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<TrainingTree> FilterTrainingEvents(this IQueryable<TrainingTree> source)
+        {
+            return source.Where(t => t.EventNumber % 2 == 1);
+        }
 
         /// <summary>
         /// Create a training tree from a jet stream.

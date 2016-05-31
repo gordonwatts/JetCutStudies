@@ -148,7 +148,7 @@ namespace JetMVATraining
                     // Calculate where we have to place the cut in order to get the same over-all background efficiency.
                     var nncut = fullBackgroundSample
                         .AsTrainingTree()
-                        .Where(e => e.EventNumber % 2 == 0)
+                        .FilterNonTrainingEvents()
                         .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), m);
                     FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is {m.Name} > {nncut}.");
 
@@ -185,13 +185,15 @@ namespace JetMVATraining
                     {
                         var sEvents = s.Item2
                             .AsGoodJetStream()
-                            .Where(e => e.EventNumber % 2 == 0)
+                            .FilterNonTrainingEvents()
                             .FilterLLPNear();
                         var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, c.CutValue, sEvents);
                         FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");
                     }
-                    var eff = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly);
-                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents: {eff.Value}.");
+                    var effTest = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterNonTrainingEvents());
+                    var effTrain = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterTrainingEvents());
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TestingSignalEvents: {effTest.Value}.");
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents: {effTrain.Value}.");
                 }
 
                 // Done. Dump all output.
