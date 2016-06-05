@@ -28,7 +28,8 @@ $samples = (
 			"mc15_13TeV.304809.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS50_lt9m.merge.AOD.e4754_s2698_r7146_r6282",
 
 			"mc15_13TeV.304810.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS50_lt5m.merge.AOD.e4754_s2698_r7146_r6282",
-			"mc15_13TeV.304812.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS50_lt9m.merge.AOD.e4754_s2698_r7146_r6282",
+			#The container is there, but no files are there.
+			#"mc15_13TeV.304812.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS50_lt9m.merge.AOD.e4754_s2698_r7146_r6282",
 			"mc15_13TeV.304811.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt5m.merge.AOD.e4754_s2698_r7146_r6282",
 			"mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282",
 
