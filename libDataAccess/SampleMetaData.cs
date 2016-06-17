@@ -88,6 +88,20 @@ namespace libDataAccess
         /// <param name="sampleName">The full dataset name or the nick name of the sample we are looking for.</param>
         public static SampleMetaData LoadFromCSV(string sampleName)
         {
+            LoadMetaData();
+
+            // Find the sample. If we can't, fail pretty badly.
+            return _samples
+                .Where(sam => sam.Name == sampleName || sam.NickName == sampleName)
+                .FirstOrDefault()
+                .IfNull(_ => { throw new ArgumentException($"Unable to find sample meta data for sample '{sampleName}' in sample metadata file."); });
+        }
+
+        /// <summary>
+        /// Load up all meta data.
+        /// </summary>
+        private static void LoadMetaData()
+        {
             if (_samples == null)
             {
                 var rootdir = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
@@ -105,12 +119,18 @@ namespace libDataAccess
                     .Select(lst => new SampleMetaData(lst[0], lst[1].ToDouble(), lst[3].ToInt32(), lst[2].ToDouble(), lst.Length >= 5 ? lst[4] : "", lst[5], lst[6].Split('+')))
                     .ToArray();
             }
+        }
 
-            // Find the sample. If we can't, fail pretty badly.
+        /// <summary>
+        /// Return any samples with a particular tag, including the null list.
+        /// </summary>
+        /// <param name="tagname"></param>
+        /// <returns></returns>
+        public static IEnumerable<SampleMetaData> AllSamplesWithTag(string tagname)
+        {
+            LoadMetaData();
             return _samples
-                .Where(sam => sam.Name == sampleName || sam.NickName == sampleName)
-                .FirstOrDefault()
-                .IfNull(_ => { throw new ArgumentException($"Unable to find sample meta data for sample '{sampleName}' in sample metadata file."); });
+                .Where(s => s.HasTag(tagname));
         }
     }
 }

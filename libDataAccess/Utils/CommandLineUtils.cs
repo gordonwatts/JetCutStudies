@@ -137,11 +137,7 @@ namespace libDataAccess.Utils
             switch (RequstedBackgroundSample)
             {
                 case BackgroundSampleEnum.All:
-                    return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", GetJZ(2)),
-                        Tuple.Create("J3Z", GetJZ(3)),
-                        Tuple.Create("J4Z", GetJZ(4)),
-                    };
+                    return SamplesAsNamedSequence(SampleMetaData.AllSamplesWithTag("background"));
 
                 case BackgroundSampleEnum.JZ2:
                     return new Tuple<string, IQueryable<MetaData>>[] {
@@ -161,6 +157,17 @@ namespace libDataAccess.Utils
                 default:
                     throw new InvalidOperationException("Unknown background samples");
             }
+        }
+
+        /// <summary>
+        /// From a list of samples, return them by name.
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        private static IEnumerable<Tuple<string, IQueryable<MetaData>>> SamplesAsNamedSequence(IEnumerable<SampleMetaData> samples)
+        {
+            return samples
+                .Select(s => Tuple.Create(s.Name, Files.GetSampleAsMetaData(s)));
         }
 
         /// <summary>

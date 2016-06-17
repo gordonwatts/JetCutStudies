@@ -16,7 +16,7 @@ namespace libDataAccess
         /// <summary>
         /// Default setting for # of files to fetch when we run. 0 means we are running on the full data sample.
         /// </summary>
-        public static int NFiles = 1;
+        public static int NFiles = 6;
 
         /// <summary>
         /// Set to true if we should ignore all queries
@@ -51,7 +51,7 @@ namespace libDataAccess
 
             try {
                 return GRIDJobs.FindJobFiles("DiVertAnalysis",
-                    5,
+                    6,
                     dsname,
                     nFiles: NFiles,
                     statusUpdate: l => Console.WriteLine(l),
@@ -81,7 +81,7 @@ namespace libDataAccess
         /// </summary>
         /// <param name="sample"></param>
         /// <returns></returns>
-        private static IQueryable<MetaData> GetSampleAsMetaData(string sample)
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample)
         {
             // Build the query tree
             var backgroundFiles = GetFileList(sample);
@@ -109,6 +109,16 @@ namespace libDataAccess
         }
 
         /// <summary>
+        /// Return the meta-data for a sample
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s)
+        {
+            return GetSampleAsMetaData(s.Name);
+        }
+
+        /// <summary>
         /// Metadata we hold for each sample
         /// </summary>
         public class MetaData
@@ -126,7 +136,10 @@ namespace libDataAccess
             return
                 GetJZ(2)
                 .Concat(GetJZ(3))
-                .Concat(GetJZ(4));
+                .Concat(GetJZ(4))
+                .Concat(GetJZ(5))
+                .Concat(GetJZ(6))
+                .Concat(GetJZ(7))
                 ;
         }
 
@@ -141,34 +154,6 @@ namespace libDataAccess
             return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight * e.eventWeight });
         }
 
-#if false
-        public static QueriableTTree<recoTree> Get125pi15()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-
-        public static QueriableTTree<recoTree> Get125pi40()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301298.HSS_mH125mS40.reco_20k.s2698_r7144_v03_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-
-        public static QueriableTTree<recoTree> Get600pi100()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301301.HSS_mH600mS100.reco_20k.s2698_r7144_v03_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-#endif
         public static IQueryable<recoTree> Get200pi25lt5m()
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
