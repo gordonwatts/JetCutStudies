@@ -3,7 +3,7 @@
 #
 
 $jobName = "DiVertAnalysis"
-$jobVersion = 5
+$jobVersion = 6
 
 # Rucio command used to search for some of these:
 # -bash-4.1$ rucio list-dids mc15_13TeV:*AOD*e5102* | grep CONTAINER
