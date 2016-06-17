@@ -1,5 +1,6 @@
 ﻿using DiVertAnalysis;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace libDataAccess
 
             try {
                 return GRIDJobs.FindJobFiles("DiVertAnalysis",
-                    4,
+                    5,
                     dsname,
                     nFiles: NFiles,
                     statusUpdate: l => Console.WriteLine(l),
@@ -65,28 +66,14 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Get the J2Z files for running.
+        /// Return the JZ sample as requested.
         /// </summary>
+        /// <param name="jzIndex"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetJ1Z()
+        public static IQueryable<MetaData> GetJZ(int jzIndex)
         {
-            const string sample = "mc15_13TeV.361021.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ1W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452";
-            return GetSampleAsMetaData(sample);
-        }
-
-        public static IQueryable<MetaData> GetJ2Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-        }
-
-        public static IQueryable<MetaData> GetJ3Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361023.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ3W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-        }
-
-        public static IQueryable<MetaData> GetJ4Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
+            var sample = SampleMetaData.LoadFromCSV($"J{jzIndex}Z");
+            return GetSampleAsMetaData(sample.Name);
         }
 
         /// <summary>
@@ -137,9 +124,9 @@ namespace libDataAccess
         public static IQueryable<MetaData> GetAllJetSamples()
         {
             return
-                GetJ2Z()
-                .Concat(GetJ3Z())
-                .Concat(GetJ4Z());
+                GetJZ(2)
+                .Concat(GetJZ(3))
+                .Concat(GetJZ(4));
                 ;
         }
 

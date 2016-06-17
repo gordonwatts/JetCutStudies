@@ -115,13 +115,13 @@ namespace libDataAccess.Utils
                     return Files.GetAllJetSamples();
 
                 case BackgroundSampleEnum.JZ2:
-                    return GetJ2Z();
+                    return GetJZ(2);
 
                 case BackgroundSampleEnum.JZ3:
-                    return GetJ3Z();
+                    return GetJZ(3);
 
                 case BackgroundSampleEnum.JZ4:
-                    return GetJ4Z();
+                    return GetJZ(4);
 
                 default:
                     throw new InvalidOperationException("Unknown background samples");
@@ -138,24 +138,24 @@ namespace libDataAccess.Utils
             {
                 case BackgroundSampleEnum.All:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", GetJ2Z()),
-                        Tuple.Create("J3Z", GetJ3Z()),
-                        Tuple.Create("J4Z", GetJ4Z()),
+                        Tuple.Create("J2Z", GetJZ(2)),
+                        Tuple.Create("J3Z", GetJZ(3)),
+                        Tuple.Create("J4Z", GetJZ(4)),
                     };
 
                 case BackgroundSampleEnum.JZ2:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", GetJ2Z()),
+                        Tuple.Create("J2Z", GetJZ(2)),
                     };
 
                 case BackgroundSampleEnum.JZ3:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J3Z", GetJ3Z()),
+                        Tuple.Create("J3Z", GetJZ(3)),
                     };
 
                 case BackgroundSampleEnum.JZ4:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J4Z", GetJ4Z()),
+                        Tuple.Create("J4Z", GetJZ(4)),
                     };
 
                 default:

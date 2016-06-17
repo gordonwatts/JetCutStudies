@@ -23,9 +23,9 @@ namespace JZPlotter
 
             // Build our own set of background samples so we can experiment.
             var jets = new IQueryable<MetaData>[] {
-                GetJ2Z(),
-                GetJ3Z(),
-                GetJ4Z(),
+                GetJZ(2),
+                GetJZ(3),
+                GetJZ(4),
             };
 
             // Count them individually
@@ -37,9 +37,9 @@ namespace JZPlotter
             var allSamplesToTest = new List<Tuple<String, IQueryable<MetaData>>>()
             {
                 Tuple.Create("AllJZ", GetAllJetSamples()),
-                Tuple.Create("J2Z", GetJ2Z()),
-                Tuple.Create("J3Z", GetJ3Z()),
-                Tuple.Create("J4Z", GetJ4Z())
+                Tuple.Create("J2Z", GetJZ(2)),
+                Tuple.Create("J3Z", GetJZ(3)),
+                Tuple.Create("J4Z", GetJZ(4))
             };
 
             var totalCount = GetAllJetSamples().FutureCount();

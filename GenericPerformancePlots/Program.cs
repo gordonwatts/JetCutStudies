@@ -39,12 +39,12 @@ namespace GenericPerformancePlots
             // All the background samples have to be done first.
             var backgroundSamples = new Tuple<IQueryable<recoTree>, string>[]
             {
-                new Tuple<IQueryable<recoTree>, string>(Files.GetJ2Z().Select(e => e.Data), "J2Z"),
-                new Tuple<IQueryable<recoTree>, string>(Files.GetJ3Z().Select(e => e.Data), "J3Z"),
-                new Tuple<IQueryable<recoTree>, string>(Files.GetJ4Z().Select(e => e.Data), "J4Z"),
+                new Tuple<IQueryable<recoTree>, string>(Files.GetJZ(2).Select(e => e.Data), "J2Z"),
+                new Tuple<IQueryable<recoTree>, string>(Files.GetJZ(3).Select(e => e.Data), "J3Z"),
+                new Tuple<IQueryable<recoTree>, string>(Files.GetJZ(4).Select(e => e.Data), "J4Z"),
             };
 
-            var backgroundEvents = Files.GetJ2Z().Select(e => e.Data);
+            var backgroundEvents = Files.GetJZ(2).Select(e => e.Data);
 
             // All the signal we are going to make plots of.
             var signalSamples = new Tuple<IQueryable<recoTree>, string>[]

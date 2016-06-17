@@ -191,14 +191,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <TTreeGroupSpec Include="DiVertAnalysis\recoTreeConfig-001.ntup" />
-  </ItemGroup>
-  <ItemGroup>
-    <ROOTFileDataModel Include="DiVertAnalysis\user.gwatts.7001349._000001.hist-output.ntupom">
-      <Namespace>DiVertAnalysis</Namespace>
-    </ROOTFileDataModel>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Sample Meta Data.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -207,6 +199,15 @@
     <None Include="Templates\TSelectorTemplate.cxx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <TTreeGroupSpec Include="DiVertAnalysis\EventLoop_FileExecutedConfig-000.ntup" />
+    <TTreeGroupSpec Include="DiVertAnalysis\recoTreeConfig-000.ntup" />
+  </ItemGroup>
+  <ItemGroup>
+    <ROOTFileDataModel Include="DiVertAnalysis\user.gwatts.8578406._000001.hist-output.ntupom">
+      <Namespace>DiVertAnalysis</Namespace>
+    </ROOTFileDataModel>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

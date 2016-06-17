@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NtupleTreeInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Classes>
+    <ROOTClassShell>
+      <Name>EventLoop_FileExecuted</Name>
+      <Items>
+        <IClassItem xsi:type="ItemROOTClass" ItemType="ROOTNET.Interface.NTString" Name="file" NotAPointer="false" />
+      </Items>
+      <IsTClonesArrayClass>false</IsTClonesArrayClass>
+      <IsTopLevelClass>true</IsTopLevelClass>
+      <NtupleProxyPath>C:\Users\Gordon\Documents\Code\calratio2015\JetCutStudies\libDataAccess\DiVertAnalysis\ntuple_EventLoop_FileExecuted.h</NtupleProxyPath>
+      <UserInfoPath>C:\Users\Gordon\Documents\Code\calratio2015\JetCutStudies\libDataAccess\DiVertAnalysis\EventLoop_FileExecutedConfig-000.ntup</UserInfoPath>
+      <ClassesToGenerate />
+    </ROOTClassShell>
+    <ROOTClassShell>
+      <Name>recoTree</Name>
+      <Items>
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="event_count" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="eventNumber" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="runNumber" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="uint" Name="backgroundFlags" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="lumiBlock" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="eventWeight" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="actualIntPerCrossing" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="averageIntPerCrossing" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="event_HT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="event_NJets" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="event_HTMiss" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="event_Meff" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="hasGoodPV" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="isGoodLAr" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="isGoodTile" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="isGoodSCT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="isCompleteEvent" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="jetsPassingCalREmul" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dPhiLeadingCalibJets" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dRLeadingCalibJets" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="event_tauRoI_maxET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_TAU30" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_LLPNOMATCH" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_TAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_cleanLLP_TAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_LLPNOMATCH_noiso" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_TAU60_noiso" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_cleanLLP_TAU60_noiso" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passMuvtx" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passMuvtx_noiso" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passL1TAU30" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passL1TAU40" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passL1TAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passL1LLPNOMATCH" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passJ25" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passJ100" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passJ400" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalibJet_isGoodStand" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalibJet_isGoodLLP" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_E" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_width" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_logRatio" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_EMF" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_time" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_BDT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalibJet_isCRHLTJet" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="CalibJet_indexLLP" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="uint[]" Name="CalibJet_nTrk" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_sumTrkpT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_maxTrkpT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_minDRTrkpt2" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalibJet_matchPassEmul" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="CalibJet_cluster_nClusters" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_r" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_x" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_y" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_z" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_Lxy" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_calibET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_calibEta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_calibPhi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_time" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_lambda" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_sec_r" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_sec_lambda" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_qual_tile" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_qual_lar" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_lateral" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_longitudinal" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_first_Eden" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_EMF" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_EEM" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_Etot" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_dR_tojet" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_fracE_ofjet" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_jetEMF_revised" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSTracklet_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSTracklet_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSeg_etaPos" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSeg_thetaPos" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSeg_phiPos" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSeg_thetaDir" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSeg_phiDir" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSeg_t0" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSeg_chIndex" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSeg_techIndex" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METCST_met" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METCST_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METCST_mpx" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METCST_mpy" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METCST_sumet" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METTST_met" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METTST_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METTST_mpx" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METTST_mpy" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="METTST_sumet" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_EMF" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_logR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_minDR_HLTtracks" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_dR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CR_HLT_matchOff" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_LLP_DR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_LLP_Lxy" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_LLP_Lz" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_NegativeE" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_FracSamplingMax" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_HECQuality" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_LArQuality" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_AverageLArQF" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_HECFrac" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_HLT_Timing" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CR_offline_HLTassoc" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_EMF" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_logR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_nTrks" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_timing" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CR_offline_matchLLP" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_LLP_DR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_LLP_Lxy" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_LLP_Lz" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CR_offline_passCuts" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="CR_offline_jetindex" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CR_offline_goodjet_stand" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CR_offline_goodjet_llp" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CR_offline_BDT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetPt" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetEta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetPhi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetEMF" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetLogR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetTime" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetsumTrkpT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetnTrk" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_minDRTrkpt2" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_jetIsCosmic" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_jetIsGoodLLP" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetLxy" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_jetLz" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_EmulPass" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_HLTPass" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_L1Pass" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalR_emul_RoImaxET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_EmulPassTAU30" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_EmulPassTAU40" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_EmulPassTAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_EmulPassLLPNOMATCH" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_EmulPassnoiso_TAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_EmulPassnoiso_LLPNOMATCH" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_HLTPassTAU30" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_HLTPassTAU40" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_HLTPassTAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_HLTPassLLPNOMATCH" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_HLTPassnoiso_TAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_HLTPassnoiso_LLPNOMATCH" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_L1PassTAU30" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_L1PassTAU40" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_L1PassTAU60" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalR_emul_L1PassLLPNOMATCH" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="muRoIClus_Trig_nRoI" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="muRoIClus_Trig_nJet" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="muRoIClus_Trig_nTrk" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="muRoIClus_Trig_offline" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="muRoIClus_Trig_offline_noiso" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_LLP_dR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="muRoIClus_Trig_indexLLP" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_jetdR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_jetET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_jetLogRatio" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_trackdR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="muRoIClus_Trig_trackpT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSVertex_LLP_dR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_indexLLP" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSVertex_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSVertex_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSVertex_R" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="MSVertex_z" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_nTrks" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_nMDT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_nRPC" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_nTGC" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_nJetsInCone" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_nTracksInCone" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_sumPtTracksInCone" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_passesJetIso" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_passesTrackIso" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_passesHitThresholds" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="MSVertex_isGood" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_pdgid" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_E" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_beta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_gamma" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_timing" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_Lxy" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_Lz" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="LLP_dR_Jet" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="LLP_nJet_dRlt04" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="LLP_nMSegs_dR04" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_pdgid" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_E" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_beta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_gamma" NotAPointer="false" />
+      </Items>
+      <IsTClonesArrayClass>false</IsTClonesArrayClass>
+      <IsTopLevelClass>true</IsTopLevelClass>
+      <NtupleProxyPath>C:\Users\Gordon\Documents\Code\calratio2015\JetCutStudies\libDataAccess\DiVertAnalysis\ntuple_recoTree.h</NtupleProxyPath>
+      <UserInfoPath>C:\Users\Gordon\Documents\Code\calratio2015\JetCutStudies\libDataAccess\DiVertAnalysis\recoTreeConfig-000.ntup</UserInfoPath>
+      <ClassesToGenerate />
+    </ROOTClassShell>
+  </Classes>
+  <ClassImplimintationFiles />
+</NtupleTreeInfo>

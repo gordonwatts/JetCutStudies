@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TTreeUserInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Groups>
+    <ArrayGroup Name="ungrouped">
+      <Variables>
+        <VariableInfo NETName="CR_HLT_ET" TTreeName="CR_HLT_ET" />
+        <VariableInfo NETName="CR_HLT_pT" TTreeName="CR_HLT_pT" />
+        <VariableInfo NETName="CR_HLT_eta" TTreeName="CR_HLT_eta" />
+        <VariableInfo NETName="CR_HLT_phi" TTreeName="CR_HLT_phi" />
+        <VariableInfo NETName="CR_HLT_EMF" TTreeName="CR_HLT_EMF" />
+        <VariableInfo NETName="CR_HLT_logR" TTreeName="CR_HLT_logR" />
+        <VariableInfo NETName="CR_HLT_minDR_HLTtracks" TTreeName="CR_HLT_minDR_HLTtracks" />
+        <VariableInfo NETName="CR_HLT_dR" TTreeName="CR_HLT_dR" />
+        <VariableInfo NETName="CR_HLT_matchOff" TTreeName="CR_HLT_matchOff" />
+        <VariableInfo NETName="CR_HLT_LLP_DR" TTreeName="CR_HLT_LLP_DR" />
+        <VariableInfo NETName="CR_HLT_LLP_Lxy" TTreeName="CR_HLT_LLP_Lxy" />
+        <VariableInfo NETName="CR_HLT_LLP_Lz" TTreeName="CR_HLT_LLP_Lz" />
+        <VariableInfo NETName="CR_HLT_NegativeE" TTreeName="CR_HLT_NegativeE" />
+        <VariableInfo NETName="CR_HLT_FracSamplingMax" TTreeName="CR_HLT_FracSamplingMax" />
+        <VariableInfo NETName="CR_HLT_HECQuality" TTreeName="CR_HLT_HECQuality" />
+        <VariableInfo NETName="CR_HLT_LArQuality" TTreeName="CR_HLT_LArQuality" />
+        <VariableInfo NETName="CR_HLT_AverageLArQF" TTreeName="CR_HLT_AverageLArQF" />
+        <VariableInfo NETName="CR_HLT_HECFrac" TTreeName="CR_HLT_HECFrac" />
+        <VariableInfo NETName="CR_HLT_Timing" TTreeName="CR_HLT_Timing" />
+        <VariableInfo NETName="CR_offline_passCuts" TTreeName="CR_offline_passCuts" />
+        <VariableInfo NETName="CalR_emul_jetET" TTreeName="CalR_emul_jetET" />
+        <VariableInfo NETName="CalR_emul_jetPt" TTreeName="CalR_emul_jetPt" />
+        <VariableInfo NETName="CalR_emul_jetEta" TTreeName="CalR_emul_jetEta" />
+        <VariableInfo NETName="CalR_emul_jetPhi" TTreeName="CalR_emul_jetPhi" />
+        <VariableInfo NETName="CalR_emul_jetEMF" TTreeName="CalR_emul_jetEMF" />
+        <VariableInfo NETName="CalR_emul_jetLogR" TTreeName="CalR_emul_jetLogR" />
+        <VariableInfo NETName="CalR_emul_jetTime" TTreeName="CalR_emul_jetTime" />
+        <VariableInfo NETName="CalR_emul_jetsumTrkpT" TTreeName="CalR_emul_jetsumTrkpT" />
+        <VariableInfo NETName="CalR_emul_jetnTrk" TTreeName="CalR_emul_jetnTrk" />
+        <VariableInfo NETName="CalR_emul_minDRTrkpt2" TTreeName="CalR_emul_minDRTrkpt2" />
+        <VariableInfo NETName="CalR_emul_jetIsCosmic" TTreeName="CalR_emul_jetIsCosmic" />
+        <VariableInfo NETName="CalR_emul_jetIsGoodLLP" TTreeName="CalR_emul_jetIsGoodLLP" />
+        <VariableInfo NETName="CalR_emul_jetLxy" TTreeName="CalR_emul_jetLxy" />
+        <VariableInfo NETName="CalR_emul_jetLz" TTreeName="CalR_emul_jetLz" />
+        <VariableInfo NETName="CalR_emul_EmulPass" TTreeName="CalR_emul_EmulPass" />
+        <VariableInfo NETName="CalR_emul_HLTPass" TTreeName="CalR_emul_HLTPass" />
+        <VariableInfo NETName="CalR_emul_L1Pass" TTreeName="CalR_emul_L1Pass" />
+        <VariableInfo NETName="CalR_emul_RoImaxET" TTreeName="CalR_emul_RoImaxET" />
+        <VariableInfo NETName="CalR_emul_EmulPassTAU30" TTreeName="CalR_emul_EmulPassTAU30" />
+        <VariableInfo NETName="CalR_emul_EmulPassTAU40" TTreeName="CalR_emul_EmulPassTAU40" />
+        <VariableInfo NETName="CalR_emul_EmulPassTAU60" TTreeName="CalR_emul_EmulPassTAU60" />
+        <VariableInfo NETName="CalR_emul_EmulPassLLPNOMATCH" TTreeName="CalR_emul_EmulPassLLPNOMATCH" />
+        <VariableInfo NETName="CalR_emul_EmulPassnoiso_TAU60" TTreeName="CalR_emul_EmulPassnoiso_TAU60" />
+        <VariableInfo NETName="CalR_emul_EmulPassnoiso_LLPNOMATCH" TTreeName="CalR_emul_EmulPassnoiso_LLPNOMATCH" />
+        <VariableInfo NETName="CalR_emul_HLTPassTAU30" TTreeName="CalR_emul_HLTPassTAU30" />
+        <VariableInfo NETName="CalR_emul_HLTPassTAU40" TTreeName="CalR_emul_HLTPassTAU40" />
+        <VariableInfo NETName="CalR_emul_HLTPassTAU60" TTreeName="CalR_emul_HLTPassTAU60" />
+        <VariableInfo NETName="CalR_emul_HLTPassLLPNOMATCH" TTreeName="CalR_emul_HLTPassLLPNOMATCH" />
+        <VariableInfo NETName="CalR_emul_HLTPassnoiso_TAU60" TTreeName="CalR_emul_HLTPassnoiso_TAU60" />
+        <VariableInfo NETName="CalR_emul_HLTPassnoiso_LLPNOMATCH" TTreeName="CalR_emul_HLTPassnoiso_LLPNOMATCH" />
+        <VariableInfo NETName="CalR_emul_L1PassTAU30" TTreeName="CalR_emul_L1PassTAU30" />
+        <VariableInfo NETName="CalR_emul_L1PassTAU40" TTreeName="CalR_emul_L1PassTAU40" />
+        <VariableInfo NETName="CalR_emul_L1PassTAU60" TTreeName="CalR_emul_L1PassTAU60" />
+        <VariableInfo NETName="CalR_emul_L1PassLLPNOMATCH" TTreeName="CalR_emul_L1PassLLPNOMATCH" />
+        <VariableInfo NETName="muRoIClus_Trig_eta" TTreeName="muRoIClus_Trig_eta" />
+        <VariableInfo NETName="muRoIClus_Trig_phi" TTreeName="muRoIClus_Trig_phi" />
+        <VariableInfo NETName="muRoIClus_Trig_nRoI" TTreeName="muRoIClus_Trig_nRoI" />
+        <VariableInfo NETName="muRoIClus_Trig_nJet" TTreeName="muRoIClus_Trig_nJet" />
+        <VariableInfo NETName="muRoIClus_Trig_nTrk" TTreeName="muRoIClus_Trig_nTrk" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_dR" TTreeName="muRoIClus_Trig_LLP_dR" />
+        <VariableInfo NETName="muRoIClus_Trig_indexLLP" TTreeName="muRoIClus_Trig_indexLLP" />
+        <VariableInfo NETName="muRoIClus_Trig_jetdR" TTreeName="muRoIClus_Trig_jetdR" />
+        <VariableInfo NETName="muRoIClus_Trig_jetET" TTreeName="muRoIClus_Trig_jetET" />
+        <VariableInfo NETName="muRoIClus_Trig_jetLogRatio" TTreeName="muRoIClus_Trig_jetLogRatio" />
+        <VariableInfo NETName="muRoIClus_Trig_trackdR" TTreeName="muRoIClus_Trig_trackdR" />
+        <VariableInfo NETName="muRoIClus_Trig_trackpT" TTreeName="muRoIClus_Trig_trackpT" />
+        <VariableInfo NETName="TruthParticle_pdgid" TTreeName="TruthParticle_pdgid" />
+        <VariableInfo NETName="TruthParticle_E" TTreeName="TruthParticle_E" />
+        <VariableInfo NETName="TruthParticle_pT" TTreeName="TruthParticle_pT" />
+        <VariableInfo NETName="TruthParticle_eta" TTreeName="TruthParticle_eta" />
+        <VariableInfo NETName="TruthParticle_phi" TTreeName="TruthParticle_phi" />
+        <VariableInfo NETName="TruthParticle_beta" TTreeName="TruthParticle_beta" />
+        <VariableInfo NETName="TruthParticle_gamma" TTreeName="TruthParticle_gamma" />
+        <VariableInfo NETName="event_count" TTreeName="event_count" />
+        <VariableInfo NETName="eventNumber" TTreeName="eventNumber" />
+        <VariableInfo NETName="runNumber" TTreeName="runNumber" />
+        <VariableInfo NETName="backgroundFlags" TTreeName="backgroundFlags" />
+        <VariableInfo NETName="lumiBlock" TTreeName="lumiBlock" />
+        <VariableInfo NETName="eventWeight" TTreeName="eventWeight" />
+        <VariableInfo NETName="actualIntPerCrossing" TTreeName="actualIntPerCrossing" />
+        <VariableInfo NETName="averageIntPerCrossing" TTreeName="averageIntPerCrossing" />
+        <VariableInfo NETName="event_HT" TTreeName="event_HT" />
+        <VariableInfo NETName="event_NJets" TTreeName="event_NJets" />
+        <VariableInfo NETName="event_HTMiss" TTreeName="event_HTMiss" />
+        <VariableInfo NETName="event_Meff" TTreeName="event_Meff" />
+        <VariableInfo NETName="hasGoodPV" TTreeName="hasGoodPV" />
+        <VariableInfo NETName="isGoodLAr" TTreeName="isGoodLAr" />
+        <VariableInfo NETName="isGoodTile" TTreeName="isGoodTile" />
+        <VariableInfo NETName="isGoodSCT" TTreeName="isGoodSCT" />
+        <VariableInfo NETName="isCompleteEvent" TTreeName="isCompleteEvent" />
+        <VariableInfo NETName="jetsPassingCalREmul" TTreeName="jetsPassingCalREmul" />
+        <VariableInfo NETName="dPhiLeadingCalibJets" TTreeName="dPhiLeadingCalibJets" />
+        <VariableInfo NETName="dRLeadingCalibJets" TTreeName="dRLeadingCalibJets" />
+        <VariableInfo NETName="event_tauRoI_maxET" TTreeName="event_tauRoI_maxET" />
+        <VariableInfo NETName="event_passCalRatio_TAU30" TTreeName="event_passCalRatio_TAU30" />
+        <VariableInfo NETName="event_passCalRatio_LLPNOMATCH" TTreeName="event_passCalRatio_LLPNOMATCH" />
+        <VariableInfo NETName="event_passCalRatio_TAU60" TTreeName="event_passCalRatio_TAU60" />
+        <VariableInfo NETName="event_passCalRatio_cleanLLP_TAU60" TTreeName="event_passCalRatio_cleanLLP_TAU60" />
+        <VariableInfo NETName="event_passCalRatio_LLPNOMATCH_noiso" TTreeName="event_passCalRatio_LLPNOMATCH_noiso" />
+        <VariableInfo NETName="event_passCalRatio_TAU60_noiso" TTreeName="event_passCalRatio_TAU60_noiso" />
+        <VariableInfo NETName="event_passCalRatio_cleanLLP_TAU60_noiso" TTreeName="event_passCalRatio_cleanLLP_TAU60_noiso" />
+        <VariableInfo NETName="event_passMuvtx" TTreeName="event_passMuvtx" />
+        <VariableInfo NETName="event_passMuvtx_noiso" TTreeName="event_passMuvtx_noiso" />
+        <VariableInfo NETName="event_passL1TAU30" TTreeName="event_passL1TAU30" />
+        <VariableInfo NETName="event_passL1TAU40" TTreeName="event_passL1TAU40" />
+        <VariableInfo NETName="event_passL1TAU60" TTreeName="event_passL1TAU60" />
+        <VariableInfo NETName="event_passL1LLPNOMATCH" TTreeName="event_passL1LLPNOMATCH" />
+        <VariableInfo NETName="event_passJ25" TTreeName="event_passJ25" />
+        <VariableInfo NETName="event_passJ100" TTreeName="event_passJ100" />
+        <VariableInfo NETName="event_passJ400" TTreeName="event_passJ400" />
+        <VariableInfo NETName="METCST_met" TTreeName="METCST_met" />
+        <VariableInfo NETName="METCST_phi" TTreeName="METCST_phi" />
+        <VariableInfo NETName="METCST_mpx" TTreeName="METCST_mpx" />
+        <VariableInfo NETName="METCST_mpy" TTreeName="METCST_mpy" />
+        <VariableInfo NETName="METCST_sumet" TTreeName="METCST_sumet" />
+        <VariableInfo NETName="METTST_met" TTreeName="METTST_met" />
+        <VariableInfo NETName="METTST_phi" TTreeName="METTST_phi" />
+        <VariableInfo NETName="METTST_mpx" TTreeName="METTST_mpx" />
+        <VariableInfo NETName="METTST_mpy" TTreeName="METTST_mpy" />
+        <VariableInfo NETName="METTST_sumet" TTreeName="METTST_sumet" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="LLPs">
+      <Variables>
+        <VariableInfo NETName="LLP_pdgid" TTreeName="LLP_pdgid" />
+        <VariableInfo NETName="LLP_E" TTreeName="LLP_E" />
+        <VariableInfo NETName="pT" TTreeName="LLP_pT" />
+        <VariableInfo NETName="eta" TTreeName="LLP_eta" />
+        <VariableInfo NETName="phi" TTreeName="LLP_phi" />
+        <VariableInfo NETName="LLP_beta" TTreeName="LLP_beta" />
+        <VariableInfo NETName="LLP_gamma" TTreeName="LLP_gamma" />
+        <VariableInfo NETName="LLP_timing" TTreeName="LLP_timing" />
+        <VariableInfo NETName="Lxy" TTreeName="LLP_Lxy" />
+        <VariableInfo NETName="LLP_Lz" TTreeName="LLP_Lz" />
+        <VariableInfo NETName="LLP_dR_Jet" TTreeName="LLP_dR_Jet" />
+        <VariableInfo NETName="LLP_nJet_dRlt04" TTreeName="LLP_nJet_dRlt04" />
+        <VariableInfo NETName="LLP_nMSegs_dR04" TTreeName="LLP_nMSegs_dR04" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="Jets">
+      <Variables>
+        <VariableInfo NETName="CalibJet_isGoodStand" TTreeName="CalibJet_isGoodStand" />
+        <VariableInfo NETName="isGoodLLP" TTreeName="CalibJet_isGoodLLP" />
+        <VariableInfo NETName="CalibJet_E" TTreeName="CalibJet_E" />
+        <VariableInfo NETName="ET" TTreeName="CalibJet_ET" />
+        <VariableInfo NETName="pT" TTreeName="CalibJet_pT" />
+        <VariableInfo NETName="eta" TTreeName="CalibJet_eta" />
+        <VariableInfo NETName="phi" TTreeName="CalibJet_phi" />
+        <VariableInfo NETName="width" TTreeName="CalibJet_width" />
+        <VariableInfo NETName="logRatio" TTreeName="CalibJet_logRatio" />
+        <VariableInfo NETName="CalibJet_EMF" TTreeName="CalibJet_EMF" />
+        <VariableInfo NETName="CalibJet_time" TTreeName="CalibJet_time" />
+        <VariableInfo NETName="CalibJet_BDT" TTreeName="CalibJet_BDT" />
+        <VariableInfo NETName="CalibJet_isCRHLTJet" TTreeName="CalibJet_isCRHLTJet" />
+        <VariableInfo NETName="LLP" TTreeName="CalibJet_indexLLP" IndexToGroup="LLPs"  />
+        <VariableInfo NETName="nTrk" TTreeName="CalibJet_nTrk" />
+        <VariableInfo NETName="CalibJet_sumTrkpT" TTreeName="CalibJet_sumTrkpT" />
+        <VariableInfo NETName="CalibJet_maxTrkpT" TTreeName="CalibJet_maxTrkpT" />
+        <VariableInfo NETName="CalibJet_minDRTrkpt2" TTreeName="CalibJet_minDRTrkpt2" />
+        <VariableInfo NETName="CalibJet_matchPassEmul" TTreeName="CalibJet_matchPassEmul" />
+        <VariableInfo NETName="CalibJet_cluster_nClusters" TTreeName="CalibJet_cluster_nClusters" />
+        <VariableInfo NETName="CalibJet_cluster_lead_r" TTreeName="CalibJet_cluster_lead_r" />
+        <VariableInfo NETName="CalibJet_cluster_lead_x" TTreeName="CalibJet_cluster_lead_x" />
+        <VariableInfo NETName="CalibJet_cluster_lead_y" TTreeName="CalibJet_cluster_lead_y" />
+        <VariableInfo NETName="CalibJet_cluster_lead_z" TTreeName="CalibJet_cluster_lead_z" />
+        <VariableInfo NETName="CalibJet_cluster_lead_Lxy" TTreeName="CalibJet_cluster_lead_Lxy" />
+        <VariableInfo NETName="CalibJet_cluster_lead_ET" TTreeName="CalibJet_cluster_lead_ET" />
+        <VariableInfo NETName="CalibJet_cluster_lead_pT" TTreeName="CalibJet_cluster_lead_pT" />
+        <VariableInfo NETName="CalibJet_cluster_lead_eta" TTreeName="CalibJet_cluster_lead_eta" />
+        <VariableInfo NETName="CalibJet_cluster_lead_phi" TTreeName="CalibJet_cluster_lead_phi" />
+        <VariableInfo NETName="CalibJet_cluster_lead_calibET" TTreeName="CalibJet_cluster_lead_calibET" />
+        <VariableInfo NETName="CalibJet_cluster_lead_calibEta" TTreeName="CalibJet_cluster_lead_calibEta" />
+        <VariableInfo NETName="CalibJet_cluster_lead_calibPhi" TTreeName="CalibJet_cluster_lead_calibPhi" />
+        <VariableInfo NETName="CalibJet_cluster_lead_time" TTreeName="CalibJet_cluster_lead_time" />
+        <VariableInfo NETName="CalibJet_cluster_lead_lambda" TTreeName="CalibJet_cluster_lead_lambda" />
+        <VariableInfo NETName="CalibJet_cluster_lead_sec_r" TTreeName="CalibJet_cluster_lead_sec_r" />
+        <VariableInfo NETName="CalibJet_cluster_lead_sec_lambda" TTreeName="CalibJet_cluster_lead_sec_lambda" />
+        <VariableInfo NETName="CalibJet_cluster_lead_qual_tile" TTreeName="CalibJet_cluster_lead_qual_tile" />
+        <VariableInfo NETName="CalibJet_cluster_lead_qual_lar" TTreeName="CalibJet_cluster_lead_qual_lar" />
+        <VariableInfo NETName="CalibJet_cluster_lead_lateral" TTreeName="CalibJet_cluster_lead_lateral" />
+        <VariableInfo NETName="CalibJet_cluster_lead_longitudinal" TTreeName="CalibJet_cluster_lead_longitudinal" />
+        <VariableInfo NETName="CalibJet_cluster_lead_first_Eden" TTreeName="CalibJet_cluster_lead_first_Eden" />
+        <VariableInfo NETName="CalibJet_cluster_lead_EMF" TTreeName="CalibJet_cluster_lead_EMF" />
+        <VariableInfo NETName="CalibJet_cluster_lead_EEM" TTreeName="CalibJet_cluster_lead_EEM" />
+        <VariableInfo NETName="CalibJet_cluster_lead_Etot" TTreeName="CalibJet_cluster_lead_Etot" />
+        <VariableInfo NETName="CalibJet_cluster_lead_dR_tojet" TTreeName="CalibJet_cluster_lead_dR_tojet" />
+        <VariableInfo NETName="CalibJet_cluster_lead_fracE_ofjet" TTreeName="CalibJet_cluster_lead_fracE_ofjet" />
+        <VariableInfo NETName="CalibJet_cluster_lead_jetEMF_revised" TTreeName="CalibJet_cluster_lead_jetEMF_revised" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="Tracks">
+      <Variables>
+        <VariableInfo NETName="pT" TTreeName="Track_pT" />
+        <VariableInfo NETName="eta" TTreeName="Track_eta" />
+        <VariableInfo NETName="phi" TTreeName="Track_phi" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group3">
+      <Variables>
+        <VariableInfo NETName="MSTracklet_eta" TTreeName="MSTracklet_eta" />
+        <VariableInfo NETName="MSTracklet_phi" TTreeName="MSTracklet_phi" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group4">
+      <Variables>
+        <VariableInfo NETName="MSeg_etaPos" TTreeName="MSeg_etaPos" />
+        <VariableInfo NETName="MSeg_thetaPos" TTreeName="MSeg_thetaPos" />
+        <VariableInfo NETName="MSeg_phiPos" TTreeName="MSeg_phiPos" />
+        <VariableInfo NETName="MSeg_thetaDir" TTreeName="MSeg_thetaDir" />
+        <VariableInfo NETName="MSeg_phiDir" TTreeName="MSeg_phiDir" />
+        <VariableInfo NETName="MSeg_t0" TTreeName="MSeg_t0" />
+        <VariableInfo NETName="MSeg_chIndex" TTreeName="MSeg_chIndex" />
+        <VariableInfo NETName="MSeg_techIndex" TTreeName="MSeg_techIndex" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group5">
+      <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_offline" TTreeName="muRoIClus_Trig_offline" />
+        <VariableInfo NETName="muRoIClus_Trig_offline_noiso" TTreeName="muRoIClus_Trig_offline_noiso" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group6">
+      <Variables>
+        <VariableInfo NETName="CR_offline_HLTassoc" TTreeName="CR_offline_HLTassoc" />
+        <VariableInfo NETName="CR_offline_eta" TTreeName="CR_offline_eta" />
+        <VariableInfo NETName="CR_offline_phi" TTreeName="CR_offline_phi" />
+        <VariableInfo NETName="CR_offline_ET" TTreeName="CR_offline_ET" />
+        <VariableInfo NETName="CR_offline_pT" TTreeName="CR_offline_pT" />
+        <VariableInfo NETName="CR_offline_EMF" TTreeName="CR_offline_EMF" />
+        <VariableInfo NETName="CR_offline_logR" TTreeName="CR_offline_logR" />
+        <VariableInfo NETName="CR_offline_nTrks" TTreeName="CR_offline_nTrks" />
+        <VariableInfo NETName="CR_offline_timing" TTreeName="CR_offline_timing" />
+        <VariableInfo NETName="CR_offline_matchLLP" TTreeName="CR_offline_matchLLP" />
+        <VariableInfo NETName="CR_offline_LLP_DR" TTreeName="CR_offline_LLP_DR" />
+        <VariableInfo NETName="CR_offline_LLP_Lxy" TTreeName="CR_offline_LLP_Lxy" />
+        <VariableInfo NETName="CR_offline_LLP_Lz" TTreeName="CR_offline_LLP_Lz" />
+        <VariableInfo NETName="CR_offline_jetindex" TTreeName="CR_offline_jetindex" />
+        <VariableInfo NETName="CR_offline_goodjet_stand" TTreeName="CR_offline_goodjet_stand" />
+        <VariableInfo NETName="CR_offline_goodjet_llp" TTreeName="CR_offline_goodjet_llp" />
+        <VariableInfo NETName="CR_offline_BDT" TTreeName="CR_offline_BDT" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group7">
+      <Variables>
+        <VariableInfo NETName="MSVertex_LLP_dR" TTreeName="MSVertex_LLP_dR" />
+        <VariableInfo NETName="MSVertex_indexLLP" TTreeName="MSVertex_indexLLP" />
+        <VariableInfo NETName="MSVertex_eta" TTreeName="MSVertex_eta" />
+        <VariableInfo NETName="MSVertex_phi" TTreeName="MSVertex_phi" />
+        <VariableInfo NETName="MSVertex_R" TTreeName="MSVertex_R" />
+        <VariableInfo NETName="MSVertex_z" TTreeName="MSVertex_z" />
+        <VariableInfo NETName="MSVertex_nTrks" TTreeName="MSVertex_nTrks" />
+        <VariableInfo NETName="MSVertex_nMDT" TTreeName="MSVertex_nMDT" />
+        <VariableInfo NETName="MSVertex_nRPC" TTreeName="MSVertex_nRPC" />
+        <VariableInfo NETName="MSVertex_nTGC" TTreeName="MSVertex_nTGC" />
+        <VariableInfo NETName="MSVertex_nJetsInCone" TTreeName="MSVertex_nJetsInCone" />
+        <VariableInfo NETName="MSVertex_nTracksInCone" TTreeName="MSVertex_nTracksInCone" />
+        <VariableInfo NETName="MSVertex_sumPtTracksInCone" TTreeName="MSVertex_sumPtTracksInCone" />
+        <VariableInfo NETName="MSVertex_passesJetIso" TTreeName="MSVertex_passesJetIso" />
+        <VariableInfo NETName="MSVertex_passesTrackIso" TTreeName="MSVertex_passesTrackIso" />
+        <VariableInfo NETName="MSVertex_passesHitThresholds" TTreeName="MSVertex_passesHitThresholds" />
+        <VariableInfo NETName="MSVertex_isGood" TTreeName="MSVertex_isGood" />
+      </Variables>
+    </ArrayGroup>
+  </Groups>
+</TTreeUserInfo>
