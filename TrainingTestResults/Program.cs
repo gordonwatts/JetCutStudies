@@ -48,11 +48,9 @@ namespace TrainingTestResults
                 Tuple.Create("QCD", backgroundJets),
             };
 
-            var allSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
-                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
-                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
-                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
-            };
+            var allSources = SampleMetaData.AllSamplesWithTag("signal")
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)))
+                .ToArray();
 
             // List the artifacts that we are going to be using.
             var mvaResults = new MVAInfo[]
