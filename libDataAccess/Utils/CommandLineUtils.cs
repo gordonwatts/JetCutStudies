@@ -13,7 +13,7 @@ namespace libDataAccess.Utils
     /// </summary>
     public class CommandLineUtils
     {
-        public class Options
+        public class CommonOptions
         {
             [Option("UseFullDataset", Default = false, HelpText = "Use full dataset rather than test dataset size.")]
             public bool UseFullDataset { get; set; }
@@ -33,6 +33,15 @@ namespace libDataAccess.Utils
             [Option("UseBackgroundJZ4", Default = false, SetName = "backgroundsamples")]
             public bool BackgroundJZ4 { get; set; }
 
+            [Option("UseCPPOptimizer", Default = 1)]
+            public int UseCPPOptimizer { get; set; }
+
+            [Option("IgnoreQueryCache", Default = 0)]
+            public int IgnoreQueryCache { get; set; }
+        }
+
+        public class Options : CommonOptions
+        {
             [Option("BDTMaxDepth", Default = 3)]
             public int BDTMaxDepth { get; set; }
 
@@ -44,12 +53,6 @@ namespace libDataAccess.Utils
 
             [Option("VariableTransform", Default = "")]
             public string VariableTransform { get; set; }
-
-            [Option("UseCPPOptimizer", Default = 1)]
-            public int UseCPPOptimizer { get; set; }
-
-            [Option("IgnoreQueryCache", Default = 0)]
-            public int IgnoreQueryCache { get; set; }
 
             [Option("TrainingVariableSet", Default = TrainingVariableSet.Default5pT)]
             public TrainingVariableSet TrainingVariableSet { get; set; }
@@ -288,6 +291,41 @@ namespace libDataAccess.Utils
                     }
                     return 1;
                 });
+        }
+
+        /// <summary>
+        /// Parase and return a set of options.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T ParseOptions<T>(string[] args)
+            where T : CommonOptions
+        {
+            var result = Parser.Default.ParseArguments<T>(args);
+
+            T optVar = null;
+            result.MapResult(
+                options => {
+                    Files.NFiles = options.UseFullDataset ? 0 : 1;
+                    Files.VerboseFileFetch = options.VerboseFileFetch;
+                    Files.UseCodeOptimizer = options.UseCPPOptimizer != 0;
+                    Files.IgnoreQueires = options.IgnoreQueryCache != 0;
+                    if (options.BackgroundAll) RequstedBackgroundSample = BackgroundSampleEnum.All;
+                    if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
+                    if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
+                    if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
+                    optVar = options;
+                    return 0;
+                },
+                errors => {
+                    foreach (var err in errors)
+                    {
+                        Console.WriteLine($"Error parsing command line: {err.ToString()}");
+                    }
+                    return 1;
+                });
+
+            return optVar;
         }
     }
 }

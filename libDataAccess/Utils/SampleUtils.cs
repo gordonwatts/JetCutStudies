@@ -10,6 +10,7 @@ using static System.Math;
 using static libDataAccess.CutConstants;
 using libDataAccess;
 using static libDataAccess.JetInfoExtraHelpers;
+using System.Linq.Expressions;
 
 namespace libDataAccess.Utils
 {
@@ -53,6 +54,11 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
+        /// Cut to determine if this is a good signal jet.
+        /// </summary>
+        public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j => j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPDecay;
+
+        /// <summary>
         /// Make sure we are talking about good signal only.
         /// </summary>
         /// <param name="source"></param>
@@ -60,8 +66,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> FilterSignal(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.JetInfo.Jet.LLP.IsGoodIndex())
-                .Where(j => j.JetInfo.Jet.LLP.Lxy > InnerDistanceForSignalLLPDecay);
+                .Where(j => IsGoodSignalJet.Invoke(j.JetInfo.Jet));
         }
 
         /// <summary>
