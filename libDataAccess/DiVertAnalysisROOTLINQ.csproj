@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>libDataAccess</RootNamespace>
-    <AssemblyName>libDataAccess</AssemblyName>
+    <AssemblyName>DiVertAnalysisROOTLINQ</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -192,12 +192,13 @@
     <None Include="ConfigData\default.classmethodmappings">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="DiVertAnalysisROOTLINQ.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sample Meta Data.csv">
+    <Content Include="Sample Meta Data.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\TSelectorTemplate.cxx">
