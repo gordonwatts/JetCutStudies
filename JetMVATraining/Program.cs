@@ -38,11 +38,15 @@ namespace JetMVATraining
             // Get the background and signal data trees for use (and training.
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource();
 
-            var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
-                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
-                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
-                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
-            };
+            var signalSources = SampleMetaData.AllSamplesWithTag("signal")
+                .Where(info => info.Tags.Contains("train"))
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)))
+                .ToArray();
+
+            if (signalSources.Length == 0)
+            {
+                throw new ArgumentException("No signal sources for training on!");
+            }
 
             var signalUnfiltered = signalSources
                 .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
@@ -50,6 +54,9 @@ namespace JetMVATraining
 
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
+
+            var signalTestSources = SampleMetaData.AllSamplesWithTag("signal")
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
@@ -181,7 +188,7 @@ namespace JetMVATraining
                 foreach (var c in cuts)
                 {
                     var cutDir = outputHistograms.mkdir(c.Title);
-                    foreach (var s in signalSources)
+                    foreach (var s in signalTestSources)
                     {
                         var sEvents = s.Item2
                             .AsGoodJetStream()
