@@ -149,6 +149,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="ConfigData\default.classmethodmappings">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
