@@ -180,6 +180,7 @@
     <Compile Include="SampleMetaData.cs" />
     <Compile Include="Utils\CommandLineUtils.cs" />
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\DirectoryUtils.cs" />
     <Compile Include="Utils\FutureConsole.cs" />
     <Compile Include="Utils\HistogramUtils.cs" />
     <Compile Include="Utils\HistUtils.cs" />

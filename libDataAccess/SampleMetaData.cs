@@ -106,6 +106,7 @@ namespace libDataAccess
             {
                 var directories = new[] { new FileInfo(Assembly.GetExecutingAssembly().Location).Directory, new DirectoryInfo(".") };
                 var f = directories
+                    .SelectMany(d => d.AllParents())
                     .Select(d => new FileInfo(Path.Combine(d.FullName, "Sample Meta Data.csv")))
                     .Where(mf => mf.Exists)
                     .FirstOrDefault();
