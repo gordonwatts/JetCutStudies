@@ -37,22 +37,16 @@ namespace GenericPerformancePlots
             Console.WriteLine("Finding the files");
 
             // All the background samples have to be done first.
-            var backgroundSamples = new Tuple<IQueryable<recoTree>, string>[]
-            {
-                new Tuple<IQueryable<recoTree>, string>(Files.GetJZ(2).Select(e => e.Data), "J2Z"),
-                new Tuple<IQueryable<recoTree>, string>(Files.GetJZ(3).Select(e => e.Data), "J3Z"),
-                new Tuple<IQueryable<recoTree>, string>(Files.GetJZ(4).Select(e => e.Data), "J4Z"),
-            };
+            var backgroundSamples = SampleMetaData.AllSamplesWithTag("background")
+                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
+                .ToArray();
 
-            var backgroundEvents = Files.GetJZ(2).Select(e => e.Data);
+            var backgroundEvents = Files.GetAllJetSamples().Select(e => e.Data);
 
             // All the signal we are going to make plots of.
-            var signalSamples = new Tuple<IQueryable<recoTree>, string>[]
-            {
-                new Tuple<IQueryable<recoTree>, string>(Files.Get200pi25lt5m(), "200-25"),
-                new Tuple<IQueryable<recoTree>, string>(Files.Get400pi100lt9m(), "400-100"),
-                new Tuple<IQueryable<recoTree>, string>(Files.Get600pi150lt9m(), "600-150"),
-            };
+            var signalSamples = SampleMetaData.AllSamplesWithTag("signal")
+                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
+                .ToArray();
 
             // Output file
             Console.WriteLine("Opening output file");
@@ -63,7 +57,7 @@ namespace GenericPerformancePlots
                 Console.WriteLine("Making background plots.");
                 foreach (var background in backgroundSamples)
                 {
-                    BuildSuperJetInfo(background.Item1)
+                    BuildSuperJetInfo(background.Item1.Select(md => md.Data))
                         .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
                 }
 
@@ -72,7 +66,7 @@ namespace GenericPerformancePlots
                 Console.WriteLine("Making the signal/background plots.");
                 foreach (var sample in signalSamples)
                 {
-                    var status = PerSampleStudies(backgroundEvents, sample.Item1, outputHistograms.mkdir(sample.Item2));
+                    var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), outputHistograms.mkdir(sample.Item2));
                     DumpResults($"Sample {sample.Item2}:", status);
                 }
 
