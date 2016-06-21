@@ -16,7 +16,7 @@ namespace libDataAccess
         /// <summary>
         /// Default setting for # of files to fetch when we run. 0 means we are running on the full data sample.
         /// </summary>
-        public static int NFiles = 6;
+        public static int NFiles = 1;
 
         /// <summary>
         /// Set to true if we should ignore all queries
