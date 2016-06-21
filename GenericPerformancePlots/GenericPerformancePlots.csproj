@@ -183,9 +183,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libDataAccess\libDataAccess.csproj">
+    <ProjectReference Include="..\libDataAccess\DiVertAnalysisROOTLINQ.csproj">
       <Project>{8694cc04-fbe1-4a4a-88d2-910d02941248}</Project>
-      <Name>libDataAccess</Name>
+      <Name>DiVertAnalysisROOTLINQ</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

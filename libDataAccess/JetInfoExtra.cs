@@ -39,11 +39,14 @@ namespace libDataAccess
         /// </remarks>
         public static IQueryable<JetInfoExtra> BuildSuperJetInfo(IQueryable<recoTree> background)
         {
-            return from ev in background
-                   from j in ev.Jets
-                   where j.pT > 40.0 && Abs(j.eta) < 2.5
-                   select CreateJetInfoExtra.Invoke(ev, j);
+            return background
+                .SelectMany(ev => ev.Jets.Where(j => IsGoodJet.Invoke(j)).Select(j => CreateJetInfoExtra.Invoke(ev, j)));
         }
+
+        /// <summary>
+        /// Test for good jets
+        /// </summary>
+        public static Expression<Func<recoTreeJets, bool>> IsGoodJet = j => j.pT > 40.0 && Abs(j.eta) < 2.5;
     }
 
 }

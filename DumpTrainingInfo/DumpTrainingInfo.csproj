@@ -187,9 +187,9 @@
       <Project>{c914fce5-046b-4e3f-9987-c5c6ce7a3e87}</Project>
       <Name>JenkinsAccess</Name>
     </ProjectReference>
-    <ProjectReference Include="..\libDataAccess\libDataAccess.csproj">
+    <ProjectReference Include="..\libDataAccess\DiVertAnalysisROOTLINQ.csproj">
       <Project>{8694cc04-fbe1-4a4a-88d2-910d02941248}</Project>
-      <Name>libDataAccess</Name>
+      <Name>DiVertAnalysisROOTLINQ</Name>
     </ProjectReference>
     <ProjectReference Include="..\TMVAUtilities\TMVAUtilities.csproj">
       <Project>{c6bde3ed-5f55-4a35-bbc6-43b299017669}</Project>

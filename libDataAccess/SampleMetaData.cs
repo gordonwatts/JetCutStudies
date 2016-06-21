@@ -104,11 +104,15 @@ namespace libDataAccess
         {
             if (_samples == null)
             {
-                var rootdir = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
-                var f = new FileInfo(Path.Combine(rootdir.FullName, "Sample Meta Data.csv"));
-                if (!f.Exists)
+                var directories = new[] { new FileInfo(Assembly.GetExecutingAssembly().Location).Directory, new DirectoryInfo(".") };
+                var f = directories
+                    .SelectMany(d => d.AllParents())
+                    .Select(d => new FileInfo(Path.Combine(d.FullName, "Sample Meta Data.csv")))
+                    .Where(mf => mf.Exists)
+                    .FirstOrDefault();
+                if (f == null || !f.Exists)
                 {
-                    throw new FileNotFoundException($"Unable to load our sample metadata file from {f.FullName}.");
+                    throw new FileNotFoundException($"Unable to load our sample metadata file from 'Sample Meta Data.csv'.");
                 }
 
                 _samples = f
