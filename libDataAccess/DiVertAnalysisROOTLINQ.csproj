@@ -197,6 +197,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DiVertAnalysis\junk_macro_parsettree_recoTree.C" />
+    <Content Include="DiVertAnalysis\ntuple_recoTree.h" />
     <Content Include="Sample Meta Data.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
