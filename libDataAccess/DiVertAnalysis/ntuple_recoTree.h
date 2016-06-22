@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////
 //   This class has been automatically generated 
-//   (at Fri Jun 17 00:47:16 2016 by ROOT version 5.34/36)
+//   (at Wed Jun 22 00:34:21 2016 by ROOT version 5.34/36)
 //   from TTree recoTree/recoTree
-//   found on file: E:\GRIDDS\user.gwatts.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.DAOD_EXOT15.r6765_r6282_p2452.DiVertAnalysis_v5_1BC42831_hist\user.gwatts\user.gwatts.8578406._000001.hist-output.root
+//   found on file: E:\GRIDDS\user.gwatts.304818.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH1000_mS50_lt5m.DiVertAnalysis_v6_D3364A39_BFC366F6_hist\user.gwatts\user.gwatts.8747115._000001.hist-output.root
 /////////////////////////////////////////////////////////////////////////
 
 
@@ -76,6 +76,8 @@ public :
    TIntProxy                                jetsPassingCalREmul;
    TDoubleProxy                             dPhiLeadingCalibJets;
    TDoubleProxy                             dRLeadingCalibJets;
+   TDoubleProxy                             dPhiLeadBDTCalibJets;
+   TDoubleProxy                             dRLeadBDTCalibJets;
    TDoubleProxy                             event_tauRoI_maxET;
    TBoolProxy                               event_passCalRatio_TAU30;
    TBoolProxy                               event_passCalRatio_LLPNOMATCH;
@@ -105,6 +107,7 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_EMF;
    TStlSimpleProxy<vector<double> >         CalibJet_time;
    TStlSimpleProxy<vector<double> >         CalibJet_BDT;
+   TStlSimpleProxy<vector<double> >         CalibJet_BDT_rank;
    TStlSimpleProxy<vector<bool> >           CalibJet_isCRHLTJet;
    TStlSimpleProxy<vector<int> >            CalibJet_indexLLP;
    TStlSimpleProxy<vector<unsigned int> >   CalibJet_nTrk;
@@ -140,6 +143,9 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_dR_tojet;
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_fracE_ofjet;
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_jetEMF_revised;
+   TStlSimpleProxy<vector<double> >         CalibJet_EH_layer1;
+   TStlSimpleProxy<vector<double> >         CalibJet_EH_layer2;
+   TStlSimpleProxy<vector<double> >         CalibJet_EH_layer3;
    TStlSimpleProxy<vector<double> >         Track_pT;
    TStlSimpleProxy<vector<double> >         Track_eta;
    TStlSimpleProxy<vector<double> >         Track_phi;
@@ -285,6 +291,42 @@ public :
    TStlSimpleProxy<vector<double> >         TruthParticle_phi;
    TStlSimpleProxy<vector<double> >         TruthParticle_beta;
    TStlSimpleProxy<vector<double> >         TruthParticle_gamma;
+   TBoolProxy                               TP_CR_passTrig;
+   TBoolProxy                               TP_CR_foundTag;
+   TBoolProxy                               TP_CR_foundProbe;
+   TStlSimpleProxy<vector<double> >         TP_CR_HLT_pT;
+   TStlSimpleProxy<vector<double> >         TP_CR_HLT_ET;
+   TStlSimpleProxy<vector<double> >         TP_CR_HLT_eta;
+   TStlSimpleProxy<vector<double> >         TP_CR_HLT_phi;
+   TStlSimpleProxy<vector<double> >         TP_CR_HLT_dR;
+   TStlSimpleProxy<vector<int> >            TP_CR_offline_index;
+   TDoubleProxy                             TP_CR_Tag_HLT_pT;
+   TDoubleProxy                             TP_CR_Tag_HLT_ET;
+   TDoubleProxy                             TP_CR_Tag_HLT_eta;
+   TDoubleProxy                             TP_CR_Tag_HLT_phi;
+   TDoubleProxy                             TP_CR_Tag_off_pT;
+   TDoubleProxy                             TP_CR_Tag_off_ET;
+   TDoubleProxy                             TP_CR_Tag_off_eta;
+   TDoubleProxy                             TP_CR_Tag_off_phi;
+   TDoubleProxy                             TP_CR_Probe_HLT_pT;
+   TDoubleProxy                             TP_CR_Probe_HLT_ET;
+   TDoubleProxy                             TP_CR_Probe_HLT_eta;
+   TDoubleProxy                             TP_CR_Probe_HLT_phi;
+   TDoubleProxy                             TP_CR_Probe_HLT_logRatio;
+   TDoubleProxy                             TP_CR_Probe_HLT_dR;
+   TDoubleProxy                             TP_CR_Probe_off_pT;
+   TDoubleProxy                             TP_CR_Probe_off_ET;
+   TDoubleProxy                             TP_CR_Probe_off_eta;
+   TDoubleProxy                             TP_CR_Probe_off_phi;
+   TDoubleProxy                             TP_CR_Probe_off_logRatio;
+   TStlSimpleProxy<vector<double> >         TP_CR_Track_off_pT;
+   TStlSimpleProxy<vector<double> >         TP_CR_Tag_off_trackDR;
+   TStlSimpleProxy<vector<double> >         TP_CR_Probe_off_trackDR;
+   TStlSimpleProxy<vector<double> >         TP_CR_Track_HLT_pT;
+   TStlSimpleProxy<vector<double> >         TP_CR_Probe_HLT_trackDR;
+   TIntProxy                                TP_CR_Tag_index;
+   TIntProxy                                TP_CR_Probe_index;
+   TDoubleProxy                             TP_CR_dPhi;
 
 
    ntuple_recoTree(TTree *tree=0) : 
@@ -312,6 +354,8 @@ public :
       jetsPassingCalREmul                     (&fDirector,"jetsPassingCalREmul"),
       dPhiLeadingCalibJets                    (&fDirector,"dPhiLeadingCalibJets"),
       dRLeadingCalibJets                      (&fDirector,"dRLeadingCalibJets"),
+      dPhiLeadBDTCalibJets                    (&fDirector,"dPhiLeadBDTCalibJets"),
+      dRLeadBDTCalibJets                      (&fDirector,"dRLeadBDTCalibJets"),
       event_tauRoI_maxET                      (&fDirector,"event_tauRoI_maxET"),
       event_passCalRatio_TAU30                (&fDirector,"event_passCalRatio_TAU30"),
       event_passCalRatio_LLPNOMATCH           (&fDirector,"event_passCalRatio_LLPNOMATCH"),
@@ -341,6 +385,7 @@ public :
       CalibJet_EMF                            (&fDirector,"CalibJet_EMF"),
       CalibJet_time                           (&fDirector,"CalibJet_time"),
       CalibJet_BDT                            (&fDirector,"CalibJet_BDT"),
+      CalibJet_BDT_rank                       (&fDirector,"CalibJet_BDT_rank"),
       CalibJet_isCRHLTJet                     (&fDirector,"CalibJet_isCRHLTJet"),
       CalibJet_indexLLP                       (&fDirector,"CalibJet_indexLLP"),
       CalibJet_nTrk                           (&fDirector,"CalibJet_nTrk"),
@@ -376,6 +421,9 @@ public :
       CalibJet_cluster_lead_dR_tojet          (&fDirector,"CalibJet_cluster_lead_dR_tojet"),
       CalibJet_cluster_lead_fracE_ofjet       (&fDirector,"CalibJet_cluster_lead_fracE_ofjet"),
       CalibJet_cluster_lead_jetEMF_revised    (&fDirector,"CalibJet_cluster_lead_jetEMF_revised"),
+      CalibJet_EH_layer1                      (&fDirector,"CalibJet_EH_layer1"),
+      CalibJet_EH_layer2                      (&fDirector,"CalibJet_EH_layer2"),
+      CalibJet_EH_layer3                      (&fDirector,"CalibJet_EH_layer3"),
       Track_pT                                (&fDirector,"Track_pT"),
       Track_eta                               (&fDirector,"Track_eta"),
       Track_phi                               (&fDirector,"Track_phi"),
@@ -520,7 +568,43 @@ public :
       TruthParticle_eta                       (&fDirector,"TruthParticle_eta"),
       TruthParticle_phi                       (&fDirector,"TruthParticle_phi"),
       TruthParticle_beta                      (&fDirector,"TruthParticle_beta"),
-      TruthParticle_gamma                     (&fDirector,"TruthParticle_gamma")
+      TruthParticle_gamma                     (&fDirector,"TruthParticle_gamma"),
+      TP_CR_passTrig                          (&fDirector,"TP_CR_passTrig"),
+      TP_CR_foundTag                          (&fDirector,"TP_CR_foundTag"),
+      TP_CR_foundProbe                        (&fDirector,"TP_CR_foundProbe"),
+      TP_CR_HLT_pT                            (&fDirector,"TP_CR_HLT_pT"),
+      TP_CR_HLT_ET                            (&fDirector,"TP_CR_HLT_ET"),
+      TP_CR_HLT_eta                           (&fDirector,"TP_CR_HLT_eta"),
+      TP_CR_HLT_phi                           (&fDirector,"TP_CR_HLT_phi"),
+      TP_CR_HLT_dR                            (&fDirector,"TP_CR_HLT_dR"),
+      TP_CR_offline_index                     (&fDirector,"TP_CR_offline_index"),
+      TP_CR_Tag_HLT_pT                        (&fDirector,"TP_CR_Tag_HLT_pT"),
+      TP_CR_Tag_HLT_ET                        (&fDirector,"TP_CR_Tag_HLT_ET"),
+      TP_CR_Tag_HLT_eta                       (&fDirector,"TP_CR_Tag_HLT_eta"),
+      TP_CR_Tag_HLT_phi                       (&fDirector,"TP_CR_Tag_HLT_phi"),
+      TP_CR_Tag_off_pT                        (&fDirector,"TP_CR_Tag_off_pT"),
+      TP_CR_Tag_off_ET                        (&fDirector,"TP_CR_Tag_off_ET"),
+      TP_CR_Tag_off_eta                       (&fDirector,"TP_CR_Tag_off_eta"),
+      TP_CR_Tag_off_phi                       (&fDirector,"TP_CR_Tag_off_phi"),
+      TP_CR_Probe_HLT_pT                      (&fDirector,"TP_CR_Probe_HLT_pT"),
+      TP_CR_Probe_HLT_ET                      (&fDirector,"TP_CR_Probe_HLT_ET"),
+      TP_CR_Probe_HLT_eta                     (&fDirector,"TP_CR_Probe_HLT_eta"),
+      TP_CR_Probe_HLT_phi                     (&fDirector,"TP_CR_Probe_HLT_phi"),
+      TP_CR_Probe_HLT_logRatio                (&fDirector,"TP_CR_Probe_HLT_logRatio"),
+      TP_CR_Probe_HLT_dR                      (&fDirector,"TP_CR_Probe_HLT_dR"),
+      TP_CR_Probe_off_pT                      (&fDirector,"TP_CR_Probe_off_pT"),
+      TP_CR_Probe_off_ET                      (&fDirector,"TP_CR_Probe_off_ET"),
+      TP_CR_Probe_off_eta                     (&fDirector,"TP_CR_Probe_off_eta"),
+      TP_CR_Probe_off_phi                     (&fDirector,"TP_CR_Probe_off_phi"),
+      TP_CR_Probe_off_logRatio                (&fDirector,"TP_CR_Probe_off_logRatio"),
+      TP_CR_Track_off_pT                      (&fDirector,"TP_CR_Track_off_pT"),
+      TP_CR_Tag_off_trackDR                   (&fDirector,"TP_CR_Tag_off_trackDR"),
+      TP_CR_Probe_off_trackDR                 (&fDirector,"TP_CR_Probe_off_trackDR"),
+      TP_CR_Track_HLT_pT                      (&fDirector,"TP_CR_Track_HLT_pT"),
+      TP_CR_Probe_HLT_trackDR                 (&fDirector,"TP_CR_Probe_HLT_trackDR"),
+      TP_CR_Tag_index                         (&fDirector,"TP_CR_Tag_index"),
+      TP_CR_Probe_index                       (&fDirector,"TP_CR_Probe_index"),
+      TP_CR_dPhi                              (&fDirector,"TP_CR_dPhi")
       { }
    ~ntuple_recoTree();
    Int_t   Version() const {return 1;}

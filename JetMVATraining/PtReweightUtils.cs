@@ -42,6 +42,12 @@ namespace JetMVATraining
                     JetET = t.JetET,
                     JetWidth = t.JetWidth,
                     JetDRTo2GeVTrack = t.JetDRTo2GeVTrack,
+                    EnergyDensity = t.EnergyDensity,
+                    FirstClusterRadius = t.FirstClusterRadius,
+                    HadronicLayer1Fraction = t.HadronicLayer1Fraction,
+                    JetLat = t.JetLat,
+                    JetLong = t.JetLong,
+                    ShowerCenter = t.ShowerCenter
                 });
 
             r

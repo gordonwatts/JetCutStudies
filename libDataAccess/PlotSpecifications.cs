@@ -327,6 +327,20 @@ namespace libDataAccess
             MakePlotterSpec<double>(150, 0.0, 750.0, j => j, "pT{0}", "pT of {0} LLP; pT [GeV]");
         public static IPlotSpec<recoTreeLLPs> LLPPtPlot;
 
+        public static IPlotSpec<double> EnergyDensityPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 14.0, j => j, "EnergyDensity{0}", "Energy Density of {0}; rho");
+
+        public static IPlotSpec<double> HadronicL1FractPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "HadronicL1Frac{0}", "Fraction of energy in L1 (Had) of {0}; L1/(L1+L2+L3)");
+        public static IPlotSpec<double> JetLatPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "JetLat{0}", "Jet Latitude of {0}");
+        public static IPlotSpec<double> JetLongPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "JetLong{0}", "Jet Longiduninal of {0}");
+        public static IPlotSpec<double> FirstClusterRadiusPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 7.0, j => j/1000.0, "FirstClusterR{0}", "Radius of first cluster of {0}; R [m]");
+        public static IPlotSpec<double> ShowerCenterPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 10.0, j => j/1000.0, "ShowerCenter{0}", "Depth of shower center {0}; Lambda_center [m]");
+
         /// <summary>
         /// Get the dependencies right
         /// </summary>

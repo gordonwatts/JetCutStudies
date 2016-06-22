@@ -3,26 +3,8 @@
   <Groups>
     <ArrayGroup Name="ungrouped">
       <Variables>
-        <VariableInfo NETName="CR_HLT_ET" TTreeName="CR_HLT_ET" />
-        <VariableInfo NETName="CR_HLT_pT" TTreeName="CR_HLT_pT" />
-        <VariableInfo NETName="CR_HLT_eta" TTreeName="CR_HLT_eta" />
-        <VariableInfo NETName="CR_HLT_phi" TTreeName="CR_HLT_phi" />
-        <VariableInfo NETName="CR_HLT_EMF" TTreeName="CR_HLT_EMF" />
-        <VariableInfo NETName="CR_HLT_logR" TTreeName="CR_HLT_logR" />
-        <VariableInfo NETName="CR_HLT_minDR_HLTtracks" TTreeName="CR_HLT_minDR_HLTtracks" />
-        <VariableInfo NETName="CR_HLT_dR" TTreeName="CR_HLT_dR" />
-        <VariableInfo NETName="CR_HLT_matchOff" TTreeName="CR_HLT_matchOff" />
-        <VariableInfo NETName="CR_HLT_LLP_DR" TTreeName="CR_HLT_LLP_DR" />
-        <VariableInfo NETName="CR_HLT_LLP_Lxy" TTreeName="CR_HLT_LLP_Lxy" />
-        <VariableInfo NETName="CR_HLT_LLP_Lz" TTreeName="CR_HLT_LLP_Lz" />
-        <VariableInfo NETName="CR_HLT_NegativeE" TTreeName="CR_HLT_NegativeE" />
-        <VariableInfo NETName="CR_HLT_FracSamplingMax" TTreeName="CR_HLT_FracSamplingMax" />
-        <VariableInfo NETName="CR_HLT_HECQuality" TTreeName="CR_HLT_HECQuality" />
-        <VariableInfo NETName="CR_HLT_LArQuality" TTreeName="CR_HLT_LArQuality" />
-        <VariableInfo NETName="CR_HLT_AverageLArQF" TTreeName="CR_HLT_AverageLArQF" />
-        <VariableInfo NETName="CR_HLT_HECFrac" TTreeName="CR_HLT_HECFrac" />
-        <VariableInfo NETName="CR_HLT_Timing" TTreeName="CR_HLT_Timing" />
-        <VariableInfo NETName="CR_offline_passCuts" TTreeName="CR_offline_passCuts" />
+        <VariableInfo NETName="LLP_nJet_dRlt04" TTreeName="LLP_nJet_dRlt04" />
+        <VariableInfo NETName="LLP_dR_Jet" TTreeName="LLP_dR_Jet" />
         <VariableInfo NETName="CalR_emul_jetET" TTreeName="CalR_emul_jetET" />
         <VariableInfo NETName="CalR_emul_jetPt" TTreeName="CalR_emul_jetPt" />
         <VariableInfo NETName="CalR_emul_jetEta" TTreeName="CalR_emul_jetEta" />
@@ -57,25 +39,6 @@
         <VariableInfo NETName="CalR_emul_L1PassTAU40" TTreeName="CalR_emul_L1PassTAU40" />
         <VariableInfo NETName="CalR_emul_L1PassTAU60" TTreeName="CalR_emul_L1PassTAU60" />
         <VariableInfo NETName="CalR_emul_L1PassLLPNOMATCH" TTreeName="CalR_emul_L1PassLLPNOMATCH" />
-        <VariableInfo NETName="muRoIClus_Trig_eta" TTreeName="muRoIClus_Trig_eta" />
-        <VariableInfo NETName="muRoIClus_Trig_phi" TTreeName="muRoIClus_Trig_phi" />
-        <VariableInfo NETName="muRoIClus_Trig_nRoI" TTreeName="muRoIClus_Trig_nRoI" />
-        <VariableInfo NETName="muRoIClus_Trig_nJet" TTreeName="muRoIClus_Trig_nJet" />
-        <VariableInfo NETName="muRoIClus_Trig_nTrk" TTreeName="muRoIClus_Trig_nTrk" />
-        <VariableInfo NETName="muRoIClus_Trig_LLP_dR" TTreeName="muRoIClus_Trig_LLP_dR" />
-        <VariableInfo NETName="muRoIClus_Trig_indexLLP" TTreeName="muRoIClus_Trig_indexLLP" />
-        <VariableInfo NETName="muRoIClus_Trig_jetdR" TTreeName="muRoIClus_Trig_jetdR" />
-        <VariableInfo NETName="muRoIClus_Trig_jetET" TTreeName="muRoIClus_Trig_jetET" />
-        <VariableInfo NETName="muRoIClus_Trig_jetLogRatio" TTreeName="muRoIClus_Trig_jetLogRatio" />
-        <VariableInfo NETName="muRoIClus_Trig_trackdR" TTreeName="muRoIClus_Trig_trackdR" />
-        <VariableInfo NETName="muRoIClus_Trig_trackpT" TTreeName="muRoIClus_Trig_trackpT" />
-        <VariableInfo NETName="TruthParticle_pdgid" TTreeName="TruthParticle_pdgid" />
-        <VariableInfo NETName="TruthParticle_E" TTreeName="TruthParticle_E" />
-        <VariableInfo NETName="TruthParticle_pT" TTreeName="TruthParticle_pT" />
-        <VariableInfo NETName="TruthParticle_eta" TTreeName="TruthParticle_eta" />
-        <VariableInfo NETName="TruthParticle_phi" TTreeName="TruthParticle_phi" />
-        <VariableInfo NETName="TruthParticle_beta" TTreeName="TruthParticle_beta" />
-        <VariableInfo NETName="TruthParticle_gamma" TTreeName="TruthParticle_gamma" />
         <VariableInfo NETName="event_count" TTreeName="event_count" />
         <VariableInfo NETName="eventNumber" TTreeName="eventNumber" />
         <VariableInfo NETName="runNumber" TTreeName="runNumber" />
@@ -96,6 +59,8 @@
         <VariableInfo NETName="jetsPassingCalREmul" TTreeName="jetsPassingCalREmul" />
         <VariableInfo NETName="dPhiLeadingCalibJets" TTreeName="dPhiLeadingCalibJets" />
         <VariableInfo NETName="dRLeadingCalibJets" TTreeName="dRLeadingCalibJets" />
+        <VariableInfo NETName="dPhiLeadBDTCalibJets" TTreeName="dPhiLeadBDTCalibJets" />
+        <VariableInfo NETName="dRLeadBDTCalibJets" TTreeName="dRLeadBDTCalibJets" />
         <VariableInfo NETName="event_tauRoI_maxET" TTreeName="event_tauRoI_maxET" />
         <VariableInfo NETName="event_passCalRatio_TAU30" TTreeName="event_passCalRatio_TAU30" />
         <VariableInfo NETName="event_passCalRatio_LLPNOMATCH" TTreeName="event_passCalRatio_LLPNOMATCH" />
@@ -123,23 +88,31 @@
         <VariableInfo NETName="METTST_mpx" TTreeName="METTST_mpx" />
         <VariableInfo NETName="METTST_mpy" TTreeName="METTST_mpy" />
         <VariableInfo NETName="METTST_sumet" TTreeName="METTST_sumet" />
-      </Variables>
-    </ArrayGroup>
-    <ArrayGroup Name="LLPs">
-      <Variables>
-        <VariableInfo NETName="LLP_pdgid" TTreeName="LLP_pdgid" />
-        <VariableInfo NETName="LLP_E" TTreeName="LLP_E" />
-        <VariableInfo NETName="pT" TTreeName="LLP_pT" />
-        <VariableInfo NETName="eta" TTreeName="LLP_eta" />
-        <VariableInfo NETName="phi" TTreeName="LLP_phi" />
-        <VariableInfo NETName="LLP_beta" TTreeName="LLP_beta" />
-        <VariableInfo NETName="LLP_gamma" TTreeName="LLP_gamma" />
-        <VariableInfo NETName="LLP_timing" TTreeName="LLP_timing" />
-        <VariableInfo NETName="Lxy" TTreeName="LLP_Lxy" />
-        <VariableInfo NETName="LLP_Lz" TTreeName="LLP_Lz" />
-        <VariableInfo NETName="LLP_dR_Jet" TTreeName="LLP_dR_Jet" />
-        <VariableInfo NETName="LLP_nJet_dRlt04" TTreeName="LLP_nJet_dRlt04" />
-        <VariableInfo NETName="LLP_nMSegs_dR04" TTreeName="LLP_nMSegs_dR04" />
+        <VariableInfo NETName="TP_CR_passTrig" TTreeName="TP_CR_passTrig" />
+        <VariableInfo NETName="TP_CR_foundTag" TTreeName="TP_CR_foundTag" />
+        <VariableInfo NETName="TP_CR_foundProbe" TTreeName="TP_CR_foundProbe" />
+        <VariableInfo NETName="TP_CR_Tag_HLT_pT" TTreeName="TP_CR_Tag_HLT_pT" />
+        <VariableInfo NETName="TP_CR_Tag_HLT_ET" TTreeName="TP_CR_Tag_HLT_ET" />
+        <VariableInfo NETName="TP_CR_Tag_HLT_eta" TTreeName="TP_CR_Tag_HLT_eta" />
+        <VariableInfo NETName="TP_CR_Tag_HLT_phi" TTreeName="TP_CR_Tag_HLT_phi" />
+        <VariableInfo NETName="TP_CR_Tag_off_pT" TTreeName="TP_CR_Tag_off_pT" />
+        <VariableInfo NETName="TP_CR_Tag_off_ET" TTreeName="TP_CR_Tag_off_ET" />
+        <VariableInfo NETName="TP_CR_Tag_off_eta" TTreeName="TP_CR_Tag_off_eta" />
+        <VariableInfo NETName="TP_CR_Tag_off_phi" TTreeName="TP_CR_Tag_off_phi" />
+        <VariableInfo NETName="TP_CR_Probe_HLT_pT" TTreeName="TP_CR_Probe_HLT_pT" />
+        <VariableInfo NETName="TP_CR_Probe_HLT_ET" TTreeName="TP_CR_Probe_HLT_ET" />
+        <VariableInfo NETName="TP_CR_Probe_HLT_eta" TTreeName="TP_CR_Probe_HLT_eta" />
+        <VariableInfo NETName="TP_CR_Probe_HLT_phi" TTreeName="TP_CR_Probe_HLT_phi" />
+        <VariableInfo NETName="TP_CR_Probe_HLT_logRatio" TTreeName="TP_CR_Probe_HLT_logRatio" />
+        <VariableInfo NETName="TP_CR_Probe_HLT_dR" TTreeName="TP_CR_Probe_HLT_dR" />
+        <VariableInfo NETName="TP_CR_Probe_off_pT" TTreeName="TP_CR_Probe_off_pT" />
+        <VariableInfo NETName="TP_CR_Probe_off_ET" TTreeName="TP_CR_Probe_off_ET" />
+        <VariableInfo NETName="TP_CR_Probe_off_eta" TTreeName="TP_CR_Probe_off_eta" />
+        <VariableInfo NETName="TP_CR_Probe_off_phi" TTreeName="TP_CR_Probe_off_phi" />
+        <VariableInfo NETName="TP_CR_Probe_off_logRatio" TTreeName="TP_CR_Probe_off_logRatio" />
+        <VariableInfo NETName="TP_CR_Tag_index" TTreeName="TP_CR_Tag_index" />
+        <VariableInfo NETName="TP_CR_Probe_index" TTreeName="TP_CR_Probe_index" />
+        <VariableInfo NETName="TP_CR_dPhi" TTreeName="TP_CR_dPhi" />
       </Variables>
     </ArrayGroup>
     <ArrayGroup Name="Jets">
@@ -156,15 +129,16 @@
         <VariableInfo NETName="CalibJet_EMF" TTreeName="CalibJet_EMF" />
         <VariableInfo NETName="CalibJet_time" TTreeName="CalibJet_time" />
         <VariableInfo NETName="CalibJet_BDT" TTreeName="CalibJet_BDT" />
+        <VariableInfo NETName="CalibJet_BDT_rank" TTreeName="CalibJet_BDT_rank" />
         <VariableInfo NETName="CalibJet_isCRHLTJet" TTreeName="CalibJet_isCRHLTJet" />
-        <VariableInfo NETName="LLP" TTreeName="CalibJet_indexLLP" IndexToGroup="LLPs"  />
+        <VariableInfo NETName="LLP" TTreeName="CalibJet_indexLLP" IndexToGroup="LLPs" />
         <VariableInfo NETName="nTrk" TTreeName="CalibJet_nTrk" />
         <VariableInfo NETName="CalibJet_sumTrkpT" TTreeName="CalibJet_sumTrkpT" />
         <VariableInfo NETName="CalibJet_maxTrkpT" TTreeName="CalibJet_maxTrkpT" />
         <VariableInfo NETName="CalibJet_minDRTrkpt2" TTreeName="CalibJet_minDRTrkpt2" />
         <VariableInfo NETName="CalibJet_matchPassEmul" TTreeName="CalibJet_matchPassEmul" />
         <VariableInfo NETName="CalibJet_cluster_nClusters" TTreeName="CalibJet_cluster_nClusters" />
-        <VariableInfo NETName="CalibJet_cluster_lead_r" TTreeName="CalibJet_cluster_lead_r" />
+        <VariableInfo NETName="FirstClusterR" TTreeName="CalibJet_cluster_lead_r" />
         <VariableInfo NETName="CalibJet_cluster_lead_x" TTreeName="CalibJet_cluster_lead_x" />
         <VariableInfo NETName="CalibJet_cluster_lead_y" TTreeName="CalibJet_cluster_lead_y" />
         <VariableInfo NETName="CalibJet_cluster_lead_z" TTreeName="CalibJet_cluster_lead_z" />
@@ -177,20 +151,23 @@
         <VariableInfo NETName="CalibJet_cluster_lead_calibEta" TTreeName="CalibJet_cluster_lead_calibEta" />
         <VariableInfo NETName="CalibJet_cluster_lead_calibPhi" TTreeName="CalibJet_cluster_lead_calibPhi" />
         <VariableInfo NETName="CalibJet_cluster_lead_time" TTreeName="CalibJet_cluster_lead_time" />
-        <VariableInfo NETName="CalibJet_cluster_lead_lambda" TTreeName="CalibJet_cluster_lead_lambda" />
+        <VariableInfo NETName="FirstClusterLambda" TTreeName="CalibJet_cluster_lead_lambda" />
         <VariableInfo NETName="CalibJet_cluster_lead_sec_r" TTreeName="CalibJet_cluster_lead_sec_r" />
         <VariableInfo NETName="CalibJet_cluster_lead_sec_lambda" TTreeName="CalibJet_cluster_lead_sec_lambda" />
         <VariableInfo NETName="CalibJet_cluster_lead_qual_tile" TTreeName="CalibJet_cluster_lead_qual_tile" />
         <VariableInfo NETName="CalibJet_cluster_lead_qual_lar" TTreeName="CalibJet_cluster_lead_qual_lar" />
-        <VariableInfo NETName="CalibJet_cluster_lead_lateral" TTreeName="CalibJet_cluster_lead_lateral" />
-        <VariableInfo NETName="CalibJet_cluster_lead_longitudinal" TTreeName="CalibJet_cluster_lead_longitudinal" />
-        <VariableInfo NETName="CalibJet_cluster_lead_first_Eden" TTreeName="CalibJet_cluster_lead_first_Eden" />
+        <VariableInfo NETName="FirstClusterLateral" TTreeName="CalibJet_cluster_lead_lateral" />
+        <VariableInfo NETName="FirstClusterLongitudinal" TTreeName="CalibJet_cluster_lead_longitudinal" />
+        <VariableInfo NETName="FirstClusterEnergyDensity" TTreeName="CalibJet_cluster_lead_first_Eden" />
         <VariableInfo NETName="CalibJet_cluster_lead_EMF" TTreeName="CalibJet_cluster_lead_EMF" />
         <VariableInfo NETName="CalibJet_cluster_lead_EEM" TTreeName="CalibJet_cluster_lead_EEM" />
         <VariableInfo NETName="CalibJet_cluster_lead_Etot" TTreeName="CalibJet_cluster_lead_Etot" />
         <VariableInfo NETName="CalibJet_cluster_lead_dR_tojet" TTreeName="CalibJet_cluster_lead_dR_tojet" />
         <VariableInfo NETName="CalibJet_cluster_lead_fracE_ofjet" TTreeName="CalibJet_cluster_lead_fracE_ofjet" />
         <VariableInfo NETName="CalibJet_cluster_lead_jetEMF_revised" TTreeName="CalibJet_cluster_lead_jetEMF_revised" />
+        <VariableInfo NETName="EHadLayer1" TTreeName="CalibJet_EH_layer1" />
+        <VariableInfo NETName="EHadLayer2" TTreeName="CalibJet_EH_layer2" />
+        <VariableInfo NETName="EHadLayer3" TTreeName="CalibJet_EH_layer3" />
       </Variables>
     </ArrayGroup>
     <ArrayGroup Name="Tracks">
@@ -226,6 +203,44 @@
     </ArrayGroup>
     <ArrayGroup Name="group6">
       <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_jetdR" TTreeName="muRoIClus_Trig_jetdR" />
+        <VariableInfo NETName="muRoIClus_Trig_jetET" TTreeName="muRoIClus_Trig_jetET" />
+        <VariableInfo NETName="muRoIClus_Trig_jetLogRatio" TTreeName="muRoIClus_Trig_jetLogRatio" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group7">
+      <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_trackdR" TTreeName="muRoIClus_Trig_trackdR" />
+        <VariableInfo NETName="muRoIClus_Trig_trackpT" TTreeName="muRoIClus_Trig_trackpT" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group8">
+      <Variables>
+        <VariableInfo NETName="TP_CR_HLT_pT" TTreeName="TP_CR_HLT_pT" />
+        <VariableInfo NETName="TP_CR_HLT_ET" TTreeName="TP_CR_HLT_ET" />
+        <VariableInfo NETName="TP_CR_HLT_eta" TTreeName="TP_CR_HLT_eta" />
+        <VariableInfo NETName="TP_CR_HLT_phi" TTreeName="TP_CR_HLT_phi" />
+        <VariableInfo NETName="TP_CR_HLT_dR" TTreeName="TP_CR_HLT_dR" />
+        <VariableInfo NETName="TP_CR_offline_index" TTreeName="TP_CR_offline_index" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="LLPs">
+      <Variables>
+        <VariableInfo NETName="LLP_pdgid" TTreeName="LLP_pdgid" />
+        <VariableInfo NETName="LLP_E" TTreeName="LLP_E" />
+        <VariableInfo NETName="pT" TTreeName="LLP_pT" />
+        <VariableInfo NETName="eta" TTreeName="LLP_eta" />
+        <VariableInfo NETName="phi" TTreeName="LLP_phi" />
+        <VariableInfo NETName="LLP_beta" TTreeName="LLP_beta" />
+        <VariableInfo NETName="LLP_gamma" TTreeName="LLP_gamma" />
+        <VariableInfo NETName="LLP_timing" TTreeName="LLP_timing" />
+        <VariableInfo NETName="Lxy" TTreeName="LLP_Lxy" />
+        <VariableInfo NETName="LLP_Lz" TTreeName="LLP_Lz" />
+        <VariableInfo NETName="LLP_nMSegs_dR04" TTreeName="LLP_nMSegs_dR04" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group10">
+      <Variables>
         <VariableInfo NETName="CR_offline_HLTassoc" TTreeName="CR_offline_HLTassoc" />
         <VariableInfo NETName="CR_offline_eta" TTreeName="CR_offline_eta" />
         <VariableInfo NETName="CR_offline_phi" TTreeName="CR_offline_phi" />
@@ -245,7 +260,7 @@
         <VariableInfo NETName="CR_offline_BDT" TTreeName="CR_offline_BDT" />
       </Variables>
     </ArrayGroup>
-    <ArrayGroup Name="group7">
+    <ArrayGroup Name="group11">
       <Variables>
         <VariableInfo NETName="MSVertex_LLP_dR" TTreeName="MSVertex_LLP_dR" />
         <VariableInfo NETName="MSVertex_indexLLP" TTreeName="MSVertex_indexLLP" />
@@ -264,6 +279,65 @@
         <VariableInfo NETName="MSVertex_passesTrackIso" TTreeName="MSVertex_passesTrackIso" />
         <VariableInfo NETName="MSVertex_passesHitThresholds" TTreeName="MSVertex_passesHitThresholds" />
         <VariableInfo NETName="MSVertex_isGood" TTreeName="MSVertex_isGood" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group12">
+      <Variables>
+        <VariableInfo NETName="muRoIClus_Trig_eta" TTreeName="muRoIClus_Trig_eta" />
+        <VariableInfo NETName="muRoIClus_Trig_phi" TTreeName="muRoIClus_Trig_phi" />
+        <VariableInfo NETName="muRoIClus_Trig_nRoI" TTreeName="muRoIClus_Trig_nRoI" />
+        <VariableInfo NETName="muRoIClus_Trig_nJet" TTreeName="muRoIClus_Trig_nJet" />
+        <VariableInfo NETName="muRoIClus_Trig_nTrk" TTreeName="muRoIClus_Trig_nTrk" />
+        <VariableInfo NETName="muRoIClus_Trig_LLP_dR" TTreeName="muRoIClus_Trig_LLP_dR" />
+        <VariableInfo NETName="muRoIClus_Trig_indexLLP" TTreeName="muRoIClus_Trig_indexLLP" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group13">
+      <Variables>
+        <VariableInfo NETName="CR_HLT_ET" TTreeName="CR_HLT_ET" />
+        <VariableInfo NETName="CR_HLT_pT" TTreeName="CR_HLT_pT" />
+        <VariableInfo NETName="CR_HLT_eta" TTreeName="CR_HLT_eta" />
+        <VariableInfo NETName="CR_HLT_phi" TTreeName="CR_HLT_phi" />
+        <VariableInfo NETName="CR_HLT_EMF" TTreeName="CR_HLT_EMF" />
+        <VariableInfo NETName="CR_HLT_logR" TTreeName="CR_HLT_logR" />
+        <VariableInfo NETName="CR_HLT_minDR_HLTtracks" TTreeName="CR_HLT_minDR_HLTtracks" />
+        <VariableInfo NETName="CR_HLT_dR" TTreeName="CR_HLT_dR" />
+        <VariableInfo NETName="CR_HLT_matchOff" TTreeName="CR_HLT_matchOff" />
+        <VariableInfo NETName="CR_HLT_LLP_DR" TTreeName="CR_HLT_LLP_DR" />
+        <VariableInfo NETName="CR_HLT_LLP_Lxy" TTreeName="CR_HLT_LLP_Lxy" />
+        <VariableInfo NETName="CR_HLT_LLP_Lz" TTreeName="CR_HLT_LLP_Lz" />
+        <VariableInfo NETName="CR_HLT_NegativeE" TTreeName="CR_HLT_NegativeE" />
+        <VariableInfo NETName="CR_HLT_FracSamplingMax" TTreeName="CR_HLT_FracSamplingMax" />
+        <VariableInfo NETName="CR_HLT_HECQuality" TTreeName="CR_HLT_HECQuality" />
+        <VariableInfo NETName="CR_HLT_LArQuality" TTreeName="CR_HLT_LArQuality" />
+        <VariableInfo NETName="CR_HLT_AverageLArQF" TTreeName="CR_HLT_AverageLArQF" />
+        <VariableInfo NETName="CR_HLT_HECFrac" TTreeName="CR_HLT_HECFrac" />
+        <VariableInfo NETName="CR_HLT_Timing" TTreeName="CR_HLT_Timing" />
+        <VariableInfo NETName="CR_offline_passCuts" TTreeName="CR_offline_passCuts" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group14">
+      <Variables>
+        <VariableInfo NETName="TP_CR_Track_off_pT" TTreeName="TP_CR_Track_off_pT" />
+        <VariableInfo NETName="TP_CR_Tag_off_trackDR" TTreeName="TP_CR_Tag_off_trackDR" />
+        <VariableInfo NETName="TP_CR_Probe_off_trackDR" TTreeName="TP_CR_Probe_off_trackDR" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group15">
+      <Variables>
+        <VariableInfo NETName="TP_CR_Track_HLT_pT" TTreeName="TP_CR_Track_HLT_pT" />
+        <VariableInfo NETName="TP_CR_Probe_HLT_trackDR" TTreeName="TP_CR_Probe_HLT_trackDR" />
+      </Variables>
+    </ArrayGroup>
+    <ArrayGroup Name="group16">
+      <Variables>
+        <VariableInfo NETName="TruthParticle_pdgid" TTreeName="TruthParticle_pdgid" />
+        <VariableInfo NETName="TruthParticle_E" TTreeName="TruthParticle_E" />
+        <VariableInfo NETName="TruthParticle_pT" TTreeName="TruthParticle_pT" />
+        <VariableInfo NETName="TruthParticle_eta" TTreeName="TruthParticle_eta" />
+        <VariableInfo NETName="TruthParticle_phi" TTreeName="TruthParticle_phi" />
+        <VariableInfo NETName="TruthParticle_beta" TTreeName="TruthParticle_beta" />
+        <VariableInfo NETName="TruthParticle_gamma" TTreeName="TruthParticle_gamma" />
       </Variables>
     </ArrayGroup>
   </Groups>

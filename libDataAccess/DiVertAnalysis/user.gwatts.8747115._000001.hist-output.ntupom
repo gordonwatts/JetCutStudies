@@ -35,6 +35,8 @@
         <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="jetsPassingCalREmul" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dPhiLeadingCalibJets" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dRLeadingCalibJets" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dPhiLeadBDTCalibJets" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dRLeadBDTCalibJets" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="event_tauRoI_maxET" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_TAU30" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="event_passCalRatio_LLPNOMATCH" NotAPointer="false" />
@@ -64,6 +66,7 @@
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_EMF" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_time" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_BDT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_BDT_rank" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalibJet_isCRHLTJet" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="CalibJet_indexLLP" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="uint[]" Name="CalibJet_nTrk" NotAPointer="false" />
@@ -99,6 +102,9 @@
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_dR_tojet" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_fracE_ofjet" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_jetEMF_revised" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_EH_layer1" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_EH_layer2" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_EH_layer3" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_pT" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_eta" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_phi" NotAPointer="false" />
@@ -244,6 +250,42 @@
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_phi" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_beta" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TruthParticle_gamma" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="TP_CR_passTrig" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="TP_CR_foundTag" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="TP_CR_foundProbe" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_HLT_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_HLT_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_HLT_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_HLT_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_HLT_dR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="TP_CR_offline_index" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_HLT_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_HLT_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_HLT_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_HLT_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_off_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_off_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_off_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Tag_off_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_HLT_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_HLT_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_HLT_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_HLT_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_HLT_logRatio" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_HLT_dR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_off_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_off_ET" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_off_eta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_off_phi" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_Probe_off_logRatio" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_Track_off_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_Tag_off_trackDR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_Probe_off_trackDR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_Track_HLT_pT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="TP_CR_Probe_HLT_trackDR" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="TP_CR_Tag_index" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="TP_CR_Probe_index" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="TP_CR_dPhi" NotAPointer="false" />
       </Items>
       <IsTClonesArrayClass>false</IsTClonesArrayClass>
       <IsTopLevelClass>true</IsTopLevelClass>

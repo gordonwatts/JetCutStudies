@@ -30,6 +30,12 @@ namespace CalRatioTMVAUtilities
         public double JetET;
         public double JetWidth;
         public double JetDRTo2GeVTrack;
+        public double EnergyDensity;
+        public double HadronicLayer1Fraction;
+        public double JetLat;
+        public double JetLong;
+        public double FirstClusterRadius;
+        public double ShowerCenter;
     }
 
     /// <summary>
@@ -54,6 +60,12 @@ namespace CalRatioTMVAUtilities
                 JetET = i.JetInfo.Jet.ET,
                 JetWidth = i.JetInfo.Jet.width,
                 JetDRTo2GeVTrack = PlotSpecifications.CalcDR2GeVTrack.Invoke(i.JetInfo.AllTracks, i.JetInfo.Jet),
+                JetLat = i.JetInfo.Jet.FirstClusterLateral,
+                JetLong = i.JetInfo.Jet.FirstClusterLongitudinal,
+                FirstClusterRadius = i.JetInfo.Jet.FirstClusterR,
+                ShowerCenter = i.JetInfo.Jet.FirstClusterLambda,
+                EnergyDensity = i.JetInfo.Jet.FirstClusterEnergyDensity,
+                HadronicLayer1Fraction = i.JetInfo.Jet.EHadLayer1 / (i.JetInfo.Jet.EHadLayer1 + i.JetInfo.Jet.EHadLayer2 + i.JetInfo.Jet.EHadLayer3),
             };
 
         /// <summary>
@@ -110,6 +122,12 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = MaxTrackPtPlotRaw, ValueGetter = tu => tu.MaxTrackPt },
             new PlotInfo() { Plotter = JetWidthPlotRaw, ValueGetter = tu => tu.JetWidth },
             new PlotInfo() { Plotter = DeltaROfCloseTrackPlotRaw, ValueGetter = tu => tu.JetDRTo2GeVTrack },
+            new PlotInfo() { Plotter = EnergyDensityPlotRaw, ValueGetter = tu => tu.EnergyDensity },
+            new PlotInfo() { Plotter = HadronicL1FractPlotRaw, ValueGetter = tu => tu.HadronicLayer1Fraction },
+            new PlotInfo() { Plotter = JetLatPlotRaw, ValueGetter = tu => tu.JetLat },
+            new PlotInfo() { Plotter = JetLongPlotRaw, ValueGetter = tu => tu.JetLat },
+            new PlotInfo() { Plotter = FirstClusterRadiusPlotRaw, ValueGetter = tu => tu.FirstClusterRadius },
+            new PlotInfo() { Plotter = ShowerCenterPlotRaw, ValueGetter = tu => tu.ShowerCenter },
         };
 
         /// <summary>

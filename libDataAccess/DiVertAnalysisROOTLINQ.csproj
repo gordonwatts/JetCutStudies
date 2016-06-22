@@ -211,7 +211,7 @@
     <TTreeGroupSpec Include="DiVertAnalysis\recoTreeConfig-000.ntup" />
   </ItemGroup>
   <ItemGroup>
-    <ROOTFileDataModel Include="DiVertAnalysis\user.gwatts.8578406._000001.hist-output.ntupom">
+    <ROOTFileDataModel Include="DiVertAnalysis\user.gwatts.8747115._000001.hist-output.ntupom">
       <Namespace>DiVertAnalysis</Namespace>
     </ROOTFileDataModel>
   </ItemGroup>
