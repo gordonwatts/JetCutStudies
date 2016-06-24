@@ -319,6 +319,7 @@ namespace GenericPerformancePlots
             FutureTDirectory dir,
             string name)
         {
+            GC.Collect(3, GCCollectionMode.Forced, true);
             // Some generic plots
             signal
                 .FuturePlot(JetExtraPtPlot, $"{name}_sig")
