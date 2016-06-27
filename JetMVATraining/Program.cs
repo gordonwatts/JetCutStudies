@@ -92,8 +92,8 @@ namespace JetMVATraining
 
                 // Setup the training
                 var training = flatSignalTrainingData
-                    .AsSignal(isTrainingEvent: e => e.EventNumber % 2 == 1)
-                    .Background(flatBackgroundTrainingData, isTrainingEvent: e => e.EventNumber % 2 == 1)
+                    .AsSignal(isTrainingEvent: e => !(e.EventNumber % 3 == 1))
+                    .Background(flatBackgroundTrainingData, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
                     .UseVariables(varList);
 
                 // Build options (like what we might like to transform.
