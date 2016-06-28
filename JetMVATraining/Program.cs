@@ -187,7 +187,7 @@ namespace JetMVATraining
                         jobNameBuilder.Append(".");
                     }
                     first = false;
-                    jobNameBuilder.Append(v);
+                    jobNameBuilder.Append(v.Substring(0, v.Length-2));
                 }
                 var jobName = jobNameBuilder.ToString();
 
