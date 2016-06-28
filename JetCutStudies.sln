@@ -19,6 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMVAUtilities", "TMVAUtilit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{310A7D99-42EF-4435-85D7-F69222380661}"
 	ProjectSection(SolutionItems) = preProject
+		download-local-copy-of-all-ds.ps1 = download-local-copy-of-all-ds.ps1
 		dump-sample-output-ds.ps1 = dump-sample-output-ds.ps1
 		libDataAccess\Sample Meta Data.csv = libDataAccess\Sample Meta Data.csv
 		submit-all-samples.ps1 = submit-all-samples.ps1
