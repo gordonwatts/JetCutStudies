@@ -41,7 +41,7 @@ namespace JetMVATraining
         [Option("VariableTransform", Default = "")]
         public string VariableTransform { get; set; }
 
-        [Option("TrainingVariableSet", Default = TrainingVariableSet.Default5pT)]
+        [Option("TrainingVariableSet", Default = TrainingVariableSet.DefaultAllpT)]
         public TrainingVariableSet TrainingVariableSet { get; set; }
 
         [Option("DropVariable")]
@@ -58,6 +58,8 @@ namespace JetMVATraining
     {
         Default5pT,
         Default5ET,
+        DefaultAllpT,
+        DefaultAllET,
         None
     }
 
@@ -75,6 +77,12 @@ namespace JetMVATraining
         JetET,
         JetWidth,
         JetTrackDR,
+        EnergyDensity,
+        HadronicLayer1Fraction,
+        JetLat,
+        JetLong,
+        FirstClusterRadius,
+        ShowerCenter
     }
 
     class Program
@@ -321,8 +329,26 @@ namespace JetMVATraining
                 case TrainingVariables.JetTrackDR:
                     return t => t.JetDRTo2GeVTrack;
 
+                case TrainingVariables.EnergyDensity:
+                    return t => t.EnergyDensity;
+
+                case TrainingVariables.HadronicLayer1Fraction:
+                    return t => t.HadronicLayer1Fraction;
+
+                case TrainingVariables.JetLat:
+                    return t => t.JetLat;
+
+                case TrainingVariables.JetLong:
+                    return t => t.JetLong;
+
+                case TrainingVariables.FirstClusterRadius:
+                    return t => t.FirstClusterRadius;
+
+                case TrainingVariables.ShowerCenter:
+                    return t => t.ShowerCenter;
+
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Unknown variable requested: {varName.ToString()}");
             }
         }
 
@@ -475,6 +501,38 @@ namespace JetMVATraining
                     result.Add(TrainingVariables.NTracks);
                     result.Add(TrainingVariables.SumPtOfAllTracks);
                     result.Add(TrainingVariables.MaxTrackPt);
+                    break;
+
+                case TrainingVariableSet.DefaultAllpT:
+                    result.Add(TrainingVariables.JetPt);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    result.Add(TrainingVariables.JetWidth);
+                    result.Add(TrainingVariables.JetTrackDR);
+                    result.Add(TrainingVariables.EnergyDensity);
+                    result.Add(TrainingVariables.HadronicLayer1Fraction);
+                    result.Add(TrainingVariables.JetLat);
+                    result.Add(TrainingVariables.JetLong);
+                    result.Add(TrainingVariables.FirstClusterRadius);
+                    result.Add(TrainingVariables.ShowerCenter);
+                    break;
+
+                case TrainingVariableSet.DefaultAllET:
+                    result.Add(TrainingVariables.JetET);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    result.Add(TrainingVariables.JetWidth);
+                    result.Add(TrainingVariables.JetTrackDR);
+                    result.Add(TrainingVariables.EnergyDensity);
+                    result.Add(TrainingVariables.HadronicLayer1Fraction);
+                    result.Add(TrainingVariables.JetLat);
+                    result.Add(TrainingVariables.JetLong);
+                    result.Add(TrainingVariables.FirstClusterRadius);
+                    result.Add(TrainingVariables.ShowerCenter);
                     break;
 
                 case TrainingVariableSet.None:
