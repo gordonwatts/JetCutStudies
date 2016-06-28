@@ -31,5 +31,10 @@ namespace libDataAccess
         /// How many tracks are allowed before isolation is violated?
         /// </summary>
         public static int IsolationTrackCountAllowed = 0;
+
+        /// <summary>
+        /// What limit should we have for jet eta?
+        /// </summary>
+        public static double JetEtaLimit = 2.5;
     }
 }

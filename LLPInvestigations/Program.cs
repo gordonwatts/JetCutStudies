@@ -57,7 +57,7 @@ namespace LLPInvestigations
                 .Select(j => j.LLP)
                 .PlotBasicLLPValues("withJet", dir);
             var llpStreamWithGoodJets = llpStreamWithJets
-                .Where(j => j.ET > 40.0 && Math.Abs(j.eta) < 2.4);
+                .Where(j => j.ET > 40.0 && Math.Abs(j.eta) < JetEtaLimit);
             llpStreamWithGoodJets
                 .Select(j => j.LLP)
                 .PlotBasicLLPValues("withGoodJet", dir);
@@ -155,7 +155,7 @@ namespace LLPInvestigations
             var jetsOnTheirOwn = from ev in llp
                                  from j in ev.Data.Jets
                                  where j.isGoodLLP
-                                 where Abs(j.eta) < 2.5 && j.pT > 40.0
+                                 where Abs(j.eta) < JetEtaLimit && j.pT > 40.0
                                  where j.logRatio >= IsolationTrackPtCut
                                  where !j.LLP.IsGoodIndex()
                                  let closeLLP = ev.Data.LLPs.OrderBy(l => DR2.Invoke(j, l)).First()
@@ -164,7 +164,7 @@ namespace LLPInvestigations
             var jetsWithPartner = from ev in llp
                                  from j in ev.Data.Jets
                                   where j.isGoodLLP
-                                  where Abs(j.eta) < 2.5
+                                  where Abs(j.eta) < JetEtaLimit
                                   where j.logRatio >= IsolationTrackPtCut
                                  where j.LLP.IsGoodIndex()
                                  let closeLLP = ev.Data.LLPs.OrderBy(l => DR2.Invoke(j, l)).First()
