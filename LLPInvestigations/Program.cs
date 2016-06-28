@@ -61,7 +61,12 @@ namespace LLPInvestigations
             llpStreamWithGoodJets
                 .Select(j => j.LLP)
                 .PlotBasicLLPValues("withGoodJet", dir);
-
+            llpStreamWithGoodJets
+                .Where(j => Math.Abs(j.eta) <= 1.7)
+                .PlotBasicValues("withGoodJetBarrel", dir);
+            llpStreamWithGoodJets
+                .Where(j => Math.Abs(j.eta) > 1.7)
+                .PlotBasicValues("withGoodJetEndCap", dir);
 
             // Look at the number of times sharing occurs (should never happen)
             var sharedJets = from ev in llp
@@ -96,6 +101,7 @@ namespace LLPInvestigations
             // How many LLPs are within 0.4 of a jet?
             Expression<Func<recoTreeJets, recoTreeLLPs, double>> DR2 = (l, j) => DeltaR2(l.eta, l.phi, j.eta, j.phi);
             double openingAngle = 0.4;
+#if false
             var llpsCloseToJets = from ev in llp
                                   select from j in ev.Data.Jets
                                          where j.isGoodLLP
@@ -149,6 +155,7 @@ namespace LLPInvestigations
                     60, 0, 0.4, jet => jet.Item4,
                     60, -0.5, 0.5, jet => jet.Item1.eta - jet.Item2.eta)
                 .Save(dir);
+#endif
 
             // Look at jets that pass the Run 1 cuts but don't have an associated LLP.
             // Once we have the good and bad jets, partner them up with the closest LLP we can.
@@ -195,6 +202,16 @@ namespace LLPInvestigations
             jetsWithPartner
                 .Select(jinfo => jinfo.Item2)
                 .PlotBasicLLPValues("CalRLLPNear", dir);
+
+            jetsWithPartner
+                .Where(jinfo => Math.Abs(jinfo.Item1.eta) <= 1.7)
+                .Select(jinfo => jinfo.Item2)
+                .PlotBasicLLPValues("CalRLLPNearBarrel", dir);
+
+            jetsWithPartner
+                .Where(jinfo => Math.Abs(jinfo.Item1.eta) > 1.7)
+                .Select(jinfo => jinfo.Item2)
+                .PlotBasicLLPValues("CalRLLPNearEndCap", dir);
 
             // Write out a small text file of the bad events so we can cross check.
             jetsOnTheirOwn

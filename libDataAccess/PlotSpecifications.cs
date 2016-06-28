@@ -315,6 +315,20 @@ namespace libDataAccess
             MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lxy / 1000, "LLPLxy{0}", "LLP Lxy for {0}; Lxy (m)");
 
         /// <summary>
+        /// 1D plot of Lz
+        /// </summary>
+        public static IPlotSpec<recoTreeLLPs> LLPLzPlot =
+            MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lz / 1000, "LLPLz{0}", "LLP Lz for {0}; Lz (m)");
+
+        /// <summary>
+        /// Scatter plot of the LLP guys
+        /// </summary>
+        public static IPlotSpec<recoTreeLLPs> LLPLxyLzPlot =
+            MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lxy / 1000.0,
+                50, 0.0, 10.0, llp => llp.Lz / 1000.0,
+                "LLPLxyLz{0}", "LLP Lxy vs Lz for {0}; Lxy (m); Lz (m)");
+
+        /// <summary>
         /// 1D plot of the eta for LLP's
         /// </summary>
         public static IPlotSpec<recoTreeLLPs> LLPEtaPlot =

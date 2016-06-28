@@ -56,7 +56,12 @@ namespace libDataAccess.Utils
         /// <summary>
         /// Cut to determine if this is a good signal jet.
         /// </summary>
-        public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j => j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPDecay;
+        public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
+                (j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPBarrelDecay);
+        //public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
+        //   Math.Abs(j.eta) <= 1.7
+        //        ? (j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPBarrelDecay)
+        //        : (j.LLP.IsGoodIndex() && j.LLP.Lz > InnerDistanceForSignalLLPEndcapDecay);
 
         /// <summary>
         /// Make sure we are talking about good signal only.
@@ -88,7 +93,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> FilterTrainingEvents(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.EventNumber % 2 == 1);
+                .Where(j => !(j.EventNumber % 3 == 1));
         }
 
         /// <summary>
@@ -99,7 +104,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> FilterNonTrainingEvents(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.EventNumber % 2 == 0);
+                .Where(j => !(j.EventNumber % 3 == 1));
         }
     }
 }
