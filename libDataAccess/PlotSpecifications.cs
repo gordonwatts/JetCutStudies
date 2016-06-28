@@ -331,7 +331,7 @@ namespace libDataAccess
             MakePlotterSpec<double>(200, 0.0, 6.0, j => j, "EnergyDensity{0}", "Energy Density of {0}; rho");
 
         public static IPlotSpec<double> HadronicL1FractPlotRaw =
-            MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "HadronicL1Frac{0}", "Fraction of energy in L1 (Had) of {0}; L1/(L1+L2+L3)");
+            MakePlotterSpec<double>(200, -1.5, 1.5, j => j, "HadronicL1Frac{0}", "Fraction of energy in L1 (Had) of {0}; L1/(L1+L2+L3)");
         public static IPlotSpec<double> JetLatPlotRaw =
             MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "JetLat{0}", "Jet Latitude of {0}");
         public static IPlotSpec<double> JetLongPlotRaw =
