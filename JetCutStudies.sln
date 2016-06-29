@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plots", "Plots", "{B5DE55FA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericPerformancePlots", "GenericPerformancePlots\GenericPerformancePlots.csproj", "{5D22D284-363D-4349-8A3F-FE78AD95E5B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libDataAccess", "libDataAccess\libDataAccess.csproj", "{8694CC04-FBE1-4A4A-88D2-910D02941248}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiVertAnalysisROOTLINQ", "libDataAccess\DiVertAnalysisROOTLINQ.csproj", "{8694CC04-FBE1-4A4A-88D2-910D02941248}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLPInvestigations", "LLPInvestigations\LLPInvestigations.csproj", "{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}"
 EndProject
@@ -19,6 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMVAUtilities", "TMVAUtilit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{310A7D99-42EF-4435-85D7-F69222380661}"
 	ProjectSection(SolutionItems) = preProject
+		download-local-copy-of-all-ds.ps1 = download-local-copy-of-all-ds.ps1
+		dump-sample-output-ds.ps1 = dump-sample-output-ds.ps1
+		libDataAccess\Sample Meta Data.csv = libDataAccess\Sample Meta Data.csv
 		submit-all-samples.ps1 = submit-all-samples.ps1
 	EndProjectSection
 EndProject

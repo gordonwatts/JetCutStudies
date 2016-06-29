@@ -10,6 +10,7 @@ using static System.Math;
 using static libDataAccess.CutConstants;
 using libDataAccess;
 using static libDataAccess.JetInfoExtraHelpers;
+using System.Linq.Expressions;
 
 namespace libDataAccess.Utils
 {
@@ -34,7 +35,7 @@ namespace libDataAccess.Utils
         {
             return source
                 .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, j), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber }))
-                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < 2.4)
+                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
         }
 
@@ -47,10 +48,20 @@ namespace libDataAccess.Utils
         {
             return source
                 .Select(e => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, e.Data.Jets.OrderByDescending(j => j.pT).First()), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber })
-                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < 2.4)
+                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
 
         }
+
+        /// <summary>
+        /// Cut to determine if this is a good signal jet.
+        /// </summary>
+        public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
+                (j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPBarrelDecay);
+        //public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
+        //   Math.Abs(j.eta) <= 1.7
+        //        ? (j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPBarrelDecay)
+        //        : (j.LLP.IsGoodIndex() && j.LLP.Lz > InnerDistanceForSignalLLPEndcapDecay);
 
         /// <summary>
         /// Make sure we are talking about good signal only.
@@ -60,8 +71,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> FilterSignal(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.JetInfo.Jet.LLP.IsGoodIndex())
-                .Where(j => j.JetInfo.Jet.LLP.Lxy > InnerDistanceForSignalLLPDecay);
+                .Where(j => IsGoodSignalJet.Invoke(j.JetInfo.Jet));
         }
 
         /// <summary>
@@ -83,7 +93,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> FilterTrainingEvents(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.EventNumber % 2 == 1);
+                .Where(j => !(j.EventNumber % 3 == 1));
         }
 
         /// <summary>
@@ -94,7 +104,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> FilterNonTrainingEvents(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.EventNumber % 2 == 0);
+                .Where(j => !(j.EventNumber % 3 == 1));
         }
     }
 }

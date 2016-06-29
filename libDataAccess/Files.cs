@@ -1,5 +1,6 @@
 ﻿using DiVertAnalysis;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace libDataAccess
 
             try {
                 return GRIDJobs.FindJobFiles("DiVertAnalysis",
-                    4,
+                    6,
                     dsname,
                     nFiles: NFiles,
                     statusUpdate: l => Console.WriteLine(l),
@@ -65,28 +66,14 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Get the J2Z files for running.
+        /// Return the JZ sample as requested.
         /// </summary>
+        /// <param name="jzIndex"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetJ1Z()
+        public static IQueryable<MetaData> GetJZ(int jzIndex)
         {
-            const string sample = "mc15_13TeV.361021.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ1W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452";
-            return GetSampleAsMetaData(sample);
-        }
-
-        public static IQueryable<MetaData> GetJ2Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-        }
-
-        public static IQueryable<MetaData> GetJ3Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361023.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ3W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-        }
-
-        public static IQueryable<MetaData> GetJ4Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
+            var sample = SampleMetaData.LoadFromCSV($"J{jzIndex}Z");
+            return GetSampleAsMetaData(sample.Name);
         }
 
         /// <summary>
@@ -94,7 +81,7 @@ namespace libDataAccess
         /// </summary>
         /// <param name="sample"></param>
         /// <returns></returns>
-        private static IQueryable<MetaData> GetSampleAsMetaData(string sample)
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample)
         {
             // Build the query tree
             var backgroundFiles = GetFileList(sample);
@@ -122,6 +109,16 @@ namespace libDataAccess
         }
 
         /// <summary>
+        /// Return the meta-data for a sample
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s)
+        {
+            return GetSampleAsMetaData(s.Name);
+        }
+
+        /// <summary>
         /// Metadata we hold for each sample
         /// </summary>
         public class MetaData
@@ -137,9 +134,12 @@ namespace libDataAccess
         public static IQueryable<MetaData> GetAllJetSamples()
         {
             return
-                GetJ2Z()
-                .Concat(GetJ3Z())
-                .Concat(GetJ4Z());
+                GetJZ(2)
+                .Concat(GetJZ(3))
+                .Concat(GetJZ(4))
+                .Concat(GetJZ(5))
+                .Concat(GetJZ(6))
+                .Concat(GetJZ(7))
                 ;
         }
 
@@ -154,34 +154,6 @@ namespace libDataAccess
             return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight * e.eventWeight });
         }
 
-#if false
-        public static QueriableTTree<recoTree> Get125pi15()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-
-        public static QueriableTTree<recoTree> Get125pi40()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301298.HSS_mH125mS40.reco_20k.s2698_r7144_v03_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-
-        public static QueriableTTree<recoTree> Get600pi100()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301301.HSS_mH600mS100.reco_20k.s2698_r7144_v03_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-#endif
         public static IQueryable<recoTree> Get200pi25lt5m()
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");

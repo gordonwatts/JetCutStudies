@@ -58,6 +58,11 @@ namespace libDataAccess
                 result = GRIDDatasetLocator.FetchDatasetUrisAtLocation("Local", dataset, statusUpdate, fileFilter: filter, timeoutDownloadSecs: timeoutDownloadSecs);
             }
 
+            if (result == null)
+            {
+                throw new ArgumentException($"Unable to fetch dataset '{dataset}' - failing!");
+            }
+
             return result.Select(furi => new FileInfo(furi.LocalPath)).ToArray();
         }
 

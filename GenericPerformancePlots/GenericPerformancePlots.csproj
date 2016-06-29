@@ -40,12 +40,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AtlasSSH, Version=2.1.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.1.8-beta6\lib\net451\AtlasSSH.dll</HintPath>
+    <Reference Include="AtlasSSH, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.2.3.7-beta1\lib\net451\AtlasSSH.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AtlasWorkFlows, Version=2.1.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.1.8-beta6\lib\net451\AtlasWorkFlows.dll</HintPath>
+    <Reference Include="AtlasWorkFlows, Version=2.3.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.2.3.7-beta1\lib\net451\AtlasWorkFlows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -57,7 +57,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Doddle.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=183ffec7490b24a9, processorArchitecture=MSIL">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build441\lib\net45\Doddle.Reporting.dll</HintPath>
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build456\lib\net45\Doddle.Reporting.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="libCoreWrapper, Version=11.11.5940.37163, Culture=neutral, processorArchitecture=x86">
@@ -120,16 +120,16 @@
       <HintPath>..\packages\ROOT.NET.Tree.5.34.36.11\lib\net40\libTreeWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LINQToTreeHelpers, Version=0.50.5985.4944, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build441\lib\net45\LINQToTreeHelpers.dll</HintPath>
+    <Reference Include="LINQToTreeHelpers, Version=0.50.6016.1743, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build456\lib\net45\LINQToTreeHelpers.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LinqToTTreeInterfacesLib, Version=0.42.5985.4929, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build441\lib\net45\LinqToTTreeInterfacesLib.dll</HintPath>
+    <Reference Include="LinqToTTreeInterfacesLib, Version=0.42.6016.1725, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build456\lib\net45\LinqToTTreeInterfacesLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LINQToTTreeLib, Version=0.51.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build441\lib\net45\LINQToTTreeLib.dll</HintPath>
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build456\lib\net45\LINQToTTreeLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -140,16 +140,20 @@
       <HintPath>..\packages\NVelocity.1.0.3\lib\NVelocity.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Polly, Version=4.2.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.4.2.4\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=640ff7d91e1d07da, processorArchitecture=MSIL">
       <HintPath>..\packages\Remotion.Linq.2.0.3-x-009-160302-230435\lib\net45\Remotion.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Renci.SshNet, Version=2014.4.6.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
-      <HintPath>..\packages\SSH.NET.2014.4.6-beta2\lib\net40\Renci.SshNet.dll</HintPath>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.0.0-beta1\lib\net40\Renci.SshNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sprache, Version=2.0.0.51, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sprache.2.0.0.51\lib\portable-net4+netcore45+win8+wp8+sl5+MonoAndroid+Xamarin.iOS10+MonoTouch\Sprache.dll</HintPath>
+    <Reference Include="Sprache, Version=2.0.0.52, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sprache.2.0.0.52\lib\portable-net4+netcore45+win8+wp8+sl5+MonoAndroid+Xamarin.iOS10+MonoTouch\Sprache.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -179,9 +183,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libDataAccess\libDataAccess.csproj">
+    <ProjectReference Include="..\libDataAccess\DiVertAnalysisROOTLINQ.csproj">
       <Project>{8694cc04-fbe1-4a4a-88d2-910d02941248}</Project>
-      <Name>libDataAccess</Name>
+      <Name>DiVertAnalysisROOTLINQ</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -195,10 +199,10 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets'))" />
-    <Error Condition="!Exists('..\packages\LINQToTTree-Head.0.51.0-build441\build\LINQToTTree-Head.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LINQToTTree-Head.0.51.0-build441\build\LINQToTTree-Head.targets'))" />
+    <Error Condition="!Exists('..\packages\LINQToTTree-Head.0.51.0-build456\build\LINQToTTree-Head.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LINQToTTree-Head.0.51.0-build456\build\LINQToTTree-Head.targets'))" />
   </Target>
   <Import Project="..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets" Condition="Exists('..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets')" />
-  <Import Project="..\packages\LINQToTTree-Head.0.51.0-build441\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build441\build\LINQToTTree-Head.targets')" />
+  <Import Project="..\packages\LINQToTTree-Head.0.51.0-build456\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build456\build\LINQToTTree-Head.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

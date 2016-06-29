@@ -13,7 +13,7 @@ namespace libDataAccess.Utils
     /// </summary>
     public class CommandLineUtils
     {
-        public class Options
+        public class CommonOptions
         {
             [Option("UseFullDataset", Default = false, HelpText = "Use full dataset rather than test dataset size.")]
             public bool UseFullDataset { get; set; }
@@ -33,66 +33,16 @@ namespace libDataAccess.Utils
             [Option("UseBackgroundJZ4", Default = false, SetName = "backgroundsamples")]
             public bool BackgroundJZ4 { get; set; }
 
-            [Option("BDTMaxDepth", Default = 3)]
-            public int BDTMaxDepth { get; set; }
-
-            [Option("BDTLeafMinFraction", Default = 5)]
-            public double BDTLeafMinFraction { get; set; }
-
-            [Option("TrainingEvents", Default = 500000)]
-            public int EventsToUseForTrainingAndTesting { get; set; }
-
-            [Option("VariableTransform", Default = "")]
-            public string VariableTransform { get; set; }
-
             [Option("UseCPPOptimizer", Default = 1)]
             public int UseCPPOptimizer { get; set; }
 
             [Option("IgnoreQueryCache", Default = 0)]
             public int IgnoreQueryCache { get; set; }
-
-            [Option("TrainingVariableSet", Default = TrainingVariableSet.Default5pT)]
-            public TrainingVariableSet TrainingVariableSet { get; set; }
-
-            [Option("DropVariable")]
-            public IEnumerable<TrainingVariables> DropVariable { get; set; }
-
-            [Option("AddVariable")]
-            public IEnumerable<TrainingVariables> AddVariable { get; set; }
-
-            [Option("RunNumber", Default = 0)]
-            public int RunNumber { get; set; }
-
-            [Option("EventNumber", Default = 0)]
-            public int EventNumber { get; set; }
         }
 
         enum BackgroundSampleEnum
         {
             All, JZ2, JZ3, JZ4
-        }
-
-        /// <summary>
-        /// Possible variables for training dataset
-        /// </summary>
-        public enum TrainingVariableSet
-        {
-            Default5pT,
-            Default5ET
-        }
-
-        /// <summary>
-        /// All possible training variables
-        /// </summary>
-        public enum TrainingVariables
-        {
-            JetPt,
-            CalRatio,
-            JetEta,
-            NTracks,
-            SumPtOfAllTracks,
-            MaxTrackPt,
-            JetET,
         }
 
         /// <summary>
@@ -112,13 +62,13 @@ namespace libDataAccess.Utils
                     return Files.GetAllJetSamples();
 
                 case BackgroundSampleEnum.JZ2:
-                    return GetJ2Z();
+                    return GetJZ(2);
 
                 case BackgroundSampleEnum.JZ3:
-                    return GetJ3Z();
+                    return GetJZ(3);
 
                 case BackgroundSampleEnum.JZ4:
-                    return GetJ4Z();
+                    return GetJZ(4);
 
                 default:
                     throw new InvalidOperationException("Unknown background samples");
@@ -134,25 +84,21 @@ namespace libDataAccess.Utils
             switch (RequstedBackgroundSample)
             {
                 case BackgroundSampleEnum.All:
-                    return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", GetJ2Z()),
-                        Tuple.Create("J3Z", GetJ3Z()),
-                        Tuple.Create("J4Z", GetJ4Z()),
-                    };
+                    return SamplesAsNamedSequence(SampleMetaData.AllSamplesWithTag("background"));
 
                 case BackgroundSampleEnum.JZ2:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", GetJ2Z()),
+                        Tuple.Create("J2Z", GetJZ(2)),
                     };
 
                 case BackgroundSampleEnum.JZ3:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J3Z", GetJ3Z()),
+                        Tuple.Create("J3Z", GetJZ(3)),
                     };
 
                 case BackgroundSampleEnum.JZ4:
                     return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J4Z", GetJ4Z()),
+                        Tuple.Create("J4Z", GetJZ(4)),
                     };
 
                 default:
@@ -161,83 +107,14 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
-        /// The max depth for BDT training
+        /// From a list of samples, return them by name.
         /// </summary>
-        public static int MaxBDTDepth = 3;
-
-        /// <summary>
-        /// Min fraction of total evens that can be put into each leaf. It is a percentage.
-        /// </summary>
-        public static double BDTLeafMinFraction = 5;
-
-        public static string TrainingVariableTransform = "";
-
-        /// <summary>
-        /// How many events to use for training/testing.
-        /// </summary>
-        public static int TrainingEvents = 500000;
-
-        /// <summary>
-        /// Which set list are we going to use?
-        /// </summary>
-        private static TrainingVariableSet TrainingVariableSetList { get; set; }
-
-        /// <summary>
-        /// List of additional variables to add
-        /// </summary>
-        private static TrainingVariables[] AdditionalVariables { get; set; }
-
-        /// <summary>
-        /// List of Variables to drop
-        /// </summary>
-        private static TrainingVariables[] DropVaribles { get; set; }
-
-        public static Tuple<int, int> RunAndEventNumber { get; private set; }
-
-        /// <summary>
-        /// Return a list of all variables that we are using.
-        /// </summary>
+        /// <param name="enumerable"></param>
         /// <returns></returns>
-        public static IEnumerable<TrainingVariables> GetListOfVariablesToUse()
+        private static IEnumerable<Tuple<string, IQueryable<MetaData>>> SamplesAsNamedSequence(IEnumerable<SampleMetaData> samples)
         {
-            var result = new HashSet<TrainingVariables>();
-
-            // First take care of the sets
-            switch (TrainingVariableSetList)
-            {
-                case CommandLineUtils.TrainingVariableSet.Default5pT:
-                    result.Add(TrainingVariables.JetPt);
-                    result.Add(TrainingVariables.CalRatio);
-                    result.Add(TrainingVariables.NTracks);
-                    result.Add(TrainingVariables.SumPtOfAllTracks);
-                    result.Add(TrainingVariables.MaxTrackPt);
-                    break;
-
-                case CommandLineUtils.TrainingVariableSet.Default5ET:
-                    result.Add(TrainingVariables.JetET);
-                    result.Add(TrainingVariables.CalRatio);
-                    result.Add(TrainingVariables.NTracks);
-                    result.Add(TrainingVariables.SumPtOfAllTracks);
-                    result.Add(TrainingVariables.MaxTrackPt);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            // Additional variables
-            foreach (var v in AdditionalVariables)
-            {
-                result.Add(v);
-            }
-
-            // Remove any that we want to drop
-            foreach (var v in DropVaribles)
-            {
-                result.Remove(v);
-            }
-
-            return result;
+            return samples
+                .Select(s => Tuple.Create(s.Name, Files.GetSampleAsMetaData(s)));
         }
 
         /// <summary>
@@ -246,7 +123,7 @@ namespace libDataAccess.Utils
         /// <param name="args"></param>
         public static void Parse(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Options>(args);
+            var result = Parser.Default.ParseArguments<CommonOptions>(args);
 
             result.MapResult(
                 options => {
@@ -258,14 +135,7 @@ namespace libDataAccess.Utils
                     if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
                     if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
                     if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
-                    TrainingVariableSetList = options.TrainingVariableSet;
-                    AdditionalVariables = options.AddVariable.ToArray();
-                    DropVaribles = options.DropVariable.ToArray();
-                    MaxBDTDepth = options.BDTMaxDepth;
-                    BDTLeafMinFraction = options.BDTLeafMinFraction;
-                    TrainingVariableTransform = options.VariableTransform;
-                    TrainingEvents = options.EventsToUseForTrainingAndTesting;
-                    RunAndEventNumber = Tuple.Create(options.RunNumber, options.EventNumber);
+                    //RunAndEventNumber = Tuple.Create(options.RunNumber, options.EventNumber);
                     return 0;
                 },
                 errors => {
@@ -275,6 +145,41 @@ namespace libDataAccess.Utils
                     }
                     return 1;
                 });
+        }
+
+        /// <summary>
+        /// Parase and return a set of options.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T ParseOptions<T>(string[] args)
+            where T : CommonOptions
+        {
+            var result = Parser.Default.ParseArguments<T>(args);
+
+            T optVar = null;
+            result.MapResult(
+                options => {
+                    Files.NFiles = options.UseFullDataset ? 0 : 1;
+                    Files.VerboseFileFetch = options.VerboseFileFetch;
+                    Files.UseCodeOptimizer = options.UseCPPOptimizer != 0;
+                    Files.IgnoreQueires = options.IgnoreQueryCache != 0;
+                    if (options.BackgroundAll) RequstedBackgroundSample = BackgroundSampleEnum.All;
+                    if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
+                    if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
+                    if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
+                    optVar = options;
+                    return 0;
+                },
+                errors => {
+                    foreach (var err in errors)
+                    {
+                        Console.WriteLine($"Error parsing command line: {err.ToString()}");
+                    }
+                    return 1;
+                });
+
+            return optVar;
         }
     }
 }
