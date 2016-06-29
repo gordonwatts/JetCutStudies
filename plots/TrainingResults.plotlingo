@@ -112,7 +112,7 @@ for (trainings) {
 inputVariables = [
 	{vname => "pT", title => "pT", rebin => 20},
 	{vname => "eta", title => "Eta", rebin => 20},
-	{vname => "eta", title => "CalR", rebin => 20},
+	{vname => "CalR", title => "CalR", rebin => 20},
 	{vname => "Lxy", title => "Lxy", rebin => 20}
 ];
 
