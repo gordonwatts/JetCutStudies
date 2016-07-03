@@ -3,6 +3,8 @@
 # This will require accessing the internet and the installation of the Jenkins powershell
 # access package (see https://github.com/gordonwatts/JenkinsAccess).
 #
+# Example command script to generate a csv file:
+# .\summarize-optimization-runs.ps1 | %{ New-Object psobject -Property $_ } | Export-Csv -NoTypeInformation -Path test.csv
 
 # The optimization jobs to scan over.
 $firstJob = 418
@@ -20,7 +22,7 @@ $results = @()
 foreach ($jobId in $firstJob..$lastJob) {
 	$jobInfo = Find-JenkinsJob -JobUri http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-JetMVATraining/ -JobId $jobId
 	if ($jobInfo.JobState -eq "Success") {
-		$jobResults = @{}
+		$jobResults = @{ JobId = $jobId }
 		$jobInfo.Parameters.Keys | % {$jobResults[$_] = Clean-PropertyValue $jobInfo.Parameters[$_]}
 		$jobInfo `
 			| Get-JenkinsBuildLogfile `
