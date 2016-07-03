@@ -4,16 +4,15 @@
 
 include ("common.plotlingo");
 
-samples = ["125-15", "125-40", "600-100"];
-
 Legend("all" => {Color => 1, Title => "All Jets"});
 Legend("near" => {Color => 2, Title => "Near LLP"});
 Legend("cal" => {Color => 3, Title => "LLP Cal Decay"});
 
-for (sample, samples) {
-	hall  = f.Get("{sample}/sigrtback/pTCalR_sig").tag("all");
-	hNearLJ  = f.Get("{sample}/sigrtback/pTCalRLLPJ_sig").tag("near");
-	hCalLJ  = f.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag("cal");
+# Look at how the pT evolves with various requirements
+for (sample, widthBugNonBug) {
+	hall  = f_generic.Get("{sample}/sigrtback/pTCalR_sig").tag("all");
+	hNearLJ  = f_generic.Get("{sample}/sigrtback/pTCalRLLPJ_sig").tag("near");
+	hCalLJ  = f_generic.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag("cal");
 
 	[hall, hNearLJ, hCalLJ]
 		.plot()
@@ -23,18 +22,15 @@ for (sample, samples) {
 		.LegendOptions("drawbox" => "false");
 };
 
-Legend("125-15" => {Color => 1, Title => "125-15"});
-Legend("125-40" => {Color => 2, Title => "125-40"});
-Legend("600-100" => {Color => 3, Title => "600-100"});
-
-plots = map(sample, samples) {
-	f.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag(sample).normalize();
+# Now look at the pT evolution of the various samples.
+plots = map(sample, widthBugNonBug) {
+	f_generic.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag(sample).normalize();
 };
-background = f.Get("125-15/sigrtback/pTCalR_back").tag("background").normalize();
 
 plots
 	.plot()
 	.title("p_{T} of Jets with Cal decay in all samples")
 	.yaxis("Jets")
 	.logy()
-	.LegendOptions("drawbox" => "false");
+	.size(1200,800)
+	.LegendOptions({drawbox => "false", scale => 0.55, placement => "LowerLeft", xmarg => 0.135, ymarg=>0.135});
