@@ -363,6 +363,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="run-optimization.ps1" />
+    <None Include="summarize-optimization-runs.ps1" />
     <None Include="Templates\TSelectorTemplate.cxx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
