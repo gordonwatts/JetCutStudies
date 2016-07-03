@@ -49,6 +49,19 @@ namespace JetMVATraining
 
         [Option("AddVariable")]
         public IEnumerable<TrainingVariables> AddVariable { get; set; }
+
+        [Option("FlattenBy", Default = TrainingSpectraFlatteningPossibilities.JetPt)]
+        public TrainingSpectraFlatteningPossibilities FlattenBy { get; set; }
+    }
+
+    /// <summary>
+    /// How should we flatten the spectra we are looking at?
+    /// </summary>
+    public enum TrainingSpectraFlatteningPossibilities
+    {
+        JetPt,
+        JetET,
+        None
     }
 
     /// <summary>
@@ -123,24 +136,34 @@ namespace JetMVATraining
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
             {
-                // Create the training data and flatten the pT/eta spectra.
+                // Do flattening if requested
                 Expression<Func<TrainingTree, double>> toMakeFlat = null;
-                if (UsingJetPt(options))
+                switch (options.FlattenBy)
                 {
-                    toMakeFlat = t => t.JetPt;
-                    FutureWriteLine("Reweighting to flatten as a function of JetPt");
-                } else
-                {
-                    toMakeFlat = t => t.JetET;
-                    FutureWriteLine("Reweighting to flatten as a function of JetEt");
+                    case TrainingSpectraFlatteningPossibilities.JetPt:
+                        toMakeFlat = t => t.JetPt;
+                        FutureWriteLine("Reweighting to flatten as a function of JetPt");
+                        break;
+                    case TrainingSpectraFlatteningPossibilities.JetET:
+                        toMakeFlat = t => t.JetET;
+                        FutureWriteLine("Reweighting to flatten as a function of JetEt");
+                        break;
+                    case TrainingSpectraFlatteningPossibilities.None:
+                        FutureWriteLine("Not reweighting at all before training.");
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unsupported flattening request.");
                 }
-                var flatBackgroundTrainingData = backgroundTrainingTree
-                    .FlattenBySpectra(toMakeFlat, outputHistograms, "background")
-                    ;
-                var flatSignalTrainingData = signalInCalOnly
-                    .AsTrainingTree()
-                    .FlattenBySpectra(toMakeFlat, outputHistograms, "signal")
-                    ;
+                var flatBackgroundTrainingData = toMakeFlat == null
+                    ? backgroundTrainingTree
+                    : backgroundTrainingTree
+                        .FlattenBySpectra(toMakeFlat, outputHistograms, "background");
+                var flatSignalTrainingData = toMakeFlat == null
+                    ? signalInCalOnly
+                        .AsTrainingTree()
+                    : signalInCalOnly
+                        .AsTrainingTree()
+                        .FlattenBySpectra(toMakeFlat, outputHistograms, "signal");
 
                 // Finally, plots of all the training input variables.
                 flatBackgroundTrainingData
