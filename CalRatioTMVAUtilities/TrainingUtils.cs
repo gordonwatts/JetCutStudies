@@ -97,7 +97,7 @@ namespace CalRatioTMVAUtilities
         public static IQueryable<TrainingTree> AsTrainingTree(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.JetInfo.Jet.pT < 400.0)
+                .Where(j => j.JetInfo.Jet.pT < 550.0)
                 .Select(i => TrainingTreeConverter.Invoke(i));
         }
 
