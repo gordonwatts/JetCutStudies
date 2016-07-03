@@ -14,7 +14,15 @@ plottypes = [
 	{title => "Number of Tracks", xaxis => "N Tracks", name => "ntracks"},
 	{title => "Jet Eta", xaxis => "{\eta}", name => "eta"},
 	{title => "Jet p_{T}", xaxis => "Jet p_{T} [GeV]", name => "pT"},
-	{title => "CalRatio", xaxis => "CalRatio", name => "CalR"}
+	{title => "CalRatio", xaxis => "CalRatio", name => "CalR"},
+	{title => "Jet Width", xaxis => "Width", name => "jetWidth"},
+	{title => "DR to closest 2 GeV Track", xaxis => "DR", name => "DR2GeVTrack"},
+	{title => "Jet Energy Density", xaxis => "Energy [GeV]", name => "EnergyDensity"},
+	{title => "Jet Latitude", xaxis => "Jet Latitude", name => "JetLat"},
+	{title => "Jet Longitude", xaxis => "Jet Logitude", name => "JetLong"},
+	{title => "Radius of first Jet Cluster", xaxis => "R [m]", name => "FirstClusterR"},
+	{title => "Jet Shower Center", xaxis => "Jet Shower Center", name => "ShowerCenter"},
+	{title => "Layer 1 Fraction in Hadronic", xaxis => "Hadronic L1 Fraction", name => "HadronicL1Frac"}
 ];
 
 #
