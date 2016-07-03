@@ -29,8 +29,8 @@ foreach ($jobId in $firstJob..$lastJob) {
 			| select -Last 80 `
 			| % { [regex]::match($_, "efficiency for BDT ([^:]+): (.+)\.$") } `
 			| ? { $_.Success} `
-			| % { @{$_.Groups[1].Value = Clean-PropertyValue $_.Groups[2].Value} } `
-			| % { $jobResults += $_}
-		Write-Output $jobResults
+			| % { @{ "Sample" = $_.Groups[1].Value; "Performance" = Clean-PropertyValue $_.Groups[2].Value} } `
+			| % { $jobResults + $_ } `
+			| % { Write-Output $_ }
 	}
 }
