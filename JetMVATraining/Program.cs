@@ -280,12 +280,12 @@ namespace JetMVATraining
                             .FilterNonTrainingEvents()
                             .FilterLLPNear();
                         var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, c.CutValue, sEvents);
-                        FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");
+                        FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1} {leff.Value}");
                     }
                     var effTest = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterNonTrainingEvents());
                     var effTrain = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterTrainingEvents());
-                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TestingSignalEvents: {effTest.Value}.");
-                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents: {effTrain.Value}.");
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TestingSignalEvents {effTest.Value}");
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents {effTrain.Value}");
                 }
 
                 // Done. Dump all output.
