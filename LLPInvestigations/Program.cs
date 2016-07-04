@@ -100,8 +100,8 @@ namespace LLPInvestigations
 
             // How many LLPs are within 0.4 of a jet?
             Expression<Func<recoTreeJets, recoTreeLLPs, double>> DR2 = (l, j) => DeltaR2(l.eta, l.phi, j.eta, j.phi);
-            double openingAngle = 0.4;
 #if false
+            double openingAngle = 0.4;
             var llpsCloseToJets = from ev in llp
                                   select from j in ev.Data.Jets
                                          where j.isGoodLLP
