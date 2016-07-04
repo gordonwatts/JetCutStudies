@@ -56,8 +56,6 @@ namespace libDataAccess.Utils
         /// <summary>
         /// Cut to determine if this is a good signal jet.
         /// </summary>
-        //public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
-        //        (j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPBarrelDecay);
         public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
            Math.Abs(j.eta) <= 1.7
                 ? (j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPBarrelDecay)
