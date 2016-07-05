@@ -122,9 +122,23 @@ namespace TrainingTestResults
                 .Select(myp => myp.FromType<JetStream, Tuple<JetStream, double>>(jinfo => jinfo.Item1, weight: jinfo => jinfo.Item2 * jinfo.Item1.Weight));
 
             // We want weighted and unweighted plots here. We first have to normalize the weighting to be from 0 to 1.
+            // If there is only a single weight in the sample (which is just weird) then correctly make sure we are set to deal
+            // with things.
             var firstNonZeroBinValue = weights.Value.FindNonZeroBinValue();
             var lastNonZeroBinValue = weights.Value.FindNonZeroBinValue(HistogramUtils.BinSearchOrder.HighestBin);
-            var scaleing = 1.0 / (lastNonZeroBinValue - firstNonZeroBinValue);
+
+            if (firstNonZeroBinValue == lastNonZeroBinValue)
+            {
+                Console.WriteLine($"Sample has events with all one weight ({firstNonZeroBinValue}).");
+            }
+
+            var scaleing = lastNonZeroBinValue == firstNonZeroBinValue
+                ? 1.0 
+                : 1.0 / (lastNonZeroBinValue - firstNonZeroBinValue);
+
+            firstNonZeroBinValue = lastNonZeroBinValue == firstNonZeroBinValue
+                ? firstNonZeroBinValue - 1.0
+                : firstNonZeroBinValue;
 
             var mvaWeithedJetStream = source
                 .Select(j => Tuple.Create(j, j.Weight * (mvaValue.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(j)) - firstNonZeroBinValue)*scaleing));
