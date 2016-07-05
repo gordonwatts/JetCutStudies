@@ -55,8 +55,8 @@ namespace TrainingTestResults
             // List the artifacts that we are going to be using.
             var mvaResults = new MVAInfo[]
             {
-                new MVAInfo() { Name = "FirstPt", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/job/CalR-JetMVATraining/372/artifact/Jet.MVATraining-JetPt.CalRatio.NTracks.SumPtOfAllTracks.MaxTrackPt_BDT.weights.xml") },
-                new MVAInfo() { Name = "FirstET", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/job/CalR-JetMVATraining/374/artifact/Jet.MVATraining-CalRatio.NTracks.SumPtOfAllTracks.MaxTrackPt.JetET_BDT.weights.xml") },
+                new MVAInfo() { Name = "5Variable", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/job/CalR-JetMVATraining/372/artifact/Jet.MVATraining-JetPt.CalRatio.NTracks.SumPtOfAllTracks.MaxTrackPt_BDT.weights.xml") },
+                new MVAInfo() { Name = "13Variable", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/job/CalR-JetMVATraining/460/artifact/Jet.MVATraining-CalRatio.NTracks.SumPtOfAllTracks.MaxTrackPt.JetET_BDT.weights.xml") },
             };
 
             // Fill an output file with the info for each MVA
