@@ -115,7 +115,7 @@ namespace JetMVATraining
 
             var signalSources = SampleMetaData.AllSamplesWithTag("signal")
                 .Where(info => info.Tags.Contains("train"))
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)))
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
                 .ToArray();
 
             if (signalSources.Length == 0)
