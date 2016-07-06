@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using CommandLine;
 using TMVAUtilities;
 using CalRatioTMVAUtilities;
 using static libDataAccess.PlotSpecifications;
@@ -15,21 +16,13 @@ using static LINQToTreeHelpers.PlottingUtils;
 
 namespace TrainingTestResults
 {
+    public class Options : CommandLineUtils.CommonOptions
+    {
+        [Option("SignalTag", Default = "signal", HelpText = "Tag that will match samples treated as signal for the comparisons.")]
+        public string SignalTag { get; set; }
+    }
     class Program
     {
-        class MVAInfo
-        {
-            /// <summary>
-            ///  The uri to the artifact for this mva
-            /// </summary>
-            public Uri Artifact;
-
-            /// <summary>
-            /// Short name we can use in plots, etc., for the mva.
-            /// </summary>
-            public string Name;
-        }
-
         /// <summary>
         /// Look at a number of MVA trainings and use them as results.
         /// </summary>
@@ -37,7 +30,7 @@ namespace TrainingTestResults
         static void Main(string[] args)
         {
             // Parse the arguments.
-            CommandLineUtils.Parse(args);
+            var opt = CommandLineUtils.ParseOptions<Options>(args);
 
             // Get all the samples we want to look at, and turn them into
             // jets with the proper weights attached for later use.
@@ -48,9 +41,13 @@ namespace TrainingTestResults
                 Tuple.Create("QCD", backgroundJets),
             };
 
-            var allSources = SampleMetaData.AllSamplesWithTag("signal")
+            var allSources = SampleMetaData.AllSamplesWithTag(opt.SignalTag)
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)))
                 .ToArray();
+            if (allSources.Length == 0)
+            {
+                throw new ArgumentException($"No samples were found with tag '{opt.SignalTag}'.");
+            }
 
             // List the artifacts that we are going to be using.
             var mvaResults = new MVAInfo[]
@@ -157,5 +154,21 @@ namespace TrainingTestResults
                     .Save(dir);
             }
         }
+    }
+
+    /// <summary>
+    /// Helper class to carry along info about a MVA that we are running in our comparison.
+    /// </summary>
+    class MVAInfo
+    {
+        /// <summary>
+        ///  The uri to the artifact for this mva
+        /// </summary>
+        public Uri Artifact;
+
+        /// <summary>
+        /// Short name we can use in plots, etc., for the mva.
+        /// </summary>
+        public string Name;
     }
 }
