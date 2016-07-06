@@ -79,9 +79,10 @@ namespace libDataAccess
         /// <summary>
         /// Returns the sample as metadata, including an extract cross section weight.
         /// </summary>
-        /// <param name="sample"></param>
-        /// <returns></returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(string sample)
+        /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
+        /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
+        /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true)
         {
             // Build the query tree
             var backgroundFiles = GetFileList(sample);
@@ -91,17 +92,18 @@ namespace libDataAccess
 
             // fetch the cross section weight
             double xSectionWeight = 1.0;
-            try
+            if (weightByCrossSection)
             {
-                var sampleInfo = SampleMetaData.LoadFromCSV(sample);
-                xSectionWeight = sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count();
-                //Console.WriteLine($"Sample: {sample}");
-                //Console.WriteLine($"  Total Weight: {xSectionWeight}");
-                //Console.WriteLine($"  Number raw events: {backgroundEvents.Count()}");
-            } catch (Exception e)
-            {
-                Console.WriteLine($"WARNING: Sample '{sample}' not found in x-section list. Assuming a cross section weight of 1.");
-                Console.WriteLine($"  Error: {e.Message}");
+                try
+                {
+                    var sampleInfo = SampleMetaData.LoadFromCSV(sample);
+                    xSectionWeight = sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"WARNING: Sample '{sample}' not found in x-section list. Assuming a cross section weight of 1.");
+                    Console.WriteLine($"  Error: {e.Message}");
+                }
             }
 
             // And return the stream.
@@ -112,10 +114,11 @@ namespace libDataAccess
         /// Return the meta-data for a sample
         /// </summary>
         /// <param name="s"></param>
+        /// <param name="weightByCrossSection">True if we should weight this sample by cross section or by 1</param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s)
+        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true)
         {
-            return GetSampleAsMetaData(s.Name);
+            return GetSampleAsMetaData(s.Name, weightByCrossSection);
         }
 
         /// <summary>

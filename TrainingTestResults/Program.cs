@@ -42,7 +42,7 @@ namespace TrainingTestResults
             };
 
             var allSources = SampleMetaData.AllSamplesWithTag(opt.SignalTag)
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)))
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
                 .ToArray();
             if (allSources.Length == 0)
             {
