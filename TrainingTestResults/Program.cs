@@ -83,7 +83,7 @@ namespace TrainingTestResults
                     // And now we can make the plots for signal
                     foreach (var s in allSources)
                     {
-                        Console.WriteLine(s.Item1);
+                        Console.WriteLine($"{mva.Name} - {s.Item1}");
                         var sampleD = d.mkdir(s.Item1);
                         PlotMVAResult(s.Item2.AsGoodJetStream().FilterNonTrainingEvents().FilterLLPNear(), sampleD, mvaValue);
                     }
@@ -130,7 +130,7 @@ namespace TrainingTestResults
 
             if (firstNonZeroBinValue == lastNonZeroBinValue)
             {
-                Console.WriteLine($"Sample has events with all one weight ({firstNonZeroBinValue}).");
+                Console.WriteLine($"  Sample has events with all one weight ({firstNonZeroBinValue}).");
             }
 
             var scaleing = lastNonZeroBinValue == firstNonZeroBinValue
