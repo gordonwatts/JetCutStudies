@@ -83,6 +83,7 @@ namespace TrainingTestResults
                     // And now we can make the plots for signal
                     foreach (var s in allSources)
                     {
+                        Console.WriteLine(s.Item1);
                         var sampleD = d.mkdir(s.Item1);
                         PlotMVAResult(s.Item2.AsGoodJetStream().FilterNonTrainingEvents().FilterLLPNear(), sampleD, mvaValue);
                     }
