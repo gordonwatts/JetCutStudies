@@ -3,9 +3,9 @@
 #
 
 # Set ranges - we will loop over all of them
-$nBackgroundEvents = @(500000, 1000000, 1500000)
-$trainingDepth = @(20, 30, 40)
-$leafFraction = @(2, 1, 0.5)
+$nBackgroundEvents = @(1000000, 1500000, 2000000)
+$trainingDepth = @(30, 40, 50)
+$leafFraction = @(1, 0.5, 0.25)
 
 # Now, invoke them all!
 
