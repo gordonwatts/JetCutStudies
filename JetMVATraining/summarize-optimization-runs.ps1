@@ -7,8 +7,8 @@
 # .\summarize-optimization-runs.ps1 | %{ New-Object psobject -Property $_ } | Export-Csv -NoTypeInformation -Path test.csv
 
 # The optimization jobs to scan over.
-$firstJob = 418
-$lastJob = 451
+$firstJob = 516
+$lastJob = 563
 
 # Some helper functions
 function Clean-PropertyValue
@@ -27,7 +27,7 @@ foreach ($jobId in $firstJob..$lastJob) {
 		$jobInfo `
 			| Get-JenkinsBuildLogfile `
 			| select -Last 80 `
-			| % { [regex]::match($_, "efficiency for BDT ([^:]+): (.+)\.$") } `
+			| % { [regex]::match($_, "efficiency for BDT ([^ ]+) (.+)$") } `
 			| ? { $_.Success} `
 			| % { @{ "Sample" = $_.Groups[1].Value; "Performance" = Clean-PropertyValue $_.Groups[2].Value} } `
 			| % { $jobResults + $_ } `
