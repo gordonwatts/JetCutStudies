@@ -380,6 +380,9 @@
   </Target>
   <Import Project="..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets" Condition="Exists('..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets')" />
   <Import Project="..\packages\LINQToTTree-Head.0.51.0-build459\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build459\build\LINQToTTree-Head.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\editbin.exe" /LARGEADDRESSAWARE $(TargetPath)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
