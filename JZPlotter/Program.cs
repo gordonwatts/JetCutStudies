@@ -8,6 +8,7 @@ using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Files;
 using libDataAccess.Utils;
 using System.Collections.Generic;
+using libDataAccess;
 
 namespace JZPlotter
 {
@@ -22,11 +23,8 @@ namespace JZPlotter
             libDataAccess.Utils.CommandLineUtils.Parse(args);
 
             // Build our own set of background samples so we can experiment.
-            var jets = new IQueryable<MetaData>[] {
-                GetJ2Z(),
-                GetJ3Z(),
-                GetJ4Z(),
-            };
+            var jets = SampleMetaData.AllSamplesWithTag("background")
+                .Select(info => Files.GetSampleAsMetaData(info));
 
             // Count them individually
             var individualCounts = jets.Select(sample => sample.FutureCount()).ToArray();
@@ -34,13 +32,10 @@ namespace JZPlotter
             var sum = individualCounts.Skip(2).Aggregate(firstsum, (tot, val) => from t in tot from v in val select t + v);
 
             // Get the samples with an official weight attached to them.
-            var allSamplesToTest = new List<Tuple<String, IQueryable<MetaData>>>()
-            {
-                Tuple.Create("AllJZ", GetAllJetSamples()),
-                Tuple.Create("J2Z", GetJ2Z()),
-                Tuple.Create("J3Z", GetJ3Z()),
-                Tuple.Create("J4Z", GetJ4Z())
-            };
+            var allSamplesToTest =
+                new[] { Tuple.Create("JZAll", GetAllJetSamples()) }
+                .Concat(SampleMetaData.AllSamplesWithTag("background").Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info))))
+                .ToArray();
 
             var totalCount = GetAllJetSamples().FutureCount();
 

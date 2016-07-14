@@ -3,7 +3,7 @@
 #
 
 # File we are looking at...
-//f_generic = file ("GenericPerformancePlots.root");
+f_generic = jenkins ("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-GenericPlots/lastSuccessfulBuild/artifact/GenericPerformancePlots.root");
 f_training = jenkins ("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-JetMVATraining/lastSuccessfulBuild/artifact/JetMVATraining.root");
 f_llp = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR%20LLPInvestigations/lastSuccessfulBuild/artifact/LLPInvestigations.root");
 f_mvaTest = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-TrainingResults/lastSuccessfulBuild/artifact/TrainingTestResults.root");
@@ -12,11 +12,45 @@ f_mvaTest = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/Ca
 
 # The samples that are hidden in the file
 samples = ["200-25", "400-100", "600-150"];
+
 trainingSamples = ["600pi150lt9m", "400pi100lt9m", "200pi25lt5m"];
+
+signalSamples = [
+	"100pi25lt5m", "125pi25lt5m", "125pi25lt9m", "125pi40lt9m", "125pi55lt5m", "125pi55lt9m",
+	"1000pi400lt5m", "1000pi50lt5m", "600pi50lt5m", "200pi50lt5m", "400pi50lt5m", "600pi150lt5m",
+	"400pi100lt5m", "200pi25lt5m", "200pi8lt5m"
+];
+
+signalCompareSamples = [
+	"125pi25lt5m",
+	"200pi25lt5m",
+	"400pi50lt5m",
+	"600pi50lt5m",
+	"1000pi400lt5m"
+];
+
+widthBugNonBug = [
+	"200pi25lt5mw", "200pi25lt5m",
+	"400pi100lt5mW", "400pi100lt5m",
+	"600pi50lt5mW", "600pi50lt5m",
+	"1000pi400lt5mW", "1000pi400lt5m"
+];
 
 Legend("600pi150lt9m" => {Color => 1, Title => "600/150 - 9m"});
 Legend("200pi25lt5m" => {Color => 2, Title => "200/25 - 5m"});
 Legend("400pi100lt9m" => {Color => 3, Title => "400/100 - 9m"});
+
+Legend("200pi25lt5mw" => {Color => 1, Title => "200/25 - 5m (Width Bug)"});
+Legend("200pi25lt5m" => {Color => 2, Title => "200/25 - 5m"});
+Legend("400pi100lt5mW" => {Color => 3, Title => "400/100 - 5m (Width Bug)"});
+Legend("400pi100lt5m" => {Color => 4, Title => "400/100 - 5m"});
+Legend("600pi50lt5mW" => {Color => 5, Title => "600/50 - 5m (Width Bug)"});
+Legend("600pi50lt5m" => {Color => 6, Title => "600/50 - 5m"});
+Legend("1000pi400lt5mW" => {Color => 7, Title => "1000/400 - 5m (Width Bug)"});
+Legend("1000pi400lt5m" => {Color => 8, Title => "1000/400 - 5m"});
+
+Legend("125pi25lt5m" => {Color => 9, Title => "124/25 - 5m"});
+Legend("400pi50lt5m" => {Color => 11, Title => "400/50 - 5m"});
 
 # Some legend stuff to help out
 Legend("200-25" => {Color => 1, Title => "200-25"});

@@ -1,4 +1,5 @@
 ﻿using CalRatioTMVAUtilities;
+using CommandLine;
 using DiVertAnalysis;
 using libDataAccess;
 using libDataAccess.Utils;
@@ -23,6 +24,80 @@ using static LINQToTreeHelpers.PlottingUtils;
 
 namespace JetMVATraining
 {
+    /// <summary>
+    /// Options for running the Jet training.
+    /// </summary>
+    public class Options : CommonOptions
+    {
+        [Option("BDTMaxDepth", Default = 3)]
+        public int BDTMaxDepth { get; set; }
+
+        [Option("BDTLeafMinFraction", Default = 5)]
+        public double BDTLeafMinFraction { get; set; }
+
+        [Option("TrainingEvents", Default = 500000)]
+        public int EventsToUseForTrainingAndTesting { get; set; }
+
+        [Option("VariableTransform", Default = "")]
+        public string VariableTransform { get; set; }
+
+        [Option("TrainingVariableSet", Default = TrainingVariableSet.DefaultAllpT)]
+        public TrainingVariableSet TrainingVariableSet { get; set; }
+
+        [Option("DropVariable")]
+        public IEnumerable<TrainingVariables> DropVariable { get; set; }
+
+        [Option("AddVariable")]
+        public IEnumerable<TrainingVariables> AddVariable { get; set; }
+
+        [Option("FlattenBy", Default = TrainingSpectraFlatteningPossibilities.JetPt)]
+        public TrainingSpectraFlatteningPossibilities FlattenBy { get; set; }
+    }
+
+    /// <summary>
+    /// How should we flatten the spectra we are looking at?
+    /// </summary>
+    public enum TrainingSpectraFlatteningPossibilities
+    {
+        JetPt,
+        JetET,
+        None
+    }
+
+    /// <summary>
+    /// Possible variables for training dataset
+    /// </summary>
+    public enum TrainingVariableSet
+    {
+        Default5pT,
+        Default5ET,
+        DefaultAllpT,
+        DefaultAllET,
+        None
+    }
+
+    /// <summary>
+    /// All possible training variables
+    /// </summary>
+    public enum TrainingVariables
+    {
+        JetPt,
+        CalRatio,
+        JetEta,
+        NTracks,
+        SumPtOfAllTracks,
+        MaxTrackPt,
+        JetET,
+        JetWidth,
+        JetTrackDR,
+        EnergyDensity,
+        HadronicLayer1Fraction,
+        JetLat,
+        JetLong,
+        FirstClusterRadius,
+        ShowerCenter
+    }
+
     class Program
     {
         /// <summary>
@@ -33,16 +108,20 @@ namespace JetMVATraining
         static void Main(string[] args)
         {
             // Parse command line arguments
-            CommandLineUtils.Parse(args);
+            var options = CommandLineUtils.ParseOptions<Options>(args);
 
             // Get the background and signal data trees for use (and training.
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource();
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options);
 
-            var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
-                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
-                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
-                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
-            };
+            var signalSources = SampleMetaData.AllSamplesWithTag("signal")
+                .Where(info => info.Tags.Contains("train"))
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
+                .ToArray();
+
+            if (signalSources.Length == 0)
+            {
+                throw new ArgumentException("No signal sources for training on!");
+            }
 
             var signalUnfiltered = signalSources
                 .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
@@ -51,27 +130,40 @@ namespace JetMVATraining
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
+            var signalTestSources = SampleMetaData.AllSamplesWithTag("signal")
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
+
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
             {
-                // Create the training data and flatten the pT/eta spectra.
+                // Do flattening if requested
                 Expression<Func<TrainingTree, double>> toMakeFlat = null;
-                if (UsingJetPt())
+                switch (options.FlattenBy)
                 {
-                    toMakeFlat = t => t.JetPt;
-                    FutureWriteLine("Reweighting to flatten as a function of JetPt");
-                } else
-                {
-                    toMakeFlat = t => t.JetET;
-                    FutureWriteLine("Reweighting to flatten as a function of JetEt");
+                    case TrainingSpectraFlatteningPossibilities.JetPt:
+                        toMakeFlat = t => t.JetPt;
+                        FutureWriteLine("Reweighting to flatten as a function of JetPt");
+                        break;
+                    case TrainingSpectraFlatteningPossibilities.JetET:
+                        toMakeFlat = t => t.JetET;
+                        FutureWriteLine("Reweighting to flatten as a function of JetEt");
+                        break;
+                    case TrainingSpectraFlatteningPossibilities.None:
+                        FutureWriteLine("Not reweighting at all before training.");
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unsupported flattening request.");
                 }
-                var flatBackgroundTrainingData = backgroundTrainingTree
-                    .FlattenBySpectra(toMakeFlat, outputHistograms, "background")
-                    ;
-                var flatSignalTrainingData = signalInCalOnly
-                    .AsTrainingTree()
-                    .FlattenBySpectra(toMakeFlat, outputHistograms, "signal")
-                    ;
+                var flatBackgroundTrainingData = toMakeFlat == null
+                    ? backgroundTrainingTree
+                    : backgroundTrainingTree
+                        .FlattenBySpectra(toMakeFlat, outputHistograms, "background");
+                var flatSignalTrainingData = toMakeFlat == null
+                    ? signalInCalOnly
+                        .AsTrainingTree()
+                    : signalInCalOnly
+                        .AsTrainingTree()
+                        .FlattenBySpectra(toMakeFlat, outputHistograms, "signal");
 
                 // Finally, plots of all the training input variables.
                 flatBackgroundTrainingData
@@ -81,24 +173,24 @@ namespace JetMVATraining
                     .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal");
 
                 // Get the list of variables we want to use
-                var varList = GetTrainingVariables();
+                var varList = GetTrainingVariables(options);
 
                 // Setup the training
                 var training = flatSignalTrainingData
-                    .AsSignal(isTrainingEvent: e => e.EventNumber % 2 == 1)
-                    .Background(flatBackgroundTrainingData, isTrainingEvent: e => e.EventNumber % 2 == 1)
+                    .AsSignal(isTrainingEvent: e => !(e.EventNumber % 3 == 1))
+                    .Background(flatBackgroundTrainingData, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
                     .UseVariables(varList);
 
                 // Build options (like what we might like to transform.
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
-                    .Option("MaxDepth", CommandLineUtils.MaxBDTDepth.ToString())
-                    .Option("MinNodeSize", CommandLineUtils.BDTLeafMinFraction.ToString())
+                    .Option("MaxDepth", options.BDTMaxDepth.ToString())
+                    .Option("MinNodeSize", options.BDTLeafMinFraction.ToString())
                     .Option("nCuts", "200")
                     ;
 
-                if (!string.IsNullOrWhiteSpace(CommandLineUtils.TrainingVariableTransform))
+                if (!string.IsNullOrWhiteSpace(options.VariableTransform))
                 {
-                    m1.Option("VarTransform", CommandLineUtils.TrainingVariableTransform);
+                    m1.Option("VarTransform", options.VariableTransform);
                 }
 
                 var methods = new List<Method<TrainingTree>>();
@@ -118,7 +210,7 @@ namespace JetMVATraining
                         jobNameBuilder.Append(".");
                     }
                     first = false;
-                    jobNameBuilder.Append(v);
+                    jobNameBuilder.Append(v.Substring(0, v.Length-2));
                 }
                 var jobName = jobNameBuilder.ToString();
 
@@ -148,7 +240,7 @@ namespace JetMVATraining
                     // Calculate where we have to place the cut in order to get the same over-all background efficiency.
                     var nncut = fullBackgroundSample
                         .AsTrainingTree()
-                        .Where(e => e.EventNumber % 2 == 0)
+                        .FilterNonTrainingEvents()
                         .FindNNCut(1.0 - standardBackgroundEff.Value, outputHistograms.mkdir("jet_mva_background"), m);
                     FutureWriteLine(() => $"The MVA cut for background efficiency of {standardBackgroundEff.Value} is {m.Name} > {nncut}.");
 
@@ -181,17 +273,19 @@ namespace JetMVATraining
                 foreach (var c in cuts)
                 {
                     var cutDir = outputHistograms.mkdir(c.Title);
-                    foreach (var s in signalSources)
+                    foreach (var s in signalTestSources)
                     {
                         var sEvents = s.Item2
                             .AsGoodJetStream()
-                            .Where(e => e.EventNumber % 2 == 0)
+                            .FilterNonTrainingEvents()
                             .FilterLLPNear();
                         var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, c.CutValue, sEvents);
-                        FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1}: {leff.Value}.");
+                        FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1} {leff.Value}");
                     }
-                    var eff = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly);
-                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents: {eff.Value}.");
+                    var effTest = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterNonTrainingEvents());
+                    var effTrain = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterTrainingEvents());
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TestingSignalEvents {effTest.Value}");
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents {effTrain.Value}");
                 }
 
                 // Done. Dump all output.
@@ -204,9 +298,9 @@ namespace JetMVATraining
         /// Return true if we are using JetPt as part of our list of variables.
         /// </summary>
         /// <returns></returns>
-        private static bool UsingJetPt()
+        private static bool UsingJetPt(Options opt)
         {
-            return CommandLineUtils.GetListOfVariablesToUse()
+            return GetListOfVariablesToUse(opt)
                 .Where(v => v == TrainingVariables.JetPt)
                 .Any();
         }
@@ -215,9 +309,9 @@ namespace JetMVATraining
         /// Return a list of the training variables that we get by looking at command line options.
         /// </summary>
         /// <returns></returns>
-        private static Expression<Func<TrainingTree, double>>[] GetTrainingVariables()
+        private static Expression<Func<TrainingTree, double>>[] GetTrainingVariables(Options opt)
         {
-            return CommandLineUtils.GetListOfVariablesToUse()
+            return GetListOfVariablesToUse(opt)
                 .Select(v => DictionaryPairForVariable(v))
                 .ToArray();
         }
@@ -252,8 +346,32 @@ namespace JetMVATraining
                 case TrainingVariables.JetET:
                     return t => t.JetET;
 
+                case TrainingVariables.JetWidth:
+                    return t => t.JetWidth;
+
+                case TrainingVariables.JetTrackDR:
+                    return t => t.JetDRTo2GeVTrack;
+
+                case TrainingVariables.EnergyDensity:
+                    return t => t.EnergyDensity;
+
+                case TrainingVariables.HadronicLayer1Fraction:
+                    return t => t.HadronicLayer1Fraction;
+
+                case TrainingVariables.JetLat:
+                    return t => t.JetLat;
+
+                case TrainingVariables.JetLong:
+                    return t => t.JetLong;
+
+                case TrainingVariables.FirstClusterRadius:
+                    return t => t.FirstClusterRadius;
+
+                case TrainingVariables.ShowerCenter:
+                    return t => t.ShowerCenter;
+
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Unknown variable requested: {varName.ToString()}");
             }
         }
 
@@ -264,7 +382,7 @@ namespace JetMVATraining
         /// <remarks>
         /// Take the same fraction of events from each source.
         /// </remarks>
-        private static IQueryable<TrainingTree> BuildBackgroundTrainingTreeDataSource()
+        private static IQueryable<TrainingTree> BuildBackgroundTrainingTreeDataSource(Options opt)
         {
             // Get the number of events in each source.
             var backgroundSources = CommandLineUtils.GetRequestedBackgroundSourceList();
@@ -274,7 +392,7 @@ namespace JetMVATraining
                 .ToArray();
 
             // The fraction of weight we want from each source we will take.
-            var sourceFraction = ((double)CommandLineUtils.TrainingEvents) / backgroundEventsWithCounts.Select(e => e.Item1).Sum();
+            var sourceFraction = ((double)opt.EventsToUseForTrainingAndTesting) / backgroundEventsWithCounts.Select(e => e.Item1).Sum();
             sourceFraction = sourceFraction > 1.0 ? 1.0 : sourceFraction;
 
             // Build a stream of all the backgrounds, stitched together.
@@ -379,6 +497,87 @@ namespace JetMVATraining
             public string Title;
 
 
+        }
+
+        /// <summary>
+        /// Return a list of all variables that we are using.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<TrainingVariables> GetListOfVariablesToUse(Options opt)
+        {
+            var result = new HashSet<TrainingVariables>();
+
+            // First take care of the sets
+            switch (opt.TrainingVariableSet)
+            {
+                case TrainingVariableSet.Default5pT:
+                    result.Add(TrainingVariables.JetPt);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    break;
+
+                case TrainingVariableSet.Default5ET:
+                    result.Add(TrainingVariables.JetET);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    break;
+
+                case TrainingVariableSet.DefaultAllpT:
+                    result.Add(TrainingVariables.JetPt);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    result.Add(TrainingVariables.JetWidth);
+                    result.Add(TrainingVariables.JetTrackDR);
+                    result.Add(TrainingVariables.EnergyDensity);
+                    result.Add(TrainingVariables.HadronicLayer1Fraction);
+                    result.Add(TrainingVariables.JetLat);
+                    result.Add(TrainingVariables.JetLong);
+                    result.Add(TrainingVariables.FirstClusterRadius);
+                    result.Add(TrainingVariables.ShowerCenter);
+                    break;
+
+                case TrainingVariableSet.DefaultAllET:
+                    result.Add(TrainingVariables.JetET);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    result.Add(TrainingVariables.JetWidth);
+                    result.Add(TrainingVariables.JetTrackDR);
+                    result.Add(TrainingVariables.EnergyDensity);
+                    result.Add(TrainingVariables.HadronicLayer1Fraction);
+                    result.Add(TrainingVariables.JetLat);
+                    result.Add(TrainingVariables.JetLong);
+                    result.Add(TrainingVariables.FirstClusterRadius);
+                    result.Add(TrainingVariables.ShowerCenter);
+                    break;
+
+                case TrainingVariableSet.None:
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            // Additional variables
+            foreach (var v in opt.AddVariable)
+            {
+                result.Add(v);
+            }
+
+            // Remove any that we want to drop
+            foreach (var v in opt.DropVariable)
+            {
+                result.Remove(v);
+            }
+
+            return result;
         }
     }
 }

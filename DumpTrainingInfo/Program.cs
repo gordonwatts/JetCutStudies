@@ -1,4 +1,5 @@
 ﻿using CalRatioTMVAUtilities;
+using CommandLine;
 using JenkinsAccess;
 using libDataAccess;
 using libDataAccess.Utils;
@@ -17,13 +18,24 @@ namespace DumpTrainingInfo
     class Program
     {
         /// <summary>
+        /// Custom parameters for running
+        /// </summary>
+        class Options : CommandLineUtils.CommonOptions
+        {
+            [Option("RunNumber", Required = true)]
+            public int RunNumber { get; set; }
+
+            [Option("EventNumber", Required = true)]
+            public int EventNumber { get; set; }
+        }
+        /// <summary>
         /// Pass an event number and basic training information will be dumped.
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
         {
             // Parse the arguments.
-            CommandLineUtils.Parse(args);
+            var options = CommandLineUtils.ParseOptions<Options>(args);
 
             // Get all the samples we want to look at, and turn them into
             // jets with the proper weights attached for later use.
@@ -51,15 +63,10 @@ namespace DumpTrainingInfo
                 .FilterNonTrainingEvents();
 
             // Filter by event number and run number
-            var runAndEvent = CommandLineUtils.RunAndEventNumber;
             var jsGood = js;
-            if (runAndEvent.Item1 != 0)
+            if (options.EventNumber != 0)
             {
-
-            }
-            if (runAndEvent.Item2 != 0)
-            {
-                jsGood = jsGood.Where(j => j.EventNumber == runAndEvent.Item2);
+                jsGood = jsGood.Where(j => j.EventNumber == options.EventNumber);
             }
 
             var jsWithTrainingInfo = from j in jsGood

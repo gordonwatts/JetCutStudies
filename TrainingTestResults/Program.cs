@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using CommandLine;
 using TMVAUtilities;
 using CalRatioTMVAUtilities;
 using static libDataAccess.PlotSpecifications;
@@ -15,21 +16,13 @@ using static LINQToTreeHelpers.PlottingUtils;
 
 namespace TrainingTestResults
 {
+    public class Options : CommandLineUtils.CommonOptions
+    {
+        [Option("SignalTag", Default = "signal", HelpText = "Tag that will match samples treated as signal for the comparisons.")]
+        public string SignalTag { get; set; }
+    }
     class Program
     {
-        class MVAInfo
-        {
-            /// <summary>
-            ///  The uri to the artifact for this mva
-            /// </summary>
-            public Uri Artifact;
-
-            /// <summary>
-            /// Short name we can use in plots, etc., for the mva.
-            /// </summary>
-            public string Name;
-        }
-
         /// <summary>
         /// Look at a number of MVA trainings and use them as results.
         /// </summary>
@@ -37,7 +30,7 @@ namespace TrainingTestResults
         static void Main(string[] args)
         {
             // Parse the arguments.
-            CommandLineUtils.Parse(args);
+            var opt = CommandLineUtils.ParseOptions<Options>(args);
 
             // Get all the samples we want to look at, and turn them into
             // jets with the proper weights attached for later use.
@@ -48,17 +41,19 @@ namespace TrainingTestResults
                 Tuple.Create("QCD", backgroundJets),
             };
 
-            var allSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
-                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
-                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
-                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
-            };
+            var allSources = SampleMetaData.AllSamplesWithTag(opt.SignalTag)
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
+                .ToArray();
+            if (allSources.Length == 0)
+            {
+                throw new ArgumentException($"No samples were found with tag '{opt.SignalTag}'.");
+            }
 
             // List the artifacts that we are going to be using.
             var mvaResults = new MVAInfo[]
             {
-                new MVAInfo() { Name = "FirstPt", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/job/CalR-JetMVATraining/372/artifact/Jet.MVATraining-JetPt.CalRatio.NTracks.SumPtOfAllTracks.MaxTrackPt_BDT.weights.xml") },
-                new MVAInfo() { Name = "FirstET", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/job/CalR-JetMVATraining/374/artifact/Jet.MVATraining-CalRatio.NTracks.SumPtOfAllTracks.MaxTrackPt.JetET_BDT.weights.xml") },
+                new MVAInfo() { Name = "5Variable", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/job/CalR-JetMVATraining/372/artifact/Jet.MVATraining-JetPt.CalRatio.NTracks.SumPtOfAllTracks.MaxTrackPt_BDT.weights.xml") },
+                new MVAInfo() { Name = "13Variable", Artifact = new Uri("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-JetMVATraining/460/artifact/Jet.MVATraining-Jet.CalRat.NTrac.SumPtOfAllTrac.MaxTrack.JetWid.JetDRTo2GeVTra.EnergyDensi.HadronicLayer1Fracti.JetL.JetLo.FirstClusterRadi.ShowerCent_BDT.weights.xml") },
             };
 
             // Fill an output file with the info for each MVA
@@ -85,6 +80,7 @@ namespace TrainingTestResults
                     // And now we can make the plots for signal
                     foreach (var s in allSources)
                     {
+                        Console.WriteLine($"{mva.Name} - {s.Item1}");
                         var sampleD = d.mkdir(s.Item1);
                         PlotMVAResult(s.Item2.AsGoodJetStream().FilterNonTrainingEvents().FilterLLPNear(), sampleD, mvaValue);
                     }
@@ -124,9 +120,23 @@ namespace TrainingTestResults
                 .Select(myp => myp.FromType<JetStream, Tuple<JetStream, double>>(jinfo => jinfo.Item1, weight: jinfo => jinfo.Item2 * jinfo.Item1.Weight));
 
             // We want weighted and unweighted plots here. We first have to normalize the weighting to be from 0 to 1.
+            // If there is only a single weight in the sample (which is just weird) then correctly make sure we are set to deal
+            // with things.
             var firstNonZeroBinValue = weights.Value.FindNonZeroBinValue();
             var lastNonZeroBinValue = weights.Value.FindNonZeroBinValue(HistogramUtils.BinSearchOrder.HighestBin);
-            var scaleing = 1.0 / (lastNonZeroBinValue - firstNonZeroBinValue);
+
+            if (firstNonZeroBinValue == lastNonZeroBinValue)
+            {
+                Console.WriteLine($"  Sample has events with all one weight ({firstNonZeroBinValue}).");
+            }
+
+            var scaleing = lastNonZeroBinValue == firstNonZeroBinValue
+                ? 1.0 
+                : 1.0 / (lastNonZeroBinValue - firstNonZeroBinValue);
+
+            firstNonZeroBinValue = lastNonZeroBinValue == firstNonZeroBinValue
+                ? firstNonZeroBinValue - 1.0
+                : firstNonZeroBinValue;
 
             var mvaWeithedJetStream = source
                 .Select(j => Tuple.Create(j, j.Weight * (mvaValue.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(j)) - firstNonZeroBinValue)*scaleing));
@@ -144,5 +154,21 @@ namespace TrainingTestResults
                     .Save(dir);
             }
         }
+    }
+
+    /// <summary>
+    /// Helper class to carry along info about a MVA that we are running in our comparison.
+    /// </summary>
+    class MVAInfo
+    {
+        /// <summary>
+        ///  The uri to the artifact for this mva
+        /// </summary>
+        public Uri Artifact;
+
+        /// <summary>
+        /// Short name we can use in plots, etc., for the mva.
+        /// </summary>
+        public string Name;
     }
 }

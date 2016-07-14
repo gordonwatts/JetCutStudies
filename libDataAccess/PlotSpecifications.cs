@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System;
 using static libDataAccess.Files;
 using libDataAccess.Utils;
+using LINQToTreeHelpers;
 
 namespace libDataAccess
 {
@@ -32,23 +33,18 @@ namespace libDataAccess
         /// </summary>
         public static IPlotSpec<double> JetPtPlotRaw =
             MakePlotterSpec<double>(150, 0.0, 750.0, j => j, "pT{0}", "pT of {0} jets; pT [GeV]");
-
-        /// <summary>
-        /// 1D plot of jet PT
-        /// </summary>
         public static IPlotSpec<recoTreeJets> JetPtPlot;
-
-        /// <summary>
-        /// Do the pt plot directly from meta data.
-        /// </summary>
         public static IPlotSpec<JetStream> JetPtPlotJetStream;
-
-        /// <summary>
-        /// 1D plot of jet PT.
-        /// </summary>
-        /// <remarks>Initialized below</remarks>
         public static IPlotSpec<JetInfoExtra> JetExtraPtPlot;
 
+        public static IPlotSpec<double> JetWidthPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 0.3, j => j, "jetWidth{0}", "Width of {0} jets; DeltaR");
+        public static IPlotSpec<recoTreeJets> JetWidthPlot;
+        public static IPlotSpec<JetInfoExtra> JetWidthPlotExtra;
+
+        /// <summary>
+        /// Jet ET
+        /// </summary>
         public static IPlotSpec<double> JetETPlotRaw =
             MakePlotterSpec<double>(150, 0.0, 750.0, j => j, "ET{0}", "ET of {0} jets; ET [GeV]");
         public static IPlotSpec<recoTreeJets> JetETPlot;
@@ -142,6 +138,20 @@ namespace libDataAccess
         /// </summary>
         public static IPlotSpec<JetInfoExtra> MaxTrackPtPlot =
             MakePlotterSpec<JetInfoExtra>(40, 0.0, 20.0, j => CalcMaxPt.Invoke(j.AllTracks), "MaxTrkPt{0}", "Max pT of tracks for {0}; Max pT [GeV]");
+
+        /// <summary>
+        /// The DeltaR of the closest track that is at 2 GeV
+        /// </summary>
+        public static IPlotSpec<double> DeltaROfCloseTrackPlotRaw
+            = MakePlotterSpec<double>(100, 0.0, 0.2, j => j, "DR2GeVTrack{0}", "DeltaR of 2 GeV track for {0}; DeltaR");
+        public static IPlotSpec<JetInfoExtra> DeltaROfCloseTrackPlotExtra;
+        public static Expression<Func<recoTreeTracks, recoTreeJets, double>> CalcDR2
+            = (t, j) => ROOTUtils.DeltaR2(t.eta, t.phi, j.eta, j.phi);
+        public static Expression<Func<IEnumerable<recoTreeTracks>, recoTreeJets, double>> CalcDR2GeVTrack
+            = (tracks, jet) => 
+            tracks.Where(t => t.pT > 2.0).Any() 
+            ? Math.Sqrt(tracks.Where(t => t.pT > 2.0).Select(t => CalcDR2.Invoke(t, jet)).OrderBy(t => t).First())
+            : 0.1999;
 
         /// <summary>
         /// A pT plot of tracks associated with jets
@@ -305,6 +315,20 @@ namespace libDataAccess
             MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lxy / 1000, "LLPLxy{0}", "LLP Lxy for {0}; Lxy (m)");
 
         /// <summary>
+        /// 1D plot of Lz
+        /// </summary>
+        public static IPlotSpec<recoTreeLLPs> LLPLzPlot =
+            MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lz / 1000, "LLPLz{0}", "LLP Lz for {0}; Lz (m)");
+
+        /// <summary>
+        /// Scatter plot of the LLP guys
+        /// </summary>
+        public static IPlotSpec<recoTreeLLPs> LLPLxyLzPlot =
+            MakePlotterSpec<recoTreeLLPs>(50, 0.0, 10.0, llp => llp.Lxy / 1000.0,
+                50, 0.0, 10.0, llp => llp.Lz / 1000.0,
+                "LLPLxyLz{0}", "LLP Lxy vs Lz for {0}; Lxy (m); Lz (m)");
+
+        /// <summary>
         /// 1D plot of the eta for LLP's
         /// </summary>
         public static IPlotSpec<recoTreeLLPs> LLPEtaPlot =
@@ -317,6 +341,20 @@ namespace libDataAccess
             MakePlotterSpec<double>(150, 0.0, 750.0, j => j, "pT{0}", "pT of {0} LLP; pT [GeV]");
         public static IPlotSpec<recoTreeLLPs> LLPPtPlot;
 
+        public static IPlotSpec<double> EnergyDensityPlotRaw =
+            MakePlotterSpec<double>(200, 0.0, 1.0, j => j, "EnergyDensity{0}", "Energy Density of {0}; rho");
+
+        public static IPlotSpec<double> HadronicL1FractPlotRaw =
+            MakePlotterSpec<double>(100, -1.5, 1.5, j => j, "HadronicL1Frac{0}", "Fraction of energy in L1 (Had) of {0}; L1/(L1+L2+L3)");
+        public static IPlotSpec<double> JetLatPlotRaw =
+            MakePlotterSpec<double>(50, 0.0, 1.0, j => j, "JetLat{0}", "Jet Latitude of {0}");
+        public static IPlotSpec<double> JetLongPlotRaw =
+            MakePlotterSpec<double>(50, 0.0, 1.0, j => j, "JetLong{0}", "Jet Longiduninal of {0}");
+        public static IPlotSpec<double> FirstClusterRadiusPlotRaw =
+            MakePlotterSpec<double>(7*5, 0.0, 7.0, j => j/1000.0, "FirstClusterR{0}", "Radius of first cluster of {0}; R [m]");
+        public static IPlotSpec<double> ShowerCenterPlotRaw =
+            MakePlotterSpec<double>(50, 0.0, 10.0, j => j/1000.0, "ShowerCenter{0}", "Depth of shower center {0}; Lambda_center [m]");
+
         /// <summary>
         /// Get the dependencies right
         /// </summary>
@@ -324,6 +362,7 @@ namespace libDataAccess
         {
             JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
             JetETPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.ET);
+            JetWidthPlot = JetWidthPlotRaw.FromType<double, recoTreeJets>(j => j.width);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
@@ -344,7 +383,9 @@ namespace libDataAccess
 
             SumTrackPtPlot = SumTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => j.AllTracks.Sum(t => t.pT));
             MaxTrackPtPlot = MaxTrackPtPlotRaw.FromType<double, JetInfoExtra>(j => CalcMaxPt.Invoke(j.AllTracks));
+            DeltaROfCloseTrackPlotExtra = DeltaROfCloseTrackPlotRaw.FromType<double, JetInfoExtra>(j => CalcDR2GeVTrack.Invoke(j.AllTracks, j.Jet));
             JetExtraPtPlot = JetPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
+            JetWidthPlotExtra = JetWidthPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraCalRPlot = JetCalRPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             NTrackExtraPlot = NTrackPlot.FromType<IEnumerable<recoTreeTracks>, JetInfoExtra>(jinfo => jinfo.Tracks);

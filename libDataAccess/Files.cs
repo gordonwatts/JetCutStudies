@@ -1,5 +1,6 @@
 ﻿using DiVertAnalysis;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace libDataAccess
 
             try {
                 return GRIDJobs.FindJobFiles("DiVertAnalysis",
-                    4,
+                    6,
                     dsname,
                     nFiles: NFiles,
                     statusUpdate: l => Console.WriteLine(l),
@@ -65,36 +66,23 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Get the J2Z files for running.
+        /// Return the JZ sample as requested.
         /// </summary>
+        /// <param name="jzIndex"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetJ1Z()
+        public static IQueryable<MetaData> GetJZ(int jzIndex)
         {
-            const string sample = "mc15_13TeV.361021.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ1W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452";
-            return GetSampleAsMetaData(sample);
-        }
-
-        public static IQueryable<MetaData> GetJ2Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361022.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ2W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-        }
-
-        public static IQueryable<MetaData> GetJ3Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361023.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ3W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
-        }
-
-        public static IQueryable<MetaData> GetJ4Z()
-        {
-            return GetSampleAsMetaData("mc15_13TeV.361024.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ4W.merge.DAOD_EXOT15.e3668_s2576_s2132_r6765_r6282_p2452");
+            var sample = SampleMetaData.LoadFromCSV($"J{jzIndex}Z");
+            return GetSampleAsMetaData(sample.Name);
         }
 
         /// <summary>
         /// Returns the sample as metadata, including an extract cross section weight.
         /// </summary>
-        /// <param name="sample"></param>
-        /// <returns></returns>
-        private static IQueryable<MetaData> GetSampleAsMetaData(string sample)
+        /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
+        /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
+        /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true)
         {
             // Build the query tree
             var backgroundFiles = GetFileList(sample);
@@ -104,21 +92,33 @@ namespace libDataAccess
 
             // fetch the cross section weight
             double xSectionWeight = 1.0;
-            try
+            if (weightByCrossSection)
             {
-                var sampleInfo = SampleMetaData.LoadFromCSV(sample);
-                xSectionWeight = sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count();
-                //Console.WriteLine($"Sample: {sample}");
-                //Console.WriteLine($"  Total Weight: {xSectionWeight}");
-                //Console.WriteLine($"  Number raw events: {backgroundEvents.Count()}");
-            } catch (Exception e)
-            {
-                Console.WriteLine($"WARNING: Sample '{sample}' not found in x-section list. Assuming a cross section weight of 1.");
-                Console.WriteLine($"  Error: {e.Message}");
+                try
+                {
+                    var sampleInfo = SampleMetaData.LoadFromCSV(sample);
+                    xSectionWeight = sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"WARNING: Sample '{sample}' not found in x-section list. Assuming a cross section weight of 1.");
+                    Console.WriteLine($"  Error: {e.Message}");
+                }
             }
 
             // And return the stream.
             return GenerateStream(backgroundEvents, xSectionWeight);
+        }
+
+        /// <summary>
+        /// Return the meta-data for a sample
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="weightByCrossSection">True if we should weight this sample by cross section or by 1</param>
+        /// <returns></returns>
+        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true)
+        {
+            return GetSampleAsMetaData(s.Name, weightByCrossSection);
         }
 
         /// <summary>
@@ -137,9 +137,12 @@ namespace libDataAccess
         public static IQueryable<MetaData> GetAllJetSamples()
         {
             return
-                GetJ2Z()
-                .Concat(GetJ3Z())
-                .Concat(GetJ4Z());
+                GetJZ(2)
+                .Concat(GetJZ(3))
+                .Concat(GetJZ(4))
+                .Concat(GetJZ(5))
+                .Concat(GetJZ(6))
+                .Concat(GetJZ(7))
                 ;
         }
 
@@ -149,39 +152,11 @@ namespace libDataAccess
         /// <param name="source"></param>
         /// <param name="xSecWeight"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GenerateStream(this IQueryable<recoTree> source, double xSecWeight)
+        private static IQueryable<MetaData> GenerateStream(this IQueryable<recoTree> source, double xSecWeight)
         {
             return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight * e.eventWeight });
         }
 
-#if false
-        public static QueriableTTree<recoTree> Get125pi15()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301303.HSS_mH125mS15.reco.s2698_r7144_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-
-        public static QueriableTTree<recoTree> Get125pi40()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301298.HSS_mH125mS40.reco_20k.s2698_r7144_v03_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-
-        public static QueriableTTree<recoTree> Get600pi100()
-        {
-            var sig = GetFileList("user.hrussell.mc15_13TeV.301301.HSS_mH600mS100.reco_20k.s2698_r7144_v03_EXT2");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            //sigEvents.IgnoreQueryCache = true;
-            //sigEvents.UseStatementOptimizer = false;
-            return sigEvents;
-        }
-#endif
         public static IQueryable<recoTree> Get200pi25lt5m()
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");

@@ -146,5 +146,17 @@ namespace TMVAUtilities
         {
             throw new InvalidOperationException("This should never be called");
         }
+        public double MVAResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public double MVAResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public double MVAResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12, double v13)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
     }
 }

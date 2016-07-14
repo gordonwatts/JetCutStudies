@@ -10,6 +10,7 @@ using LinqToTTreeInterfacesLib;
 using ROOTNET;
 using libDataAccess.Utils;
 using TMVAUtilities;
+using libDataAccess;
 
 namespace CalRatioTMVAUtilities
 {
@@ -27,6 +28,14 @@ namespace CalRatioTMVAUtilities
         public double MaxTrackPt;
         public int EventNumber;
         public double JetET;
+        public double JetWidth;
+        public double JetDRTo2GeVTrack;
+        public double EnergyDensity;
+        public double HadronicLayer1Fraction;
+        public double JetLat;
+        public double JetLong;
+        public double FirstClusterRadius;
+        public double ShowerCenter;
     }
 
     /// <summary>
@@ -34,6 +43,9 @@ namespace CalRatioTMVAUtilities
     /// </summary>
     public static class TrainingUtils
     {
+        /// <summary>
+        /// Converter expression that can be used in our LINQ queries
+        /// </summary>
         public static Expression<Func<JetStream, TrainingTree>> TrainingTreeConverter = i
             => new TrainingTree()
             {
@@ -46,7 +58,35 @@ namespace CalRatioTMVAUtilities
                 MaxTrackPt = CalcMaxPt.Invoke(i.JetInfo.AllTracks),
                 EventNumber = i.EventNumber,
                 JetET = i.JetInfo.Jet.ET,
+                JetWidth = i.JetInfo.Jet.width,
+                JetDRTo2GeVTrack = PlotSpecifications.CalcDR2GeVTrack.Invoke(i.JetInfo.AllTracks, i.JetInfo.Jet),
+                JetLat = i.JetInfo.Jet.FirstClusterLateral,
+                JetLong = i.JetInfo.Jet.FirstClusterLongitudinal,
+                FirstClusterRadius = i.JetInfo.Jet.FirstClusterR,
+                ShowerCenter = i.JetInfo.Jet.FirstClusterLambda,
+                EnergyDensity = i.JetInfo.Jet.FirstClusterEnergyDensity,
+                HadronicLayer1Fraction = (i.JetInfo.Jet.EHadLayer1 + i.JetInfo.Jet.EHadLayer2 + i.JetInfo.Jet.EHadLayer3) == 0 ? -1.0 : i.JetInfo.Jet.EHadLayer1 / (i.JetInfo.Jet.EHadLayer1 + i.JetInfo.Jet.EHadLayer2 + i.JetInfo.Jet.EHadLayer3),
             };
+
+        /// <summary>
+        /// Remove training events
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<TrainingTree> FilterNonTrainingEvents (this IQueryable<TrainingTree> source)
+        {
+            return source.Where(t => t.EventNumber % 2 == 0);
+        }
+
+        /// <summary>
+        /// Keep only the training events
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<TrainingTree> FilterTrainingEvents(this IQueryable<TrainingTree> source)
+        {
+            return source.Where(t => t.EventNumber % 2 == 1);
+        }
 
         /// <summary>
         /// Create a training tree from a jet stream.
@@ -57,7 +97,7 @@ namespace CalRatioTMVAUtilities
         public static IQueryable<TrainingTree> AsTrainingTree(this IQueryable<JetStream> source)
         {
             return source
-                .Where(j => j.JetInfo.Jet.pT < 400.0)
+                .Where(j => j.JetInfo.Jet.pT < 550.0)
                 .Select(i => TrainingTreeConverter.Invoke(i));
         }
 
@@ -80,6 +120,14 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = NTrackPlotRaw, ValueGetter = tu => tu.NTracks },
             new PlotInfo() { Plotter = SumTrackPtPlotRaw, ValueGetter = tu => tu.SumPtOfAllTracks },
             new PlotInfo() { Plotter = MaxTrackPtPlotRaw, ValueGetter = tu => tu.MaxTrackPt },
+            new PlotInfo() { Plotter = JetWidthPlotRaw, ValueGetter = tu => tu.JetWidth },
+            new PlotInfo() { Plotter = DeltaROfCloseTrackPlotRaw, ValueGetter = tu => tu.JetDRTo2GeVTrack },
+            new PlotInfo() { Plotter = EnergyDensityPlotRaw, ValueGetter = tu => tu.EnergyDensity },
+            new PlotInfo() { Plotter = HadronicL1FractPlotRaw, ValueGetter = tu => tu.HadronicLayer1Fraction },
+            new PlotInfo() { Plotter = JetLatPlotRaw, ValueGetter = tu => tu.JetLat },
+            new PlotInfo() { Plotter = JetLongPlotRaw, ValueGetter = tu => tu.JetLat },
+            new PlotInfo() { Plotter = FirstClusterRadiusPlotRaw, ValueGetter = tu => tu.FirstClusterRadius },
+            new PlotInfo() { Plotter = ShowerCenterPlotRaw, ValueGetter = tu => tu.ShowerCenter },
         };
 
         /// <summary>

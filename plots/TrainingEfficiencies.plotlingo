@@ -38,7 +38,7 @@ TurnOffStatBoxes();
 
 for (t, trainings) {
   for (p, plotTypes2D) {
-    for (s, trainingSamples) {
+    for (s, signalCompareSamples) {
 	  name = p["name"];
       f_training.Get("{t}/{s}/{name}")
 		.tag(s)
@@ -58,7 +58,7 @@ for (t, trainings) {
 for (plottypes) {
     for (t, trainings) {
 
-		plots = map(sample, trainingSamples) {
+		plots = map(sample, signalCompareSamples) {
 		  f_training.Get("{t}/{sample}/{name}").tag(sample);
 		};
 
@@ -79,7 +79,7 @@ for (plottypes) {
 #			.xaxis(xaxis);
 	};
 
-	for (sample, trainingSamples) {
+	for (sample, signalCompareSamples) {
 		plots = map(t, trainings) {
 			f_training.Get("{t}/{sample}/{name}").tag(t);
 		};

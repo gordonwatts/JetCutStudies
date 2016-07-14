@@ -23,11 +23,8 @@ namespace LLPInvestigations
         {
             CommandLineUtils.Parse(args);
 
-            var signalSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
-                Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),
-                Tuple.Create("400pi100lt9m", Files.Get400pi100lt9m().GenerateStream(1.0)),
-                Tuple.Create("200pi25lt5m", Files.Get200pi25lt5m().GenerateStream(1.0)),
-            };
+            var signalSources = SampleMetaData.AllSamplesWithTag("signal")
+                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
 
             using (var outputHistograms = new FutureTFile("LLPInvestigations.root"))
             {
@@ -60,11 +57,16 @@ namespace LLPInvestigations
                 .Select(j => j.LLP)
                 .PlotBasicLLPValues("withJet", dir);
             var llpStreamWithGoodJets = llpStreamWithJets
-                .Where(j => j.ET > 40.0 && Math.Abs(j.eta) < 2.4);
+                .Where(j => j.ET > 40.0 && Math.Abs(j.eta) < JetEtaLimit);
             llpStreamWithGoodJets
                 .Select(j => j.LLP)
                 .PlotBasicLLPValues("withGoodJet", dir);
-
+            llpStreamWithGoodJets
+                .Where(j => Math.Abs(j.eta) <= 1.7)
+                .PlotBasicValues("withGoodJetBarrel", dir);
+            llpStreamWithGoodJets
+                .Where(j => Math.Abs(j.eta) > 1.7)
+                .PlotBasicValues("withGoodJetEndCap", dir);
 
             // Look at the number of times sharing occurs (should never happen)
             var sharedJets = from ev in llp
@@ -98,6 +100,7 @@ namespace LLPInvestigations
 
             // How many LLPs are within 0.4 of a jet?
             Expression<Func<recoTreeJets, recoTreeLLPs, double>> DR2 = (l, j) => DeltaR2(l.eta, l.phi, j.eta, j.phi);
+#if false
             double openingAngle = 0.4;
             var llpsCloseToJets = from ev in llp
                                   select from j in ev.Data.Jets
@@ -152,13 +155,14 @@ namespace LLPInvestigations
                     60, 0, 0.4, jet => jet.Item4,
                     60, -0.5, 0.5, jet => jet.Item1.eta - jet.Item2.eta)
                 .Save(dir);
+#endif
 
             // Look at jets that pass the Run 1 cuts but don't have an associated LLP.
             // Once we have the good and bad jets, partner them up with the closest LLP we can.
             var jetsOnTheirOwn = from ev in llp
                                  from j in ev.Data.Jets
                                  where j.isGoodLLP
-                                 where Abs(j.eta) < 2.5 && j.pT > 40.0
+                                 where Abs(j.eta) < JetEtaLimit && j.pT > 40.0
                                  where j.logRatio >= IsolationTrackPtCut
                                  where !j.LLP.IsGoodIndex()
                                  let closeLLP = ev.Data.LLPs.OrderBy(l => DR2.Invoke(j, l)).First()
@@ -167,7 +171,7 @@ namespace LLPInvestigations
             var jetsWithPartner = from ev in llp
                                  from j in ev.Data.Jets
                                   where j.isGoodLLP
-                                  where Abs(j.eta) < 2.5
+                                  where Abs(j.eta) < JetEtaLimit
                                   where j.logRatio >= IsolationTrackPtCut
                                  where j.LLP.IsGoodIndex()
                                  let closeLLP = ev.Data.LLPs.OrderBy(l => DR2.Invoke(j, l)).First()
@@ -198,6 +202,16 @@ namespace LLPInvestigations
             jetsWithPartner
                 .Select(jinfo => jinfo.Item2)
                 .PlotBasicLLPValues("CalRLLPNear", dir);
+
+            jetsWithPartner
+                .Where(jinfo => Math.Abs(jinfo.Item1.eta) <= 1.7)
+                .Select(jinfo => jinfo.Item2)
+                .PlotBasicLLPValues("CalRLLPNearBarrel", dir);
+
+            jetsWithPartner
+                .Where(jinfo => Math.Abs(jinfo.Item1.eta) > 1.7)
+                .Select(jinfo => jinfo.Item2)
+                .PlotBasicLLPValues("CalRLLPNearEndCap", dir);
 
             // Write out a small text file of the bad events so we can cross check.
             jetsOnTheirOwn

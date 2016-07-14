@@ -14,7 +14,15 @@ plottypes = [
 	{title => "Number of Tracks", xaxis => "N Tracks", name => "ntracks"},
 	{title => "Jet Eta", xaxis => "{\eta}", name => "eta"},
 	{title => "Jet p_{T}", xaxis => "Jet p_{T} [GeV]", name => "pT"},
-	{title => "CalRatio", xaxis => "CalRatio", name => "CalR"}
+	{title => "CalRatio", xaxis => "CalRatio", name => "CalR"},
+	{title => "Jet Width", xaxis => "Width", name => "jetWidth"},
+	{title => "DR to closest 2 GeV Track", xaxis => "DR", name => "DR2GeVTrack"},
+	{title => "Jet Energy Density", xaxis => "Energy [GeV]", name => "EnergyDensity"},
+	{title => "Jet Latitudinal spread", xaxis => "Jet Latitude", name => "JetLat"},
+	{title => "Jet Longitudinal spread", xaxis => "Jet Logitude", name => "JetLong"},
+	{title => "Radius (xyz) of first Jet Cluster", xaxis => "R [m]", name => "FirstClusterR"},
+	{title => "Jet Shower Center", xaxis => "Jet Shower Center", name => "ShowerCenter"},
+	{title => "Layer 1 Fraction in Hadronic", xaxis => "Hadronic L1 Fraction", name => "HadronicL1Frac"}
 ];
 
 #
@@ -24,16 +32,24 @@ plottypes = [
 Legend("signal" => {Color => 2, Title => "Signal"});
 Legend("background" => {Color => 1, Title => "Background"});
 
-##NormalizePlots();
-
 #
 # Plots of CalR vs pT per sample for the signal.
 #
-wts = [{name_add => "", title_add => ""}, {name_add => "_unweighted", title_add => " (unweighted)"}];
+wts = [
+	{name_add => "", title_add => "", norm => 1},
+	{name_add => "_unweighted", title_add => " (unweighted)", norm => 1},
+	{name_add => "_unweighted", title_add => " (unweighted unnormalized)", norm => 0}
+];
+
 for (plottypes) {
     for (wts) {
-		sig = f_training.Get("signal/{name}training_signal{name_add}").normalize().minimum(0);
-		bac = f_training.Get("background/{name}training_background{name_add}").normalize().minimum(0);
+		sig = f_training.Get("signal/{name}training_signal{name_add}").minimum(0);
+		bac = f_training.Get("background/{name}training_background{name_add}").minimum(0);
+
+		if(norm) {
+			sig = sig.normalize();
+			bac = bac.normalize();
+		};
 
 		[sig,bac]
 			.plot()

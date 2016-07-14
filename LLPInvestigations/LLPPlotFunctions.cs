@@ -30,6 +30,14 @@ namespace LLPInvestigations
             source
                 .FuturePlot(LLPEtaPlot, name)
                 .Save(dir);
+
+            source
+                .FuturePlot(LLPLzPlot, name)
+                .Save(dir);
+
+            source
+                .FuturePlot(LLPLxyLzPlot, name)
+                .Save(dir);
         }
 
         /// <summary>

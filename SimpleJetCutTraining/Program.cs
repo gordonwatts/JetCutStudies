@@ -24,7 +24,7 @@ namespace SimpleJetCutTraining
         static void Main(string[] args)
         {
             WriteLine("Finding the files");
-            var backgroundEvents = Files.GetJ2Z().Select(e => e.Data);
+            var backgroundEvents = Files.GetJZ(2).Select(e => e.Data);
             //var signalHV125pi15Events = Files.Get125pi15();
             //var signalHV125pi40Events = Files.Get125pi40();
             var signalHV600pi100Events = Files.Get600pi150lt9m();
@@ -124,7 +124,7 @@ namespace SimpleJetCutTraining
 #if false
             var allJets = from e in events
                           from j in e.Jets
-                          where j.pT > 30.0 && Abs(j.eta) < 2.4
+                          where j.pT > 30.0 && Abs(j.eta) < JetEtaLimit
                           select new TrainingData()
                           {
                               logR = j.logRatio,
@@ -139,7 +139,7 @@ namespace SimpleJetCutTraining
             var trainingDataSetJets = events
                 .SelectMany(e => e.Jets.Select(j => new { Jet = j, Event = e }))
                 .Where(j => j.Jet.pT > 30.0)
-                .Where(j => Abs(j.Jet.eta) < 2.4);
+                .Where(j => Abs(j.Jet.eta) < CutConstants.JetEtaLimit);
 
             // If this is to be treated as signal, then look for the LLP to have
             // decayed in the right way.
