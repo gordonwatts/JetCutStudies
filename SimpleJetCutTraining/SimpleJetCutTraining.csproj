@@ -53,7 +53,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Doddle.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=183ffec7490b24a9, processorArchitecture=MSIL">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build459\lib\net45\Doddle.Reporting.dll</HintPath>
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build462\lib\net45\Doddle.Reporting.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="libASImageGuiWrapper, Version=11.11.5940.38063, Culture=neutral, processorArchitecture=x86">
@@ -308,16 +308,16 @@
       <HintPath>..\packages\ROOT.NET.All.5.34.36.11\lib\net40\libXMLIOWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LINQToTreeHelpers, Version=0.50.6034.31813, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build459\lib\net45\LINQToTreeHelpers.dll</HintPath>
+    <Reference Include="LINQToTreeHelpers, Version=0.50.6038.31052, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build462\lib\net45\LINQToTreeHelpers.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LinqToTTreeInterfacesLib, Version=0.42.6034.31792, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build459\lib\net45\LinqToTTreeInterfacesLib.dll</HintPath>
+    <Reference Include="LinqToTTreeInterfacesLib, Version=0.42.6038.31035, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build462\lib\net45\LinqToTTreeInterfacesLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LINQToTTreeLib, Version=0.51.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build459\lib\net45\LINQToTTreeLib.dll</HintPath>
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build462\lib\net45\LINQToTTreeLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -391,10 +391,10 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets'))" />
-    <Error Condition="!Exists('..\packages\LINQToTTree-Head.0.51.0-build459\build\LINQToTTree-Head.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LINQToTTree-Head.0.51.0-build459\build\LINQToTTree-Head.targets'))" />
+    <Error Condition="!Exists('..\packages\LINQToTTree-Head.0.51.0-build462\build\LINQToTTree-Head.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LINQToTTree-Head.0.51.0-build462\build\LINQToTTree-Head.targets'))" />
   </Target>
   <Import Project="..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets" Condition="Exists('..\packages\ROOT.NET.Dynamic.5.34.36.11\build\net40\ROOT.NET.Dynamic.targets')" />
-  <Import Project="..\packages\LINQToTTree-Head.0.51.0-build459\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build459\build\LINQToTTree-Head.targets')" />
+  <Import Project="..\packages\LINQToTTree-Head.0.51.0-build462\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build462\build\LINQToTTree-Head.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
