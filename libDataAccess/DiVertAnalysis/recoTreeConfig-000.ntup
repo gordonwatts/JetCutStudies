@@ -231,9 +231,9 @@
         <VariableInfo NETName="pT" TTreeName="LLP_pT" />
         <VariableInfo NETName="eta" TTreeName="LLP_eta" />
         <VariableInfo NETName="phi" TTreeName="LLP_phi" />
-        <VariableInfo NETName="LLP_beta" TTreeName="LLP_beta" />
-        <VariableInfo NETName="LLP_gamma" TTreeName="LLP_gamma" />
-        <VariableInfo NETName="LLP_timing" TTreeName="LLP_timing" />
+        <VariableInfo NETName="beta" TTreeName="LLP_beta" />
+        <VariableInfo NETName="gamma" TTreeName="LLP_gamma" />
+        <VariableInfo NETName="timing" TTreeName="LLP_timing" />
         <VariableInfo NETName="Lxy" TTreeName="LLP_Lxy" />
         <VariableInfo NETName="Lz" TTreeName="LLP_Lz" />
         <VariableInfo NETName="LLP_nMSegs_dR04" TTreeName="LLP_nMSegs_dR04" />
