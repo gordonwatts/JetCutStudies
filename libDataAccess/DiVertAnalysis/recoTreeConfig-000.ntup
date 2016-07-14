@@ -226,8 +226,8 @@
     </ArrayGroup>
     <ArrayGroup Name="LLPs">
       <Variables>
-        <VariableInfo NETName="LLP_pdgid" TTreeName="LLP_pdgid" />
-        <VariableInfo NETName="LLP_E" TTreeName="LLP_E" />
+        <VariableInfo NETName="pdgid" TTreeName="LLP_pdgid" />
+        <VariableInfo NETName="E" TTreeName="LLP_E" />
         <VariableInfo NETName="pT" TTreeName="LLP_pT" />
         <VariableInfo NETName="eta" TTreeName="LLP_eta" />
         <VariableInfo NETName="phi" TTreeName="LLP_phi" />
