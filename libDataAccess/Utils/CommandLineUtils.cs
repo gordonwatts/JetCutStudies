@@ -155,7 +155,7 @@ namespace libDataAccess.Utils
         public static T ParseOptions<T>(string[] args)
             where T : CommonOptions
         {
-            var result = Parser.Default.ParseArguments<T>(args);
+            var result = Parser.Default.ParseArguments<T>(args.Select(a => a.Trim()));
 
             T optVar = null;
             result.MapResult(
