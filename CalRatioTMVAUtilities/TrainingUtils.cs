@@ -125,7 +125,7 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = EnergyDensityPlotRaw, ValueGetter = tu => tu.EnergyDensity },
             new PlotInfo() { Plotter = HadronicL1FractPlotRaw, ValueGetter = tu => tu.HadronicLayer1Fraction },
             new PlotInfo() { Plotter = JetLatPlotRaw, ValueGetter = tu => tu.JetLat },
-            new PlotInfo() { Plotter = JetLongPlotRaw, ValueGetter = tu => tu.JetLat },
+            new PlotInfo() { Plotter = JetLongPlotRaw, ValueGetter = tu => tu.JetLong },
             new PlotInfo() { Plotter = FirstClusterRadiusPlotRaw, ValueGetter = tu => tu.FirstClusterRadius },
             new PlotInfo() { Plotter = ShowerCenterPlotRaw, ValueGetter = tu => tu.ShowerCenter },
         };
