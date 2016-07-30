@@ -127,7 +127,7 @@
         <VariableInfo NETName="width" TTreeName="CalibJet_width" />
         <VariableInfo NETName="logRatio" TTreeName="CalibJet_logRatio" />
         <VariableInfo NETName="CalibJet_EMF" TTreeName="CalibJet_EMF" />
-        <VariableInfo NETName="CalibJet_time" TTreeName="CalibJet_time" />
+        <VariableInfo NETName="time" TTreeName="CalibJet_time" />
         <VariableInfo NETName="CalibJet_BDT" TTreeName="CalibJet_BDT" />
         <VariableInfo NETName="CalibJet_BDT_rank" TTreeName="CalibJet_BDT_rank" />
         <VariableInfo NETName="CalibJet_isCRHLTJet" TTreeName="CalibJet_isCRHLTJet" />
