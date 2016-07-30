@@ -9,6 +9,7 @@ using static libDataAccess.Files;
 using libDataAccess.Utils;
 using System.Collections.Generic;
 using libDataAccess;
+using static libDataAccess.Utils.CommandLineUtils;
 
 namespace JZPlotter
 {
@@ -17,10 +18,18 @@ namespace JZPlotter
     /// </summary>
     class Program
     {
+        /// <summary>
+        /// For options unique to this program
+        /// </summary>
+        class Options : CommonOptions
+        {
+
+        }
+
         static void Main(string[] args)
         {
             // Get command line arguments
-            libDataAccess.Utils.CommandLineUtils.Parse(args);
+            var opt = ParseOptions<Options>(args);
 
             // Build our own set of background samples so we can experiment.
             var jets = SampleMetaData.AllSamplesWithTag("background")

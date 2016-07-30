@@ -14,14 +14,22 @@ using static libDataAccess.CutConstants;
 using static LINQToTreeHelpers.ROOTUtils;
 using static System.Math;
 using System.IO;
+using static libDataAccess.Utils.CommandLineUtils;
 
 namespace LLPInvestigations
 {
     class Program
     {
+        /// <summary>
+        /// For command line options unique to this program.
+        /// </summary>
+        class Options : CommonOptions
+        {
+
+        }
         static void Main(string[] args)
         {
-            CommandLineUtils.Parse(args);
+            var opt = ParseOptions<Options>(args);
 
             var signalSources = SampleMetaData.AllSamplesWithTag("signal")
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));

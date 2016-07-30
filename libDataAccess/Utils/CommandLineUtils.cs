@@ -118,36 +118,6 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
-        /// Parse the command line arguments, and deal with their execution.
-        /// </summary>
-        /// <param name="args"></param>
-        public static void Parse(string[] args)
-        {
-            var result = Parser.Default.ParseArguments<CommonOptions>(args);
-
-            result.MapResult(
-                options => {
-                    Files.NFiles = options.UseFullDataset ? 0 : 1;
-                    Files.VerboseFileFetch = options.VerboseFileFetch;
-                    Files.UseCodeOptimizer = options.UseCPPOptimizer != 0;
-                    Files.IgnoreQueires = options.IgnoreQueryCache != 0;
-                    if (options.BackgroundAll) RequstedBackgroundSample = BackgroundSampleEnum.All;
-                    if (options.BackgroundJZ2) RequstedBackgroundSample = BackgroundSampleEnum.JZ2;
-                    if (options.BackgroundJZ3) RequstedBackgroundSample = BackgroundSampleEnum.JZ3;
-                    if (options.BackgroundJZ4) RequstedBackgroundSample = BackgroundSampleEnum.JZ4;
-                    //RunAndEventNumber = Tuple.Create(options.RunNumber, options.EventNumber);
-                    return 0;
-                },
-                errors => {
-                    foreach (var err in errors)
-                    {
-                        Console.WriteLine($"Error parsing command line: {err.ToString()}");
-                    }
-                    return 1;
-                });
-        }
-
-        /// <summary>
         /// Parase and return a set of options.
         /// </summary>
         /// <typeparam name="T"></typeparam>

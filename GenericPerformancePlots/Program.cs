@@ -14,11 +14,17 @@ using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
 using static System.Linq.Enumerable;
 using static libDataAccess.Utils.Constants;
+using static libDataAccess.Utils.CommandLineUtils;
 
 namespace GenericPerformancePlots
 {
     class Program
     {
+        class Options : CommonOptions
+        {
+
+        }
+
         /// <summary>
         /// Make generic plots of the signal or background
         /// </summary>
@@ -32,7 +38,7 @@ namespace GenericPerformancePlots
         /// </remarks>
         static void Main(string[] args)
         {
-            CommandLineUtils.Parse(args);
+            var opt = CommandLineUtils.ParseOptions<Options>(args);
 
             Console.WriteLine("Finding the files");
 
