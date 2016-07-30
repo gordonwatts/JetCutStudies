@@ -176,7 +176,7 @@ namespace libDataAccess.Utils
                     {
                         Console.WriteLine($"Error parsing command line: {err.ToString()}");
                     }
-                    return 1;
+                    throw new InvalidOperationException("Command line couldn't be parsed");
                 });
 
             return optVar;
