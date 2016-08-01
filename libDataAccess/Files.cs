@@ -35,6 +35,11 @@ namespace libDataAccess
         public static bool UseCodeOptimizer = true;
 
         /// <summary>
+        /// Get/Set the job version number
+        /// </summary>
+        public static int JobVersionNumber = 6;
+
+        /// <summary>
         /// Return a dataset list given the name of the dataset.
         /// </summary>
         /// <param name="dsname"></param>
@@ -51,7 +56,7 @@ namespace libDataAccess
 
             try {
                 return GRIDJobs.FindJobFiles("DiVertAnalysis",
-                    6,
+                    JobVersionNumber,
                     dsname,
                     nFiles: NFiles,
                     statusUpdate: l => Console.WriteLine(l),
