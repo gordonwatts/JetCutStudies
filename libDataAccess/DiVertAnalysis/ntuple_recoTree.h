@@ -107,6 +107,7 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_EMF;
    TStlSimpleProxy<vector<double> >         CalibJet_time;
    TStlSimpleProxy<vector<double> >         CalibJet_BDT;
+   TStlSimpleProxy<vector<double> >         CalibJet_BDT13Lxy;
    TStlSimpleProxy<vector<double> >         CalibJet_BDT_rank;
    TStlSimpleProxy<vector<bool> >           CalibJet_isCRHLTJet;
    TStlSimpleProxy<vector<int> >            CalibJet_indexLLP;
@@ -385,6 +386,7 @@ public :
       CalibJet_EMF                            (&fDirector,"CalibJet_EMF"),
       CalibJet_time                           (&fDirector,"CalibJet_time"),
       CalibJet_BDT                            (&fDirector,"CalibJet_BDT"),
+      CalibJet_BDT13Lxy                       (&fDirector,"CalibJet_BDT13Lxy"),
       CalibJet_BDT_rank                       (&fDirector,"CalibJet_BDT_rank"),
       CalibJet_isCRHLTJet                     (&fDirector,"CalibJet_isCRHLTJet"),
       CalibJet_indexLLP                       (&fDirector,"CalibJet_indexLLP"),
