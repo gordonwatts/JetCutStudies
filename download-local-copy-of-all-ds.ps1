@@ -3,7 +3,7 @@
 #
 
 $jobName = "DiVertAnalysis"
-$jobVersion = 6
+$jobVersion = 8
 
 # Get teh list of samples from the csv file
 
@@ -17,6 +17,7 @@ $job = $samples | % {
 	Write-Host "Starting $_"
     Start-Job -Name $_ -ScriptBlock {
         param ($sample, $jobName, $jobVersion)
-		Get-GRIDDataset -nFiles 1 -JobName $jobName -JobVersion $jobVersion -JobSourceDatasetName $sample -Location Local        
+		Get-GRIDDataset -JobName $jobName -JobVersion $jobVersion -JobSourceDatasetName $sample
+		#-Location Local -nFiles 1 
     } -ArgumentList $_, $jobName, $jobVersion}
 $jobsdone = $job | Wait-Job | Receive-Job
