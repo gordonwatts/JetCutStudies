@@ -66,6 +66,7 @@
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_EMF" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_time" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_BDT" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_BDT13Lxy" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_BDT_rank" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="bool[]" Name="CalibJet_isCRHLTJet" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="int[]" Name="CalibJet_indexLLP" NotAPointer="false" />
