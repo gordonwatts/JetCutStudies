@@ -45,6 +45,7 @@
         <VariableInfo NETName="backgroundFlags" TTreeName="backgroundFlags" />
         <VariableInfo NETName="lumiBlock" TTreeName="lumiBlock" />
         <VariableInfo NETName="eventWeight" TTreeName="eventWeight" />
+        <VariableInfo NETName="pileupEventWeight" TTreeName="pileupEventWeight" />
         <VariableInfo NETName="actualIntPerCrossing" TTreeName="actualIntPerCrossing" />
         <VariableInfo NETName="averageIntPerCrossing" TTreeName="averageIntPerCrossing" />
         <VariableInfo NETName="event_HT" TTreeName="event_HT" />

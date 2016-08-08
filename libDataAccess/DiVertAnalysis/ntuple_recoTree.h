@@ -62,6 +62,7 @@ public :
    TUIntProxy                               backgroundFlags;
    TIntProxy                                lumiBlock;
    TDoubleProxy                             eventWeight;
+   TDoubleProxy                             pileupEventWeight;
    TIntProxy                                actualIntPerCrossing;
    TIntProxy                                averageIntPerCrossing;
    TDoubleProxy                             event_HT;
@@ -341,6 +342,7 @@ public :
       backgroundFlags                         (&fDirector,"backgroundFlags"),
       lumiBlock                               (&fDirector,"lumiBlock"),
       eventWeight                             (&fDirector,"eventWeight"),
+      pileupEventWeight                       (&fDirector,"pileupEventWeight"),
       actualIntPerCrossing                    (&fDirector,"actualIntPerCrossing"),
       averageIntPerCrossing                   (&fDirector,"averageIntPerCrossing"),
       event_HT                                (&fDirector,"event_HT"),

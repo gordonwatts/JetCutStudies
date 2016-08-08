@@ -154,6 +154,13 @@ namespace libDataAccess
             : 0.1999;
 
         /// <summary>
+        /// Plot the pileup event weight
+        /// </summary>
+        public static IPlotSpec<double> PileUpWeightRaw
+            = MakePlotterSpec<double>(100, 0.0, 20.0, j => j, "pileupEventWeight{0}", "Pileup Event Weight {0}; Pileup Event Weight");
+        public static IPlotSpec<recoTree> PileUpWeight;
+
+        /// <summary>
         /// A pT plot of tracks associated with jets
         /// </summary>
         public static IPlotSpec<JetInfoExtra> TrackPtExtraPlot;
@@ -391,6 +398,8 @@ namespace libDataAccess
             NTrackExtraPlot = NTrackPlot.FromType<IEnumerable<recoTreeTracks>, JetInfoExtra>(jinfo => jinfo.Tracks);
             TrackPtExtraPlot = TrackPtPlot.FromManyOfType((JetInfoExtra j) => j.Tracks);
             JetExtraCalRVsPtPlot = JetCalRVsPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
+
+            PileUpWeight = PileUpWeightRaw.FromType<double, recoTree>(evt => evt.pileupEventWeight);
         }
 
     }

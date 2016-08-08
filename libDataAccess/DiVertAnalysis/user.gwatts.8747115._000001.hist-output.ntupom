@@ -34,6 +34,7 @@
         <IClassItem xsi:type="ItemSimpleType" ItemType="bool" Name="isCompleteEvent" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="int" Name="jetsPassingCalREmul" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dPhiLeadingCalibJets" NotAPointer="false" />
+        <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="pileupEventWeight" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dRLeadingCalibJets" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dPhiLeadBDTCalibJets" NotAPointer="false" />
         <IClassItem xsi:type="ItemSimpleType" ItemType="double" Name="dRLeadBDTCalibJets" NotAPointer="false" />
