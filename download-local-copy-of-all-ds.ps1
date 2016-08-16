@@ -7,8 +7,9 @@ $jobVersion = 8
 
 # Get teh list of samples from the csv file
 
-$samples = Get-Content ".\libDataAccess\Sample Meta Data.csv"  | % {$_.Split(",")[0]} | Select-Object -Skip 1
+. .\script-utils.ps1
 
+$samples = findDS("limit")
 
 $job = $samples | % {
     while (@(Get-Job -State Running).Count -ge 4) {
