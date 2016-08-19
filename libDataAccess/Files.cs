@@ -1,6 +1,5 @@
 ﻿using DiVertAnalysis;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -40,6 +39,11 @@ namespace libDataAccess
         public static int JobVersionNumber = 6;
 
         /// <summary>
+        /// Get/Set the job name we are fetching
+        /// </summary>
+        public static string JobName = "DiVertAnalysis";
+
+        /// <summary>
         /// Return a dataset list given the name of the dataset.
         /// </summary>
         /// <param name="dsname"></param>
@@ -55,7 +59,7 @@ namespace libDataAccess
             }
 
             try {
-                return GRIDJobs.FindJobFiles("DiVertAnalysis",
+                return GRIDJobs.FindJobFiles(JobName,
                     JobVersionNumber,
                     dsname,
                     nFiles: NFiles,
