@@ -9,7 +9,7 @@ $jobVersion = 2
 
 . .\script-utils.ps1
 
-$samples = findDS("limit")
+$samples = findDS("extraptest")
 
 $job = $samples | % {
     while (@(Get-Job -State Running).Count -ge 4) {
@@ -24,6 +24,7 @@ $job = $samples | % {
 			param ($sample, $jobName, $jobVersion)
 			Get-GRIDDataset -JobName $jobName -JobVersion $jobVersion -JobSourceDatasetName $sample
 			#-Location Local -nFiles 1 
-		}
-    } -ArgumentList $_, $jobName, $jobVersion}
+		} -ArgumentList $_, $jobName, $jobVersion
+	}
+}
 $jobsdone = $job | Wait-Job | Receive-Job
