@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,34 @@ using static JenkinsAccess.Data.JenkinsDomain;
 
 namespace JenkinsAccess.EndPoint
 {
+    static class JenkinsServerUtils
+    {
+        /// <summary>
+        /// Finds the last element of a sequence that satisfies test, adn then returns that and all other elements
+        /// to the end of the sequence. WARNING: this implementation caches everything since last test!
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="test"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> SkipToLast<T> (this IEnumerable<T> source, Func<T, bool> test)
+        {
+            var list = new List<T>();
+            foreach (var item in source)
+            {
+                if (test(item))
+                {
+                    list.Clear();
+                }
+                list.Add(item);
+            }
+
+            foreach (var item in list)
+            {
+                yield return item;
+            }
+        }
+    }
     class JenkinsServer
     {
         /// <summary>
@@ -34,9 +63,9 @@ namespace JenkinsAccess.EndPoint
             _artifactURI = url;
             var segments = _artifactURI.Segments;
 
-            // Get the job and artifact.
-            var artifactInfo = segments.SkipWhile(s => s != "job/").Skip(1).Select(s => s.Trim('/')).ToArray();
-            if (artifactInfo.Length != 4 && artifactInfo[2] == "artifact")
+            // Get the job and artifact. The URL can be funny because of Jenkins Folders
+            var artifactInfo = segments.SkipToLast(s => s == "job/").Skip(1).Select(s => s.Trim('/')).ToArray();
+            if (artifactInfo.Length != 4 || artifactInfo[2] != "artifact")
             {
                 throw new ArgumentException($"The Jenkins artifact URI '{url}' is not in a format I recognize (.../jobname/build/artifact/artifact-name)");
             }
@@ -111,7 +140,18 @@ namespace JenkinsAccess.EndPoint
             var jobURI = GetJobURIStem();
             var artifactUri = new Uri($"{jobURI.OriginalString}/{artifactInfo.BuildNumber}/artifact/{artifactInfo.ArtifactName}");
 
-            await _JenkinsEndPoint.Value.DownloadFile(artifactUri, destination);
+            try
+            {
+                await _JenkinsEndPoint.Value.DownloadFile(artifactUri, destination);
+            } catch
+            {
+                destination.Refresh();
+                if (destination.Exists)
+                {
+                    destination.Delete();
+                }
+                throw;
+            }
         }
     }
 }
