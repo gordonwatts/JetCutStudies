@@ -3,17 +3,17 @@
 #
 
 # File we are looking at...
-f_generic = jenkins ("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-GenericPlots/lastSuccessfulBuild/artifact/GenericPerformancePlots.root");
-f_training = jenkins ("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-JetMVATraining/lastSuccessfulBuild/artifact/JetMVATraining.root");
-f_llp = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR%20LLPInvestigations/lastSuccessfulBuild/artifact/LLPInvestigations.root");
-f_mvaTest = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-TrainingResults/lastSuccessfulBuild/artifact/TrainingTestResults.root");
+//f_generic = jenkins ("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-GenericPlots/lastSuccessfulBuild/artifact/GenericPerformancePlots.root");
+//f_training = jenkins ("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-JetMVATraining/lastSuccessfulBuild/artifact/JetMVATraining.root");
+//f_llp = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR%20LLPInvestigations/lastSuccessfulBuild/artifact/LLPInvestigations.root");
+f_mvaTest = jenkins("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/TrainingResults/lastSuccessfulBuild/artifact/TrainingTestResults.root");
 //f = file ("..\GenericPerformancePlots\bin\x86\Debug\GenericPerformancePlots.root");
 //f_llp = file ("..\LLPInvestigations\bin\x86\Debug\LLPInvestigations.root");
 
 # The samples that are hidden in the file
 samples = ["200-25", "400-100", "600-150"];
 
-trainingSamples = ["600pi150lt9m", "400pi100lt9m", "200pi25lt5m"];
+trainingSamples = ["600pi150lt9mW", "400pi100lt9mW", "200pi25lt5m"];
 
 signalSamples = [
 	"100pi25lt5m", "125pi25lt5m", "125pi25lt9m", "125pi40lt9m", "125pi55lt5m", "125pi55lt9m",
@@ -37,8 +37,10 @@ widthBugNonBug = [
 ];
 
 Legend("600pi150lt9m" => {Color => 1, Title => "600/150 - 9m"});
+Legend("600pi150lt9mW" => {Color => 1, Title => "600/150 - 9m"});
 Legend("200pi25lt5m" => {Color => 2, Title => "200/25 - 5m"});
 Legend("400pi100lt9m" => {Color => 3, Title => "400/100 - 9m"});
+Legend("400pi100lt9mW" => {Color => 3, Title => "400/100 - 9m"});
 
 Legend("200pi25lt5mw" => {Color => 1, Title => "200/25 - 5m (Width Bug)"});
 Legend("200pi25lt5m" => {Color => 2, Title => "200/25 - 5m"});
