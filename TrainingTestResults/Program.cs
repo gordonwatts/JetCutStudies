@@ -55,6 +55,7 @@ namespace TrainingTestResults
                 new MVAInfo() { Name = "13VariableLxy", Artifact = new Uri("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVATraining/38/artifact/Jet.MVATraining-Jet.CalRat.NTrac.SumPtOfAllTrac.MaxTrack.JetWid.JetDRTo2GeVTra.EnergyDensi.HadronicLayer1Fracti.JetL.JetLo.FirstClusterRadi.ShowerCent_BDT.weights.xml") },
                 new MVAInfo() { Name = "13VariableLxyNoDR", Artifact = new Uri("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVATraining/39/artifact/Jet.MVATraining-Jet.CalRat.NTrac.SumPtOfAllTrac.MaxTrack.JetWid.EnergyDensi.HadronicLayer1Fracti.JetL.JetLo.FirstClusterRadi.ShowerCent_BDT.weights.xml") },
                 new MVAInfo() { Name = "13VariableLxyNoDRNTrack", Artifact = new Uri("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVATraining/40/artifact/Jet.MVATraining-Jet.CalRat.SumPtOfAllTrac.MaxTrack.JetWid.EnergyDensi.HadronicLayer1Fracti.JetL.JetLo.FirstClusterRadi.ShowerCent_BDT.weights.xml") },
+                new MVAInfo() { Name = "13VariableLxyNoNTrack", Artifact = new Uri("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVATraining/41/artifact/Jet.MVATraining-Jet.CalRat.NTrac.SumPtOfAllTrac.MaxTrack.JetWid.EnergyDensi.HadronicLayer1Fracti.JetL.JetLo.FirstClusterRadi.ShowerCent_BDT.weights.xml") },
             };
 
             // Fill an output file with the info for each MVA
