@@ -2,15 +2,15 @@
 # Submit all the samples to run
 #
 
-$jobName = "DiVertAnalysisNP"
-$jobVersion = 2
+$jobName = "DiVertAnalysis"
+$jobVersion = 9
 
 # Rucio command used to search for some of these:
 # -bash-4.1$ rucio list-dids mc15_13TeV:*AOD*e5102* | grep CONTAINER
 
 . .\script-utils.ps1
 
-$samples = findDS("extraptest")
+$samples = findDS("mc15c+signal")
 
 # Submit each one for processing
 foreach ($s in $samples) {
