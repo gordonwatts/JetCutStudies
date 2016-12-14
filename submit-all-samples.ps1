@@ -1,24 +1,27 @@
 #
-# Submit all the samples to run
+# Submit a list of DataSet samples to run
 #
+[CmdletBinding()]
+Param(
+  [Parameter(Mandatory=$True, HelpMessage="The samples to submit against", Position=1, ValueFromPipeline=$True)]
+   [string]$samples
+)
 
-$jobName = "DiVertAnalysisNP"
-$jobVersion = 2
+#
+# Now, process everything
+#
+process {
 
-# Rucio command used to search for some of these:
-# -bash-4.1$ rucio list-dids mc15_13TeV:*AOD*e5102* | grep CONTAINER
+	$jobName = "DiVertAnalysisNP"
+	$jobVersion = 2
 
-. .\script-utils.ps1
-
-$samples = findDS("extraptest")
-
-# Submit each one for processing
-foreach ($s in $samples) {
-	$jinfo = Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion $s
-	$h = @{DataSet = $jinfo.Name
-			Task = $jinfo.ID
-			Status = Get-GRIDJobInfo -JobStatus $jinfo.ID
-			}
-	$o = New-Object PSObject -Property $h
-	Write-Output $o
+	# Submit each one for processing
+	$samples `
+		| Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion `
+		| % {@{Dataset = $_.Name
+				Task = $_.ID
+				Status = Get-GridJobInfo -JobStatus $_.ID
+				}} `
+		| % { New-Object PSObject -Property $_ }
 }
+
