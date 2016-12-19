@@ -13,7 +13,7 @@ Param(
 begin {
 	# What we will be working with
 	$jobName = "DiVertAnalysis"
-	$jobVersion = 11
+	$jobVersion = 12
 
 	# build extra download flags
 	$flags = ""
