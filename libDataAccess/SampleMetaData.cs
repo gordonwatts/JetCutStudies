@@ -86,13 +86,15 @@ namespace libDataAccess
         /// The data in the CSV file was pulled from AMI, unless otherwise noted (see sheet).
         /// </remarks>
         /// <param name="sampleName">The full dataset name or the nick name of the sample we are looking for.</param>
-        public static SampleMetaData LoadFromCSV(string sampleName)
+        /// <param name="tagnames">List of tags the samples must also have</param>
+        public static SampleMetaData LoadFromCSV(string sampleName, params string[] tagnames)
         {
             LoadMetaData();
 
             // Find the sample. If we can't, fail pretty badly.
             return _samples
                 .Where(sam => sam.Name == sampleName || sam.NickName == sampleName)
+                .Where(sample => tagnames.All(tn => sample.HasTag(tn)))
                 .FirstOrDefault()
                 .IfNull(_ => { throw new ArgumentException($"Unable to find sample meta data for sample '{sampleName}' in sample metadata file."); });
         }
@@ -126,15 +128,16 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Return any samples with a particular tag, including the null list.
+        /// Return any samples with a particular set of tags, including the null list if no matches are found.
+        /// All samples returned will have all tags given.
         /// </summary>
-        /// <param name="tagname"></param>
+        /// <param name="tagnames">List of all tag names that we are going to require</param>
         /// <returns></returns>
-        public static IEnumerable<SampleMetaData> AllSamplesWithTag(string tagname)
+        public static IEnumerable<SampleMetaData> AllSamplesWithTag(params string[] tagnames)
         {
             LoadMetaData();
             return _samples
-                .Where(s => s.HasTag(tagname));
+                .Where(s => tagnames.All(tn => s.HasTag(tn)));
         }
     }
 }

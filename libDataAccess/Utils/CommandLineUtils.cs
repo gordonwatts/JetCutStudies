@@ -84,7 +84,7 @@ namespace libDataAccess.Utils
             switch (RequstedBackgroundSample)
             {
                 case BackgroundSampleEnum.All:
-                    return SamplesAsNamedSequence(SampleMetaData.AllSamplesWithTag("background"));
+                    return SamplesAsNamedSequence(SampleMetaData.AllSamplesWithTag("mc15c", "background"));
 
                 case BackgroundSampleEnum.JZ2:
                     return new Tuple<string, IQueryable<MetaData>>[] {
