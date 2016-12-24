@@ -36,7 +36,7 @@ namespace libDataAccess
         /// <summary>
         /// Get/Set the job version number
         /// </summary>
-        public static int JobVersionNumber = 6;
+        public static int JobVersionNumber = 13;
 
         /// <summary>
         /// Get/Set the job name we are fetching
