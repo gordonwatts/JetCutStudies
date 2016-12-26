@@ -13,7 +13,7 @@ Param(
 begin {
 	# What we will be working with
 	$jobName = "DiVertAnalysis"
-	$jobVersion = 12
+	$jobVersion = 13
 
 	# build extra download flags
 	$flags = ""
@@ -28,7 +28,6 @@ begin {
 process {
 	# Make sure we aren't trying to do too many things at once.
     while (@(Get-Job -State Running).Count -ge 4) {
-		Get-Job -State Running
         Start-Sleep -Seconds 2
     }
 	
