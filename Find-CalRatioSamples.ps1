@@ -7,8 +7,15 @@ Param(
    [string]$tags
 )
 
-# Load in tools
-. .\script-utils.ps1
+# Helper function
+function findDS ($tagName)
+{
+	$csvFile = "$PSScriptRoot\libDataAccess\Sample Meta Data.csv"
+	$fullSampleList = Import-Csv $csvFile
+	$l = $fullSampleList | ? {$_.Tags.Contains($tagName)}
+	$samples = $l | % {$_."Sample Name"}
+	return $samples
+}
 
 # Get the samples
 $samples = findDS($tags)
