@@ -33,12 +33,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AtlasSSH, Version=2.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.6.5\lib\net451\AtlasSSH.dll</HintPath>
+    <Reference Include="AtlasSSH, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.3.0.1\lib\net451\AtlasSSH.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AtlasWorkFlows, Version=2.6.4.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AtlasSSH.2.6.5\lib\net451\AtlasWorkFlows.dll</HintPath>
+    <Reference Include="AtlasWorkFlows, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.3.0.1\lib\net451\AtlasWorkFlows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
@@ -137,8 +137,8 @@
       <HintPath>..\packages\NVelocity.1.0.3\lib\NVelocity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Polly, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Polly.4.3.0\lib\net45\Polly.dll</HintPath>
+    <Reference Include="Polly, Version=5.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.0.3\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=640ff7d91e1d07da, processorArchitecture=MSIL">

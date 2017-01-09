@@ -43,6 +43,18 @@ namespace libDataAccess
         /// </summary>
         public static string JobName = "DiVertAnalysis";
 
+
+        [Serializable]
+        public class DataSetHasNoFilesException : Exception
+        {
+            public DataSetHasNoFilesException() { }
+            public DataSetHasNoFilesException(string message) : base(message) { }
+            public DataSetHasNoFilesException(string message, Exception inner) : base(message, inner) { }
+            protected DataSetHasNoFilesException(
+              System.Runtime.Serialization.SerializationInfo info,
+              System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+        }
+
         /// <summary>
         /// Return a dataset list given the name of the dataset.
         /// </summary>
@@ -95,6 +107,10 @@ namespace libDataAccess
         {
             // Build the query tree
             var backgroundFiles = GetFileList(sample);
+            if (backgroundFiles.Length == 0)
+            {
+                throw new DataSetHasNoFilesException($"Dataset {sample} has no files - remove it from the input list!");
+            }
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
             backgroundEvents.IgnoreQueryCache = IgnoreQueires;

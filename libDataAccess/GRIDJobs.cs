@@ -36,14 +36,17 @@ namespace libDataAccess
             // Get the dataset, and then see if we can't access it. If we have been instructed,
             // try to make a local copy if it isn't here already.
             var dataset = containers.First();
-
-            Func<string[], string[]> filter = nFiles == 0 ? (Func<string[], string[]>)null : flist => flist.OrderBy(f => f).Take(nFiles).ToArray();
+            var uris = DatasetManager.ListOfFilesInDataset(dataset, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
+            if (nFiles != 0)
+            {
+                uris = uris.OrderBy(u => u.Segments.Last()).Take(nFiles).ToArray();
+            }
 
             Uri[] result = null;
             bool tryLocalIfFail = intelligentLocal && nFiles <= 2;
             try
             {
-                result = GRIDDatasetLocator.FetchDatasetUris(dataset, statusUpdate, fileFilter: filter, timeoutDownloadSecs: timeoutDownloadSecs);
+                result = DatasetManager.MakeFilesLocal(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             }
             catch (Exception e) when (e.Message.Contains("generate"))
             {
@@ -55,7 +58,7 @@ namespace libDataAccess
                 {
                     statusUpdate($"  -> Trying to fetch {dataset} locally ({nFiles} files)");
                 }
-                result = GRIDDatasetLocator.FetchDatasetUrisAtLocation("Local", dataset, statusUpdate, fileFilter: filter, timeoutDownloadSecs: timeoutDownloadSecs);
+                DatasetManager.CopyFilesTo(DatasetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
             }
 
             if (result == null)
