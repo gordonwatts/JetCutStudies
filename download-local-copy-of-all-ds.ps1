@@ -7,7 +7,9 @@ Param(
   [Parameter(Mandatory=$True, HelpMessage="The samples to submit against", Position=1, ValueFromPipeline=$True)]
   [string]$samples,
   [Parameter(HelpMessage="Get a single file, locally")]
-  [Switch]$DownloadFileLocally
+  [Switch]$DownloadFileLocally,
+  [Parameter(HelpMessage="Get all files to CERN")]
+  [Switch]$DownloadToCERN
 )
 
 begin {
@@ -19,6 +21,9 @@ begin {
 	$flags = ""
 	if ($DownloadFileLocally) {
 		$flags = "-nFiles 1 -Location Local"
+	}
+	if ($DownloadToCERN) {
+		$flags = "-Location CERNLLP-OffSite-linux"
 	}
 	
 	# Hold onto jobs that have been started
