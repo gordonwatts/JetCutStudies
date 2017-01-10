@@ -113,7 +113,7 @@ namespace JetMVATraining
             // Get the background and signal data trees for use (and training.
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options);
 
-            var signalSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "training")
+            var signalSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
                 .ToArray();
 
@@ -129,7 +129,7 @@ namespace JetMVATraining
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
-            var signalTestSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal")
+            var signalTestSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "hss")
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
 
             // The file we will use to dump everything about this training.
