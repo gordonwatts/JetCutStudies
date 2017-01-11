@@ -48,7 +48,7 @@ namespace libDataAccess
             {
                 result = DatasetManager.MakeFilesLocal(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             }
-            catch (Exception e) when (e.Message.Contains("generate"))
+            catch (DatasetManager.NoLocalPlaceToCopyToException) 
             {
             }
 
@@ -58,7 +58,7 @@ namespace libDataAccess
                 {
                     statusUpdate($"  -> Trying to fetch {dataset} locally ({nFiles} files)");
                 }
-                DatasetManager.CopyFilesTo(DatasetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
+                result = DatasetManager.CopyFilesTo(DatasetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
             }
 
             if (result == null)

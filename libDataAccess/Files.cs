@@ -161,14 +161,9 @@ namespace libDataAccess
         /// <returns></returns>
         public static IQueryable<MetaData> GetAllJetSamples()
         {
-            return
-                GetJZ(2)
-                .Concat(GetJZ(3))
-                .Concat(GetJZ(4))
-                .Concat(GetJZ(5))
-                .Concat(GetJZ(6))
-                .Concat(GetJZ(7))
-                ;
+            return SampleMetaData.AllSamplesWithTag("mc15c", "background", "jz")
+                .Select(smd => GetSampleAsMetaData(smd.Name))
+                .Aggregate((IQueryable<MetaData>)null, (s, add) => s == null ? add : s.Concat(add));
         }
 
         /// <summary>
