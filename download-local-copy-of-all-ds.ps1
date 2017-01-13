@@ -9,7 +9,9 @@ Param(
   [Parameter(HelpMessage="Get a single file, locally")]
   [Switch]$DownloadFileLocally,
   [Parameter(HelpMessage="Get all files to CERN")]
-  [Switch]$DownloadToCERN
+  [Switch]$DownloadToCERN,
+  [Parameter(HelpMessage="Get all files to UW")]
+  [Switch]$DownloadToUW
 )
 
 begin {
@@ -24,6 +26,9 @@ begin {
 	}
 	if ($DownloadToCERN) {
 		$flags = "-Location CERNLLP-OffSite-linux"
+	}
+	if ($DownloadToUW) {
+		$flags = "-Location UWTeV-linux"
 	}
 	
 	# Hold onto jobs that have been started
