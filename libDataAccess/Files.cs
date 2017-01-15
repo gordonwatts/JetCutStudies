@@ -1,5 +1,6 @@
 ﻿using DiVertAnalysis;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -128,6 +129,22 @@ namespace libDataAccess
         public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true)
         {
             return GetSampleAsMetaData(s.Name, weightByCrossSection);
+        }
+
+        /// <summary>
+        /// Given all the samples, return a single queriable. We assmue that all samples have exactly
+        /// the same format, so we can combine them w/out fear.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> source)
+        {
+            // Get all the files into a single large sequence.
+            var files = source
+                .SelectMany(s => GetFileList(s.Name));
+
+            var events = QueryablerecoTree.CreateQueriable(files.ToArray());
+            return GenerateStream(events, 1.0);
         }
 
         /// <summary>
