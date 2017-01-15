@@ -40,6 +40,17 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
+        /// Return events that are beam halo events (as far as we can tell).
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQueryable<MetaData> AsBeamHaloStream(this IQueryable<MetaData> source)
+        {
+            return source
+                .Where(s => s.Data.event_passCalRatio_cleanLLP_TAU60_noiso && !s.Data.event_passCalRatio_cleanLLP_TAU60);
+        }
+
+        /// <summary>
         /// Get a good jet stream that is the high pT jet.
         /// </summary>
         /// <param name="source"></param>

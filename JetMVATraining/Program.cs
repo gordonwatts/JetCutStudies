@@ -110,9 +110,7 @@ namespace JetMVATraining
             // Parse command line arguments
             var options = CommandLineUtils.ParseOptions<Options>(args);
 
-            // Get the background and signal data trees for use (and training.
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options);
-
+            // Get the signal samples to use for testing and training.
             var signalSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
                 .ToArray();
@@ -131,6 +129,22 @@ namespace JetMVATraining
 
             var signalTestSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "hss")
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
+
+            // Get the background samples to use for testing and training
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options);
+
+            // Get the beam-halo samples to use for testing and training
+            var data15 = SampleMetaData.AllSamplesWithTag("data15")
+                .Take(options.UseFullDataset ? 10000 : 1)
+                .SamplesAsSingleQueriable()
+                .AsBeamHaloStream()
+                .AsGoodJetStream();
+
+            var data16 = SampleMetaData.AllSamplesWithTag("data16")
+                .Take(options.UseFullDataset ? 10000 : 1)
+                .SamplesAsSingleQueriable()
+                .AsBeamHaloStream()
+                .AsGoodJetStream();
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
@@ -281,10 +295,18 @@ namespace JetMVATraining
                         var leff = GenerateEfficiencyPlots(cutDir.mkdir(s.Item1), c.Cut, c.CutValue, sEvents);
                         FutureWriteLine(() => $"The signal efficiency for {c.Title} {s.Item1} {leff.Value}");
                     }
+
+                    // Signal in the calorimeter only
                     var effTest = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterNonTrainingEvents());
                     var effTrain = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterTrainingEvents());
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} TestingSignalEvents {effTest.Value}");
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents {effTrain.Value}");
+
+                    // And beam halo
+                    var effData15 = GenerateEfficiencyPlots(cutDir.mkdir("data15"), c.Cut, c.CutValue, data15);
+                    var effData16 = GenerateEfficiencyPlots(cutDir.mkdir("data16"), c.Cut, c.CutValue, data16);
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} data15 {effData15.Value}");
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} data16 {effData16.Value}");
                 }
 
                 // Done. Dump all output.
