@@ -6,9 +6,13 @@
 # Example command script to generate a csv file:
 # .\summarize-optimization-runs.ps1 | %{ New-Object psobject -Property $_ } | Export-Csv -NoTypeInformation -Path test.csv
 
-# The optimization jobs to scan over.
-$firstJob = 516
-$lastJob = 563
+[CmdletBinding()]
+Param(
+	[Parameter(Mandatory=$true, HelpMessage="The job number to start scanning")]
+	[int] $FirstJob,
+	[Parameter(Mandatory=$true, HelpMessage="The job number to stop scanning with")]
+	[int] $LastJob
+)
 
 # Some helper functions
 function Clean-PropertyValue
@@ -19,8 +23,8 @@ function Clean-PropertyValue
 # Grab the results from each job, cache them locally
 
 $results = @()
-foreach ($jobId in $firstJob..$lastJob) {
-	$jobInfo = Find-JenkinsJob -JobUri http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-JetMVATraining/ -JobId $jobId
+foreach ($jobId in $FirstJob..$LastJob) {
+	$jobInfo = Find-JenkinsJob -JobUri http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVATraining/ -JobId $jobId
 	if ($jobInfo.JobState -eq "Success") {
 		$jobResults = @{ JobId = $jobId }
 		$jobInfo.Parameters.Keys | % {$jobResults[$_] = Clean-PropertyValue $jobInfo.Parameters[$_]}
