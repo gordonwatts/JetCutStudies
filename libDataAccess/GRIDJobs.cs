@@ -43,7 +43,7 @@ namespace libDataAccess
             }
 
             Uri[] result = null;
-            bool tryLocalIfFail = intelligentLocal && nFiles <= 2;
+            bool tryLocalIfFail = intelligentLocal && nFiles <= 2 && nFiles != 0;
             try
             {
                 result = DatasetManager.MakeFilesLocal(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
