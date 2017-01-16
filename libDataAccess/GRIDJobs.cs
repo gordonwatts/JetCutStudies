@@ -52,7 +52,8 @@ namespace libDataAccess
             {
                 if (statusUpdate != null)
                 {
-                    statusUpdate($"  -> Unable to MakeFilesLocal for {dataset} (and {nFiles}): No local place to copy files: {e.Message}");
+                    var naming = nFiles == 0 ? "all" : nFiles.ToString();
+                    statusUpdate($"  -> Unable to MakeFilesLocal for {dataset} (for {naming} files): No local place to copy files: {e.Message}");
                 }
             }
 
