@@ -48,15 +48,21 @@ namespace libDataAccess
             {
                 result = DatasetManager.MakeFilesLocal(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             }
-            catch (DatasetManager.NoLocalPlaceToCopyToException) 
+            catch (DatasetManager.NoLocalPlaceToCopyToException e) 
             {
+                if (statusUpdate != null)
+                {
+                    statusUpdate($"  -> Unable to MakeFilesLocal for {dataset} (and {nFiles}): No local place to copy files: {e.Message}");
+                }
             }
 
             if (result == null && tryLocalIfFail)
             {
                 if (statusUpdate != null)
                 {
-                    statusUpdate($"  -> Trying to fetch {dataset} locally ({nFiles} files)");
+                    statusUpdate($"  -> Unable to make {dataset} availible in any local repository.");
+                    var naming = nFiles == 0 ? "all" : nFiles.ToString();
+                    statusUpdate($"  -> Trying to fetch {dataset} to Local location ({naming} files)");
                 }
                 result = DatasetManager.CopyFilesTo(DatasetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
             }
