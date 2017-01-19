@@ -43,16 +43,28 @@ namespace GenericPerformancePlots
             Console.WriteLine("Finding the files");
 
             // All the background samples have to be done first.
-            var backgroundSamples = SampleMetaData.AllSamplesWithTag("background")
+            var backgroundSamples = SampleMetaData.AllSamplesWithTag("mc15c", "background")
                 .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
                 .ToArray();
 
             var backgroundEvents = Files.GetAllJetSamples().Select(e => e.Data);
 
             // All the signal we are going to make plots of.
-            var signalSamples = SampleMetaData.AllSamplesWithTag("signal")
+            var signalSamples = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "hss")
                 .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
                 .ToArray();
+
+            // Get the beam-halo samples to use for testing and training
+            var data15 = SampleMetaData.AllSamplesWithTag("data15")
+                .Take(opt.UseFullDataset ? 10000 : 1)
+                .SamplesAsSingleQueriable()
+                .AsBeamHaloStream();
+
+            //var data16 = SampleMetaData.AllSamplesWithTag("data16")
+            //    .Take(options.UseFullDataset ? 10000 : 1)
+            //    .SamplesAsSingleQueriable()
+            //    .AsBeamHaloStream()
+            //    .AsGoodJetStream();
 
             // Output file
             Console.WriteLine("Opening output file");
@@ -67,14 +79,17 @@ namespace GenericPerformancePlots
                         .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
                 }
 
+                BuildSuperJetInfo(data15.Select(d => d.Data))
+                    .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
+
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots.
-                Console.WriteLine("Making the signal/background plots.");
-                foreach (var sample in signalSamples)
-                {
-                    var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), outputHistograms.mkdir(sample.Item2));
-                    DumpResults($"Sample {sample.Item2}:", status);
-                }
+                //Console.WriteLine("Making the signal/background plots.");
+                //foreach (var sample in signalSamples)
+                //{
+                //    var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), outputHistograms.mkdir(sample.Item2));
+                //    DumpResults($"Sample {sample.Item2}:", status);
+                //}
 
                 // Write out the histograms
                 outputHistograms.Write();
