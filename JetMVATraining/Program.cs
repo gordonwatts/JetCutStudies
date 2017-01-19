@@ -297,8 +297,8 @@ namespace JetMVATraining
                     }
 
                     // Signal in the calorimeter only
-                    var effTest = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterNonTrainingEvents());
-                    var effTrain = GenerateEfficiencyPlots(cutDir.mkdir("AllSignal"), c.Cut, c.CutValue, signalInCalOnly.FilterTrainingEvents());
+                    var effTest = GenerateEfficiencyPlots(cutDir.mkdir("AllSignalNonTraining"), c.Cut, c.CutValue, signalInCalOnly.FilterNonTrainingEvents());
+                    var effTrain = GenerateEfficiencyPlots(cutDir.mkdir("AllSignalTraining"), c.Cut, c.CutValue, signalInCalOnly.FilterTrainingEvents());
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} TestingSignalEvents {effTest.Value}");
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents {effTrain.Value}");
 
