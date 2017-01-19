@@ -306,7 +306,7 @@ namespace JetMVATraining
                     var effData15 = GenerateEfficiencyPlots(cutDir.mkdir("data15"), c.Cut, c.CutValue, data15);
                     //var effData16 = GenerateEfficiencyPlots(cutDir.mkdir("data16"), c.Cut, c.CutValue, data16);
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} data15 {effData15.Value}");
-                    FutureWriteLine(() => $"The signal efficiency for {c.Title} data16 {effData16.Value}");
+                    //FutureWriteLine(() => $"The signal efficiency for {c.Title} data16 {effData16.Value}");
                 }
 
                 // Done. Dump all output.
