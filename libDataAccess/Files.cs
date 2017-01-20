@@ -160,6 +160,8 @@ namespace libDataAccess
                 .SelectMany(s => GetFileList(s.Name));
 
             var events = QueryablerecoTree.CreateQueriable(files.ToArray());
+            events.IgnoreQueryCache = IgnoreQueires;
+            events.CleanupQuery = false;
             return GenerateStream(events, 1.0);
         }
 

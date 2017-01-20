@@ -40,14 +40,32 @@ namespace libDataAccess.Utils
         }
 
         /// <summary>
+        /// Which part of the data is this?
+        /// </summary>
+        public enum DataEpoc
+        {
+            data15,
+            data16
+        }
+
+        /// <summary>
         /// Return events that are beam halo events (as far as we can tell).
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> AsBeamHaloStream(this IQueryable<MetaData> source)
+        public static IQueryable<MetaData> AsBeamHaloStream(this IQueryable<MetaData> source, DataEpoc epoc)
         {
-            return source
-                .Where(s => s.Data.event_passCalRatio_cleanLLP_TAU60_noiso && !s.Data.event_passCalRatio_cleanLLP_TAU60);
+            switch (epoc)
+            {
+                case DataEpoc.data15:
+                    return source
+                        .Where(s => s.Data.event_passCalRatio_TAU60_noiso && !s.Data.event_passCalRatio_TAU60);
+                case DataEpoc.data16:
+                    return source
+                        .Where(s => s.Data.event_passCalRatio_cleanLLP_TAU60_noiso && !s.Data.event_passCalRatio_cleanLLP_TAU60);
+                default:
+                    throw new InvalidOperationException($"Unknown DataEpoc {epoc} - no idea how to do beam halo");
+            }
         }
 
         /// <summary>

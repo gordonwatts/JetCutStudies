@@ -137,7 +137,7 @@ namespace JetMVATraining
             var data15 = SampleMetaData.AllSamplesWithTag("data15")
                 .Take(options.UseFullDataset ? 10000 : 1)
                 .SamplesAsSingleQueriable()
-                .AsBeamHaloStream()
+                .AsBeamHaloStream(DataEpoc.data15)
                 .AsGoodJetStream();
 
             //var data16 = SampleMetaData.AllSamplesWithTag("data16")
@@ -145,6 +145,7 @@ namespace JetMVATraining
             //    .SamplesAsSingleQueriable()
             //    .AsBeamHaloStream()
             //    .AsGoodJetStream();
+                //.AsBeamHaloStream(DataEpoc.data16)
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))

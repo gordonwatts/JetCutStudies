@@ -58,7 +58,7 @@ namespace GenericPerformancePlots
             var data15 = SampleMetaData.AllSamplesWithTag("data15")
                 .Take(opt.UseFullDataset ? 10000 : 1)
                 .SamplesAsSingleQueriable()
-                .AsBeamHaloStream();
+                .AsBeamHaloStream(SampleUtils.DataEpoc.data15);
 
             //var data16 = SampleMetaData.AllSamplesWithTag("data16")
             //    .Take(options.UseFullDataset ? 10000 : 1)
@@ -84,12 +84,12 @@ namespace GenericPerformancePlots
 
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots.
-                //Console.WriteLine("Making the signal/background plots.");
-                //foreach (var sample in signalSamples)
-                //{
-                //    var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), outputHistograms.mkdir(sample.Item2));
-                //    DumpResults($"Sample {sample.Item2}:", status);
-                //}
+                Console.WriteLine("Making the signal/background plots.");
+                foreach (var sample in signalSamples)
+                {
+                    var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), outputHistograms.mkdir(sample.Item2));
+                    DumpResults($"Sample {sample.Item2}:", status);
+                }
 
                 // Write out the histograms
                 outputHistograms.Write();
