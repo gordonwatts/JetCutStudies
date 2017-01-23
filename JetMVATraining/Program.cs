@@ -140,12 +140,11 @@ namespace JetMVATraining
                 .AsBeamHaloStream(DataEpoc.data15)
                 .AsGoodJetStream();
 
-            //var data16 = SampleMetaData.AllSamplesWithTag("data16")
-            //    .Take(options.UseFullDataset ? 10000 : 1)
-            //    .SamplesAsSingleQueriable()
-            //    .AsBeamHaloStream()
-            //    .AsGoodJetStream();
-                //.AsBeamHaloStream(DataEpoc.data16)
+            var data16 = SampleMetaData.AllSamplesWithTag("data16")
+                .Take(options.UseFullDataset ? 10000 : 1)
+                .SamplesAsSingleQueriable()
+                .AsBeamHaloStream(DataEpoc.data16)
+                .AsGoodJetStream();
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
@@ -304,10 +303,10 @@ namespace JetMVATraining
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} TrainingSignalEvents {effTrain.Value}");
 
                     // And beam halo
-                    var effData15 = GenerateEfficiencyPlots(cutDir.mkdir("data15"), c.Cut, c.CutValue, data15);
-                    //var effData16 = GenerateEfficiencyPlots(cutDir.mkdir("data16"), c.Cut, c.CutValue, data16);
+                    var effData15 = GenerateEfficiencyPlots(cutDir.mkdir("beamhalo15"), c.Cut, c.CutValue, data15);
+                    var effData16 = GenerateEfficiencyPlots(cutDir.mkdir("beamhalo16"), c.Cut, c.CutValue, data16);
                     FutureWriteLine(() => $"The signal efficiency for {c.Title} data15 {effData15.Value}");
-                    //FutureWriteLine(() => $"The signal efficiency for {c.Title} data16 {effData16.Value}");
+                    FutureWriteLine(() => $"The signal efficiency for {c.Title} data16 {effData16.Value}");
                 }
 
                 // Done. Dump all output.
