@@ -60,11 +60,10 @@ namespace GenericPerformancePlots
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data15);
 
-            //var data16 = SampleMetaData.AllSamplesWithTag("data16")
-            //    .Take(options.UseFullDataset ? 10000 : 1)
-            //    .SamplesAsSingleQueriable()
-            //    .AsBeamHaloStream()
-            //    .AsGoodJetStream();
+            var data16 = SampleMetaData.AllSamplesWithTag("data16")
+                .Take(opt.UseFullDataset ? 10000 : 1)
+                .SamplesAsSingleQueriable()
+                .AsBeamHaloStream(SampleUtils.DataEpoc.data16);
 
             // Output file
             Console.WriteLine("Opening output file");
@@ -72,15 +71,22 @@ namespace GenericPerformancePlots
             {
                 // First, lets do a small individual thing for each individual background sample.
                 var bkgDir = outputHistograms.mkdir("background");
+                GC.Collect();
                 Console.WriteLine("Making background plots.");
                 foreach (var background in backgroundSamples)
                 {
+                    Console.WriteLine(background.Item2);
                     BuildSuperJetInfo(background.Item1.Select(md => md.Data))
                         .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
+                    GC.Collect();
                 }
 
                 BuildSuperJetInfo(data15.Select(d => d.Data))
                     .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
+                GC.Collect();
+                BuildSuperJetInfo(data15.Select(d => d.Data))
+                    .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
+                GC.Collect();
 
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots.
@@ -89,6 +95,7 @@ namespace GenericPerformancePlots
                 {
                     var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), outputHistograms.mkdir(sample.Item2));
                     DumpResults($"Sample {sample.Item2}:", status);
+                    GC.Collect();
                 }
 
                 // Write out the histograms
