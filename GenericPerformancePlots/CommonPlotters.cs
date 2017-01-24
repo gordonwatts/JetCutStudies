@@ -33,6 +33,10 @@ namespace GenericPerformancePlots
                 .Save(saveDir);
 
             jets
+                .FuturePlot(JetExtraPhiPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
                 .FuturePlot(JetExtraCalRPlot, nameAddition)
                 .Save(saveDir);
 

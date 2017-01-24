@@ -46,7 +46,7 @@ namespace libDataAccess
         /// <summary>
         /// Test for good jets
         /// </summary>
-        public static Expression<Func<recoTreeJets, bool>> IsGoodJet = j => j.pT > 40.0 && Abs(j.eta) < CutConstants.JetEtaLimit;
+        public static Expression<Func<recoTreeJets, bool>> IsGoodJet = j => j.pT > 40.0 && Abs(j.eta) < CutConstants.JetEtaLimit && j.isGoodLLP;
     }
 
 }

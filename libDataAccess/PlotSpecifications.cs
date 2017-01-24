@@ -56,11 +56,16 @@ namespace libDataAccess
         public static IPlotSpec<double> JetEtaPlotRaw =
             MakePlotterSpec<double>(50, -5.0, 5.0, j => j, "eta{0}", "eta of {0} jets; eta");
 
+        public static IPlotSpec<double> JetPhiPlotRaw =
+            MakePlotterSpec<double>(50, -3.2, 3.2, j => j, "phi{0}", "phi of {0} jets; phi");
+
         /// <summary>
         /// 1D plot of jet eta
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetEtaPlot;
         public static IPlotSpec<JetStream> JetEtaPlotJetStream;
+
+        public static IPlotSpec<recoTreeJets> JetPhiPlot;
 
         /// <summary>
         /// Plot of MaxPt
@@ -169,6 +174,7 @@ namespace libDataAccess
         /// 1D plot of jet eta
         /// </summary>
         public static IPlotSpec<JetInfoExtra> JetExtraEtaPlot;
+        public static IPlotSpec<JetInfoExtra> JetExtraPhiPlot;
 
         /// <summary>
         /// Normalize the cal ratio rate
@@ -368,9 +374,10 @@ namespace libDataAccess
         static PlotSpecifications()
         {
             JetPtPlot = JetPtPlotRaw.FromType<double, recoTreeJets>(j => j.pT);
-            JetETPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.ET);
+            JetETPlot = JetETPlotRaw.FromType<double, recoTreeJets>(j => j.ET);
             JetWidthPlot = JetWidthPlotRaw.FromType<double, recoTreeJets>(j => j.width);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
+            JetPhiPlot = JetPhiPlotRaw.FromType<double, recoTreeJets>(j => j.phi);
             JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
             JetCalRPlotFine = JetCalRPlotFineRaw.FromType<double, recoTreeJets>(j => j.logRatio);
@@ -394,6 +401,7 @@ namespace libDataAccess
             JetExtraPtPlot = JetPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetWidthPlotExtra = JetWidthPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraEtaPlot = JetEtaPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
+            JetExtraPhiPlot = JetPhiPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             JetExtraCalRPlot = JetCalRPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
             NTrackExtraPlot = NTrackPlot.FromType<IEnumerable<recoTreeTracks>, JetInfoExtra>(jinfo => jinfo.Tracks);
             TrackPtExtraPlot = TrackPtPlot.FromManyOfType((JetInfoExtra j) => j.Tracks);

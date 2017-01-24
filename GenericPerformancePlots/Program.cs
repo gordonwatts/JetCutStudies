@@ -71,6 +71,7 @@ namespace GenericPerformancePlots
             {
                 // First, lets do a small individual thing for each individual background sample.
                 var bkgDir = outputHistograms.mkdir("background");
+#if false
                 GC.Collect();
                 Console.WriteLine("Making background plots.");
                 foreach (var background in backgroundSamples)
@@ -80,14 +81,15 @@ namespace GenericPerformancePlots
                         .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
                     GC.Collect();
                 }
-
+#endif
                 BuildSuperJetInfo(data15.Select(d => d.Data))
                     .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
                 GC.Collect();
-                BuildSuperJetInfo(data15.Select(d => d.Data))
+                BuildSuperJetInfo(data16.Select(d => d.Data))
                     .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
                 GC.Collect();
 
+#if false
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots.
                 Console.WriteLine("Making the signal/background plots.");
@@ -97,7 +99,7 @@ namespace GenericPerformancePlots
                     DumpResults($"Sample {sample.Item2}:", status);
                     GC.Collect();
                 }
-
+#endif
                 // Write out the histograms
                 outputHistograms.Write();
             }
