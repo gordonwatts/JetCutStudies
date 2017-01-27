@@ -156,7 +156,7 @@ namespace libDataAccess
         public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> source)
         {
             // Get all the files into a single large sequence.
-            var files = source
+                var files = source
                 .SelectMany(s => GetFileList(s.Name));
 
             var events = QueryablerecoTree.CreateQueriable(files.ToArray());
