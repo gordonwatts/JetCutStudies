@@ -52,6 +52,15 @@ namespace JetMVATraining
 
         [Option("FlattenBy", Default = TrainingSpectraFlatteningPossibilities.JetPt)]
         public TrainingSpectraFlatteningPossibilities FlattenBy { get; set; }
+
+        [Option("TrainEventsBIB15", HelpText ="How many events from data15 should be used in the training?", Default = 0)]
+        public int EventsToUseForTrainingAndTestingBIB15 { get; set; }
+
+        [Option("TrainEventsBIB16", HelpText = "How many events from data16 should be used in the training?", Default = 0)]
+        public int EventsToUseForTrainingAndTestingBIB16 { get; set; }
+
+        [Option("SmallTestingMenu", HelpText ="If present, then run on a small number of samples", Default = false)]
+        public bool SmallTestingMenu { get; set; }
     }
 
     /// <summary>
@@ -127,7 +136,8 @@ namespace JetMVATraining
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
-            var signalTestSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "hss")
+            var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
+            var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
 
             // Get the background samples to use for testing and training
@@ -140,11 +150,17 @@ namespace JetMVATraining
                 .AsBeamHaloStream(DataEpoc.data15)
                 .AsGoodJetStream();
 
+            var data15TrainingAndTesting = data15
+                .Take(options.EventsToUseForTrainingAndTestingBIB15);
+
             var data16 = SampleMetaData.AllSamplesWithTag("data16")
                 .Take(options.UseFullDataset ? 10000 : 1)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(DataEpoc.data16)
                 .AsGoodJetStream();
+
+            var data16TrainingAndTesting = data16
+                .Take(options.EventsToUseForTrainingAndTestingBIB16);
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVATraining.root"))
@@ -178,12 +194,33 @@ namespace JetMVATraining
                         .AsTrainingTree()
                         .FlattenBySpectra(toMakeFlat, outputHistograms, "signal");
 
+                var flatData15 = toMakeFlat == null
+                    ? data15TrainingAndTesting
+                        .AsTrainingTree()
+                    : data15TrainingAndTesting
+                        .AsTrainingTree()
+                        .FlattenBySpectra(toMakeFlat, outputHistograms, "data15");
+
+                var flatData16 = toMakeFlat == null
+                    ? data16TrainingAndTesting
+                        .AsTrainingTree()
+                    : data16TrainingAndTesting
+                        .AsTrainingTree()
+                        .FlattenBySpectra(toMakeFlat, outputHistograms, "data16");
+
+
                 // Finally, plots of all the training input variables.
                 flatBackgroundTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background");
 
                 flatSignalTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal");
+
+                flatData15
+                    .PlotTrainingVariables(outputHistograms.mkdir("data15"), "training_bib_15");
+
+                flatData16
+                    .PlotTrainingVariables(outputHistograms.mkdir("data16"), "training_bib_16");
 
                 // Get the list of variables we want to use
                 var varList = GetTrainingVariables(options);

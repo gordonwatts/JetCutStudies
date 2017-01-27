@@ -137,7 +137,7 @@ namespace libDataAccess
         {
             LoadMetaData();
             return _samples
-                .Where(s => tagnames.All(tn => s.HasTag(tn)));
+                .Where(s => tagnames.Where(tn => !string.IsNullOrWhiteSpace(tn)).All(tn => s.HasTag(tn)));
         }
     }
 }
