@@ -217,10 +217,10 @@ namespace JetMVATraining
                     .PlotTrainingVariables(outputHistograms.mkdir("signal"), "training_signal");
 
                 flatData15
-                    .PlotTrainingVariables(outputHistograms.mkdir("data15"), "training_bib_15");
+                    .PlotTrainingVariables(outputHistograms.mkdir("data15"), "training_bib15");
 
                 flatData16
-                    .PlotTrainingVariables(outputHistograms.mkdir("data16"), "training_bib_16");
+                    .PlotTrainingVariables(outputHistograms.mkdir("data16"), "training_bib16");
 
                 // Get the list of variables we want to use
                 var varList = GetTrainingVariables(options);
