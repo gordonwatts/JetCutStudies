@@ -208,7 +208,6 @@ namespace JetMVATraining
                         .AsTrainingTree()
                         .FlattenBySpectra(toMakeFlat, outputHistograms, "data16");
 
-
                 // Finally, plots of all the training input variables.
                 flatBackgroundTrainingData
                     .PlotTrainingVariables(outputHistograms.mkdir("background"), "training_background");
@@ -229,6 +228,8 @@ namespace JetMVATraining
                 var training = flatSignalTrainingData
                     .AsSignal(isTrainingEvent: e => !(e.EventNumber % 3 == 1))
                     .Background(flatBackgroundTrainingData, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
+                    .Background(flatData15, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
+                    .Background(flatData16, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
                     .UseVariables(varList);
 
                 // Build options (like what we might like to transform.
