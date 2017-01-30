@@ -91,6 +91,7 @@ namespace JetMVATraining
     public enum TrainingVariables
     {
         JetPt,
+        JetPhi,
         CalRatio,
         JetEta,
         NTracks,
@@ -228,9 +229,18 @@ namespace JetMVATraining
                 var training = flatSignalTrainingData
                     .AsSignal(isTrainingEvent: e => !(e.EventNumber % 3 == 1))
                     .Background(flatBackgroundTrainingData, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
-                    .Background(flatData15, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
-                    .Background(flatData16, isTrainingEvent: e => !(e.EventNumber % 3 == 1))
                     .UseVariables(varList);
+
+                if (options.EventsToUseForTrainingAndTestingBIB15 > 0)
+                {
+                    training.
+                        Background(flatData15, isTrainingEvent: e => !(e.EventNumber % 3 == 1));
+                }
+                if (options.EventsToUseForTrainingAndTestingBIB16 > 0)
+                {
+                    training.
+                        Background(flatData16, isTrainingEvent: e => !(e.EventNumber % 3 == 1));
+                }
 
                 // Build options (like what we might like to transform.
                 var m1 = training.AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA.kBDT, "BDT")
@@ -392,6 +402,9 @@ namespace JetMVATraining
 
                 case TrainingVariables.JetEta:
                     return t => t.JetEta;
+
+                case TrainingVariables.JetPhi:
+                    return t => t.JetPhi;
 
                 case TrainingVariables.NTracks:
                     return t => t.NTracks;
@@ -587,6 +600,7 @@ namespace JetMVATraining
 
                 case TrainingVariableSet.DefaultAllpT:
                     result.Add(TrainingVariables.JetPt);
+                    result.Add(TrainingVariables.JetPhi);
                     result.Add(TrainingVariables.CalRatio);
                     result.Add(TrainingVariables.NTracks);
                     result.Add(TrainingVariables.SumPtOfAllTracks);
@@ -603,6 +617,7 @@ namespace JetMVATraining
 
                 case TrainingVariableSet.DefaultAllET:
                     result.Add(TrainingVariables.JetET);
+                    result.Add(TrainingVariables.JetPhi);
                     result.Add(TrainingVariables.CalRatio);
                     result.Add(TrainingVariables.NTracks);
                     result.Add(TrainingVariables.SumPtOfAllTracks);

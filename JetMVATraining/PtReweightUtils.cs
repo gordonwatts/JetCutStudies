@@ -35,6 +35,7 @@ namespace JetMVATraining
                     CalRatio = t.CalRatio,
                     JetEta = t.JetEta,
                     JetPt = t.JetPt,
+                    JetPhi = t.JetPhi,
                     MaxTrackPt = t.MaxTrackPt,
                     NTracks = t.NTracks,
                     SumPtOfAllTracks = t.SumPtOfAllTracks,

@@ -21,6 +21,7 @@ namespace CalRatioTMVAUtilities
     {
         public double Weight;
         public double JetPt;
+        public double JetPhi;
         public double CalRatio;
         public double JetEta;
         public int NTracks;
@@ -53,6 +54,7 @@ namespace CalRatioTMVAUtilities
                 CalRatio = NormalizeCalRatio.Invoke(i.JetInfo.Jet.logRatio),
                 JetPt = i.JetInfo.Jet.pT,
                 JetEta = i.JetInfo.Jet.eta,
+                JetPhi = i.JetInfo.Jet.phi,
                 NTracks = i.JetInfo.Tracks.Count(),
                 SumPtOfAllTracks = i.JetInfo.AllTracks.Sum(t => t.pT),
                 MaxTrackPt = CalcMaxPt.Invoke(i.JetInfo.AllTracks),
@@ -113,6 +115,7 @@ namespace CalRatioTMVAUtilities
         private static PlotInfo[] _plotters = new PlotInfo[]
         {
             new PlotInfo() { Plotter = JetPtPlotRaw, ValueGetter = tu => tu.JetPt },
+            new PlotInfo() { Plotter = JetPhiPlotRaw, ValueGetter = tu => tu.JetPhi },
             new PlotInfo() { Plotter = JetETPlotRaw, ValueGetter = tu => tu.JetET },
             new PlotInfo() { Plotter = JetEtaPlotRaw, ValueGetter = tu => tu.JetEta },
             new PlotInfo() { Plotter = JetCalRPlotRaw, ValueGetter = tu => tu.CalRatio },
