@@ -71,7 +71,7 @@ namespace GenericPerformancePlots
             {
                 // First, lets do a small individual thing for each individual background sample.
                 var bkgDir = outputHistograms.mkdir("background");
-#if true
+#if false
                 GC.Collect();
                 Console.WriteLine("Making background plots.");
                 foreach (var background in backgroundSamples)
@@ -89,7 +89,7 @@ namespace GenericPerformancePlots
                     .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
                 GC.Collect();
 
-#if true
+#if false
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots.
                 Console.WriteLine("Making the signal/background plots.");

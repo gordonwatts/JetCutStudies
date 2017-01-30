@@ -56,6 +56,27 @@ namespace GenericPerformancePlots
                 .FuturePlot(DeltaROfCloseTrackPlotExtra, nameAddition)
                 .Save(saveDir);
 
+            jets
+                .FuturePlot(BIBDeltaMinusTimingPlotExtra, nameAddition)
+                .Save(saveDir);
+            jets
+                .FuturePlot(BIBDeltaPlusTimingPlotExtra, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(BIBMinusTimingPlotExtra, nameAddition)
+                .Save(saveDir);
+            jets
+                .FuturePlot(BIBPlusTimingPlotExtra, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(BIBPlusTimingvsZExtra, nameAddition)
+                .Save(saveDir);
+            jets
+                .FuturePlot(BIBMinusTimingvsZExtra, nameAddition)
+                .Save(saveDir);
+
             // TODO: Running this loop takes waaay too long. What are we doing
             // wrong (if anything)?
             jets

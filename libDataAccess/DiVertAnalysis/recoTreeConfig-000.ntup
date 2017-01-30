@@ -143,8 +143,8 @@
         <VariableInfo NETName="FirstClusterR" TTreeName="CalibJet_cluster_lead_r" />
         <VariableInfo NETName="CalibJet_cluster_lead_x" TTreeName="CalibJet_cluster_lead_x" />
         <VariableInfo NETName="CalibJet_cluster_lead_y" TTreeName="CalibJet_cluster_lead_y" />
-        <VariableInfo NETName="CalibJet_cluster_lead_z" TTreeName="CalibJet_cluster_lead_z" />
-        <VariableInfo NETName="CalibJet_cluster_lead_Lxy" TTreeName="CalibJet_cluster_lead_Lxy" />
+        <VariableInfo NETName="FirstClusterZ" TTreeName="CalibJet_cluster_lead_z" />
+        <VariableInfo NETName="FirstClusterLxy" TTreeName="CalibJet_cluster_lead_Lxy" />
         <VariableInfo NETName="CalibJet_cluster_lead_ET" TTreeName="CalibJet_cluster_lead_ET" />
         <VariableInfo NETName="CalibJet_cluster_lead_pT" TTreeName="CalibJet_cluster_lead_pT" />
         <VariableInfo NETName="CalibJet_cluster_lead_eta" TTreeName="CalibJet_cluster_lead_eta" />
@@ -152,7 +152,7 @@
         <VariableInfo NETName="CalibJet_cluster_lead_calibET" TTreeName="CalibJet_cluster_lead_calibET" />
         <VariableInfo NETName="CalibJet_cluster_lead_calibEta" TTreeName="CalibJet_cluster_lead_calibEta" />
         <VariableInfo NETName="CalibJet_cluster_lead_calibPhi" TTreeName="CalibJet_cluster_lead_calibPhi" />
-        <VariableInfo NETName="CalibJet_cluster_lead_time" TTreeName="CalibJet_cluster_lead_time" />
+        <VariableInfo NETName="FIrstClusterTime" TTreeName="CalibJet_cluster_lead_time" />
         <VariableInfo NETName="FirstClusterLambda" TTreeName="CalibJet_cluster_lead_lambda" />
         <VariableInfo NETName="CalibJet_cluster_lead_sec_r" TTreeName="CalibJet_cluster_lead_sec_r" />
         <VariableInfo NETName="CalibJet_cluster_lead_sec_lambda" TTreeName="CalibJet_cluster_lead_sec_lambda" />
