@@ -15,6 +15,7 @@ using static LINQToTreeHelpers.PlottingUtils;
 using static System.Linq.Enumerable;
 using static libDataAccess.Utils.Constants;
 using static libDataAccess.Utils.CommandLineUtils;
+using ROOTNET.Globals;
 
 namespace GenericPerformancePlots
 {
@@ -64,6 +65,8 @@ namespace GenericPerformancePlots
                 .Take(opt.UseFullDataset ? 10000 : 1)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data16);
+
+            gDebug.Value = 100;
 
             // Output file
             Console.WriteLine("Opening output file");
