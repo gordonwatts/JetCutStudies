@@ -165,18 +165,9 @@ namespace libDataAccess
         /// <remarks>
         /// Note that all length units coming from the tuple are mm, and time units are ns.
         /// </remarks>
-        public static IPlotSpec<double> BIBPlusTimingPlotRaw
-            = MakePlotterSpec<double>(100, -25, 25, j => j, "BIBPlusTiming{0}", "Positive BIB Timing for Lead Cluster for {0}; t [ns]");
-        public static IPlotSpec<double> BIBMinusTimingPlotRaw
-            = MakePlotterSpec<double>(100, -25, 25, j => j, "BIBMinusTiming{0}", "Negative BIB Timing for Lead Cluster for {0}; t [ns]");
-        public static IPlotSpec<JetInfoExtra> BIBPlusTimingPlotExtra;
-        public static IPlotSpec<JetInfoExtra> BIBMinusTimingPlotExtra;
-        public static Expression<Func<double, double, double>> CalcBIBTimingRaw
-            = (z, lxy) => (z - Math.Sqrt(z * z + lxy * lxy)) / 3.0e11 * 1.0e9;
-        public static Expression<Func<recoTreeJets, double>> CalcBIBPlusTiming
-            = j => CalcBIBTimingRaw.Invoke(j.FirstClusterZ, j.FirstClusterLxy);
-        public static Expression<Func<recoTreeJets, double>> CalcBIBMinusTiming
-            = j => CalcBIBTimingRaw.Invoke(-j.FirstClusterZ, j.FirstClusterLxy);
+        public static IPlotSpec<double> BIBTimingPlotRaw
+            = MakePlotterSpec<double>(100, -25, 25, j => j, "BIBTiming{0}", "Timing for Lead Cluster for {0}; t [ns]");
+        public static IPlotSpec<JetInfoExtra> BIBTimingPlotExtra;
 
         // (z-sqrt(z*z+3000*3000))/300
         public static IPlotSpec<double> BIBDeltaPlusTimingPlotRaw
@@ -185,19 +176,23 @@ namespace libDataAccess
             = MakePlotterSpec<double>(100, -25.0, 25.0, j => j, "BIBDeltaMinusTiming{0}", "BIB Delta Minus Timing for Lead Cluster for {0}; t [ns]");
         public static IPlotSpec<JetInfoExtra> BIBDeltaPlusTimingPlotExtra;
         public static IPlotSpec<JetInfoExtra> BIBDeltaMinusTimingPlotExtra;
-        public static Expression<Func<recoTreeJets, double>> CalcBIBPlusDeltaPlotTiming
-            = j => CalcBIBTimingRaw.Invoke(j.FirstClusterZ, 3000) - CalcBIBPlusTiming.Invoke(j);
-        public static Expression<Func<recoTreeJets, double>> CalcBIBMinusDeltaPlotTiming
-            = j => CalcBIBTimingRaw.Invoke(-j.FirstClusterZ, 3000) - CalcBIBMinusTiming.Invoke(j);
 
-        public static IPlotSpec<recoTreeJets> BIBPlusTimingvsZ =
+        public static Expression<Func<double, double, double>> CalcBIBTimingRaw
+            = (z, lxy) => (z - Math.Sqrt(z * z + lxy * lxy)) / 3.0e11 * 1.0e9;
+        public static Expression<Func<recoTreeJets, double>> CalcBIBPlusTiming
+            = j => CalcBIBTimingRaw.Invoke(j.FirstClusterZ, j.FirstClusterLxy);
+        public static Expression<Func<recoTreeJets, double>> CalcBIBMinusTiming
+            = j => CalcBIBTimingRaw.Invoke(-j.FirstClusterZ, j.FirstClusterLxy);
+
+        public static Expression<Func<recoTreeJets, double>> CalcBIBPlusDeltaPlotTiming
+            = j => j.FIrstClusterTime - CalcBIBPlusTiming.Invoke(j);
+        public static Expression<Func<recoTreeJets, double>> CalcBIBMinusDeltaPlotTiming
+            = j => j.FIrstClusterTime - CalcBIBMinusTiming.Invoke(j);
+
+        public static IPlotSpec<recoTreeJets> BIBTimingvsZ =
             MakePlotterSpec<recoTreeJets>(50, -5000, 5000, j => j.FirstClusterZ,
-                50, -25, 25, j => CalcBIBPlusTiming.Invoke(j), titleFormat: "t_BIB Plus vs z for {0}", nameFormat: "BIBPlusTimingvsZ{0}");
-        public static IPlotSpec<recoTreeJets> BIBMinusTimingvsZ =
-            MakePlotterSpec<recoTreeJets>(50, -5000, 5000, j => j.FirstClusterZ,
-                50, -25, 25, j => CalcBIBMinusTiming.Invoke(j), titleFormat: "t_BIB Minus vs z for {0}", nameFormat: "BIBMinusTimingvsZ{0}");
-        public static IPlotSpec<JetInfoExtra> BIBPlusTimingvsZExtra;
-        public static IPlotSpec<JetInfoExtra> BIBMinusTimingvsZExtra;
+                50, -25, 25, j => j.FIrstClusterTime, titleFormat: "t cluster vs z for {0}; z [m]; t [ns]", nameFormat: "BIBTimingvsZ{0}");
+        public static IPlotSpec<JetInfoExtra> BIBTimingvsZExtra;
 
         /// <summary>
         /// Plot the pileup event weight
@@ -450,12 +445,10 @@ namespace libDataAccess
 
             PileUpWeight = PileUpWeightRaw.FromType<double, recoTree>(evt => evt.pileupEventWeight);
 
-            BIBPlusTimingPlotExtra = BIBPlusTimingPlotRaw.FromType<double, JetInfoExtra>(j => CalcBIBPlusTiming.Invoke(j.Jet));
-            BIBMinusTimingPlotExtra = BIBMinusTimingPlotRaw.FromType<double, JetInfoExtra>(j => CalcBIBMinusTiming.Invoke(j.Jet));
+            BIBTimingPlotExtra = BIBTimingPlotRaw.FromType<double, JetInfoExtra>(j => j.Jet.FIrstClusterTime);
             BIBDeltaPlusTimingPlotExtra = BIBDeltaPlusTimingPlotRaw.FromType<double, JetInfoExtra>(j => CalcBIBPlusDeltaPlotTiming.Invoke(j.Jet));
             BIBDeltaMinusTimingPlotExtra = BIBDeltaMinusTimingPlotRaw.FromType<double, JetInfoExtra>(j => CalcBIBMinusDeltaPlotTiming.Invoke(j.Jet));
-            BIBPlusTimingvsZExtra = BIBPlusTimingvsZ.FromType<recoTreeJets, JetInfoExtra>(j => j.Jet);
-            BIBMinusTimingvsZExtra = BIBMinusTimingvsZ.FromType<recoTreeJets, JetInfoExtra>(j => j.Jet);
+            BIBTimingvsZExtra = BIBTimingvsZ.FromType<recoTreeJets, JetInfoExtra>(j => j.Jet);
         }
 
     }

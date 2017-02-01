@@ -64,17 +64,11 @@ namespace GenericPerformancePlots
                 .Save(saveDir);
 
             jets
-                .FuturePlot(BIBMinusTimingPlotExtra, nameAddition)
-                .Save(saveDir);
-            jets
-                .FuturePlot(BIBPlusTimingPlotExtra, nameAddition)
+                .FuturePlot(BIBTimingPlotExtra, nameAddition)
                 .Save(saveDir);
 
             jets
-                .FuturePlot(BIBPlusTimingvsZExtra, nameAddition)
-                .Save(saveDir);
-            jets
-                .FuturePlot(BIBMinusTimingvsZExtra, nameAddition)
+                .FuturePlot(BIBTimingvsZExtra, nameAddition)
                 .Save(saveDir);
 
             // TODO: Running this loop takes waaay too long. What are we doing
