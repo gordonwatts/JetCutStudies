@@ -13,6 +13,7 @@ plottypes = [
 	{title => "Sum of all Track pT", xaxis => "Sum Track pT [GeV]", name => "sumTrkPt"},
 	{title => "Number of Tracks", xaxis => "N Tracks", name => "ntracks"},
 	{title => "Jet Eta", xaxis => "{\eta}", name => "eta"},
+	{title => "Jet Phi", xaxis => "{\phi}", name => "phi"},
 	{title => "Jet p_{T}", xaxis => "Jet p_{T} [GeV]", name => "pT"},
 	{title => "CalRatio", xaxis => "CalRatio", name => "CalR"},
 	{title => "Jet Width", xaxis => "Width", name => "jetWidth"},
