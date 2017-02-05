@@ -66,8 +66,6 @@ namespace GenericPerformancePlots
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data16);
 
-            gDebug.Value = 100;
-
             // Output file
             Console.WriteLine("Opening output file");
             using (var outputHistograms = new FutureTFile("GenericPerformancePlots.root"))
