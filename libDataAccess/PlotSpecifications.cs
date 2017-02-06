@@ -1,13 +1,12 @@
 ﻿using DiVertAnalysis;
-using LINQToTTreeLib;
-using System.Linq;
-using System.Collections.Generic;
-using static LINQToTreeHelpers.PlottingUtils;
-using System.Linq.Expressions;
-using System;
-using static libDataAccess.Files;
 using libDataAccess.Utils;
 using LINQToTreeHelpers;
+using LINQToTTreeLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using static LINQToTreeHelpers.PlottingUtils;
 
 namespace libDataAccess
 {

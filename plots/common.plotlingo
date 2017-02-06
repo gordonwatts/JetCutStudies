@@ -3,7 +3,7 @@
 #
 
 # File we are looking at...
-//f_generic = jenkins ("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR-GenericPlots/lastSuccessfulBuild/artifact/GenericPerformancePlots.root");
+f_generic = jenkins ("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/GenericPerformancePlots/lastSuccessfulBuild/artifact/GenericPerformancePlots.root");
 f_training = jenkins ("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVATraining/lastSuccessfulBuild/artifact/JetMVATraining.root");
 //f_llp = jenkins("http://jenks-higgs.phys.washington.edu:8080/view/LLP/job/CalR%20LLPInvestigations/lastSuccessfulBuild/artifact/LLPInvestigations.root");
 f_mvaTest = jenkins("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/TrainingResults/lastSuccessfulBuild/artifact/TrainingTestResults.root");

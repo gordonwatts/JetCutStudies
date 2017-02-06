@@ -1,0 +1,37 @@
+#
+# Some comparisons of generic plots and BIB data15 and data16 plots
+#
+
+include ("common.plotlingo");
+
+#
+# All the types of plots
+#
+
+plottypes = [
+	{title => "BIB Delta Timing", xaxis => "Delta t [ns]", name => "BIBDeltaMinusTimingall"},
+	{title => "Jet pT", xaxis => "Jet pT [GeV]", name => "pTall"}
+];
+
+samples = ["J2Z", "J3Z", "data15", "data16"];
+
+#
+# Legend info
+#
+
+Legend("J2Z" => {Color => 2, Title => "J2"});
+Legend("J3Z" => {Color => 1, Title => "J3"});
+Legend("data15" => {Color => 3, Title => "data15 BIB"});
+Legend("data16" => {Color => 4, Title => "data16 BIB"});
+
+
+for(plottypes) {
+	p = map(sample, samples) {
+		f_generic.Get("background/{sample}/{name}")
+			.tag(sample)
+			.normalize();
+	};
+	p.plot()
+		.size(1200,800)
+		.drawingOptionAfter(0,"L");
+};
