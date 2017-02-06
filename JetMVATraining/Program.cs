@@ -105,7 +105,9 @@ namespace JetMVATraining
         JetLat,
         JetLong,
         FirstClusterRadius,
-        ShowerCenter
+        ShowerCenter,
+        BIBDeltaTimingPlus,
+        BIBDeltaTimingMinus
     }
 
     class Program
@@ -271,7 +273,7 @@ namespace JetMVATraining
                         jobNameBuilder.Append(".");
                     }
                     first = false;
-                    jobNameBuilder.Append(v.Substring(0, v.Length-2));
+                    jobNameBuilder.Append(v);
                 }
                 var jobName = jobNameBuilder.ToString();
 
@@ -441,6 +443,12 @@ namespace JetMVATraining
 
                 case TrainingVariables.ShowerCenter:
                     return t => t.ShowerCenter;
+
+                case TrainingVariables.BIBDeltaTimingMinus:
+                    return t => t.BIBDeltaTimingM;
+
+                case TrainingVariables.BIBDeltaTimingPlus:
+                    return t => t.BIBDeltaTimingP;
 
                 default:
                     throw new NotImplementedException($"Unknown variable requested: {varName.ToString()}");
@@ -613,6 +621,8 @@ namespace JetMVATraining
                     result.Add(TrainingVariables.JetLong);
                     result.Add(TrainingVariables.FirstClusterRadius);
                     result.Add(TrainingVariables.ShowerCenter);
+                    result.Add(TrainingVariables.BIBDeltaTimingMinus);
+                    result.Add(TrainingVariables.BIBDeltaTimingPlus);
                     break;
 
                 case TrainingVariableSet.DefaultAllET:
@@ -630,6 +640,8 @@ namespace JetMVATraining
                     result.Add(TrainingVariables.JetLong);
                     result.Add(TrainingVariables.FirstClusterRadius);
                     result.Add(TrainingVariables.ShowerCenter);
+                    result.Add(TrainingVariables.BIBDeltaTimingMinus);
+                    result.Add(TrainingVariables.BIBDeltaTimingPlus);
                     break;
 
                 case TrainingVariableSet.None:

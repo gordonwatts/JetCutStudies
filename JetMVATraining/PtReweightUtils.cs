@@ -48,7 +48,9 @@ namespace JetMVATraining
                     HadronicLayer1Fraction = t.HadronicLayer1Fraction,
                     JetLat = t.JetLat,
                     JetLong = t.JetLong,
-                    ShowerCenter = t.ShowerCenter
+                    ShowerCenter = t.ShowerCenter,
+                    BIBDeltaTimingM = t.BIBDeltaTimingM,
+                    BIBDeltaTimingP = t.BIBDeltaTimingP,
                 });
 
             r

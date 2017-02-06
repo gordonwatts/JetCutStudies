@@ -37,6 +37,8 @@ namespace CalRatioTMVAUtilities
         public double JetLong;
         public double FirstClusterRadius;
         public double ShowerCenter;
+        public double BIBDeltaTimingM;
+        public double BIBDeltaTimingP;
     }
 
     /// <summary>
@@ -68,6 +70,8 @@ namespace CalRatioTMVAUtilities
                 ShowerCenter = i.JetInfo.Jet.FirstClusterLambda,
                 EnergyDensity = i.JetInfo.Jet.FirstClusterEnergyDensity,
                 HadronicLayer1Fraction = (i.JetInfo.Jet.EHadLayer1 + i.JetInfo.Jet.EHadLayer2 + i.JetInfo.Jet.EHadLayer3) == 0 ? -1.0 : i.JetInfo.Jet.EHadLayer1 / (i.JetInfo.Jet.EHadLayer1 + i.JetInfo.Jet.EHadLayer2 + i.JetInfo.Jet.EHadLayer3),
+                BIBDeltaTimingM = PlotSpecifications.CalcBIBMinusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
+                BIBDeltaTimingP = PlotSpecifications.CalcBIBPlusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
             };
 
         /// <summary>
@@ -131,6 +135,8 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = JetLongPlotRaw, ValueGetter = tu => tu.JetLong },
             new PlotInfo() { Plotter = FirstClusterRadiusPlotRaw, ValueGetter = tu => tu.FirstClusterRadius },
             new PlotInfo() { Plotter = ShowerCenterPlotRaw, ValueGetter = tu => tu.ShowerCenter },
+            new PlotInfo() { Plotter = BIBDeltaPlusTimingPlotRaw, ValueGetter = tu => tu.BIBDeltaTimingP },
+            new PlotInfo() { Plotter = BIBDeltaMinusTimingPlotRaw, ValueGetter = tu => tu.BIBDeltaTimingM },
         };
 
         /// <summary>
