@@ -317,7 +317,7 @@ namespace JetMVATraining
                     });
 
                     // And write out a text file that contains the information needed to use this cut.
-                    var outf = File.CreateText($"{jobName}_{m.Name}-Info.txt");
+                    var outf = File.CreateText(PathUtils.ControlFilename(jobName, new DirectoryInfo("."), n => $"{n}_{m.Name}-Info.txt"));
                     try
                     {
                         outf.WriteLine($"Using the MVA '{m.Name}' trained in job '{trainingResult.JobName}'");

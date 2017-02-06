@@ -187,6 +187,7 @@
     <Compile Include="Utils\HistUtils.cs" />
     <Compile Include="Utils\IQueriableUitils.cs" />
     <Compile Include="Utils\ObjectUtils.cs" />
+    <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Utils\SampleUtils.cs" />
   </ItemGroup>
   <ItemGroup>
