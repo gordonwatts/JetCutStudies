@@ -7,11 +7,61 @@ using System.Linq;
 using System.Linq.Expressions;
 using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
+using static libDataAccess.Utils.FutureConsole;
 
-namespace JetMVATraining
+namespace CalRatioTMVAUtilities
 {
-    static class PtReweightUtils
+    public static class PtReweightUtils
     {
+        /// <summary>
+        /// How should we flatten the spectra we are looking at?
+        /// </summary>
+        public enum TrainingSpectraFlatteningPossibilities
+        {
+            JetPt,
+            JetET,
+            None
+        }
+
+        /// <summary>
+        /// Generate a sequence that is flattened according to the function passed in.
+        /// </summary>
+        /// <param name="backgroundTrainingTree"></param>
+        /// <param name="outputHistograms"></param>
+        /// <param name="toMakeFlat">Function to flatten by. If null, then no flattening is done.</param>
+        /// <returns></returns>
+        public static IQueryable<TrainingTree> FlattenTrainingTree(IQueryable<TrainingTree> backgroundTrainingTree, FutureTFile outputHistograms, Expression<Func<TrainingTree, double>> toMakeFlat)
+        {
+            return toMakeFlat == null
+                ? backgroundTrainingTree
+                : backgroundTrainingTree
+                    .FlattenBySpectra(toMakeFlat, outputHistograms, "background");
+        }
+
+        /// <summary>
+        /// Given the flattening type, construct an expression that will do the flattening.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static Expression<Func<TrainingTree, double>> BuildFlatteningExpression(TrainingSpectraFlatteningPossibilities options)
+        {
+            // Do flattening if requested
+            switch (options)
+            {
+                case TrainingSpectraFlatteningPossibilities.JetPt:
+                    FutureWriteLine("Reweighting to flatten as a function of JetPt");
+                    return t => t.JetPt;
+                case TrainingSpectraFlatteningPossibilities.JetET:
+                    FutureWriteLine("Reweighting to flatten as a function of JetEt");
+                    return t => t.JetET;
+                case TrainingSpectraFlatteningPossibilities.None:
+                    FutureWriteLine("Not reweighting at all before training.");
+                    return null;
+                default:
+                    throw new InvalidOperationException("Unsupported flattening request.");
+            }
+        }
+
         /// <summary>
         /// Re weight a training tree by some given variable.
         /// </summary>
