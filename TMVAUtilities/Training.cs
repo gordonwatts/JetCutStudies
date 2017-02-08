@@ -16,7 +16,6 @@ namespace TMVAUtilities
     /// </summary>
     public class Training<T>
     {
-        
         /// <summary>
         /// Make it hard to create this object without using the Signal or Background helper.
         /// </summary>
@@ -33,10 +32,10 @@ namespace TMVAUtilities
             public string _title;
             public IQueryable<T> _sample;
             public Expression<Func<T, bool>> _isTrainingEvent;
+            public string _eventClass;
         }
 
-        private List<SampleInfo> _signals = new List<SampleInfo>();
-        private List<SampleInfo> _backgrounds = new List<SampleInfo>();
+        private List<SampleInfo> _trainingSamples = new List<SampleInfo>();
 
         private List<string> _ignore_variables = new List<string>();
         private List<string> _use_variables = new List<string>();
@@ -94,6 +93,25 @@ namespace TMVAUtilities
             return this;
         }
 
+        /// <summary>
+        /// Add a new event class to the training.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="entClass"></param>
+        /// <param name="isTrainingEvent"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public Training<T> EventClass(IQueryable<T> source, string entClass, Expression<Func<T, bool>> isTrainingEvent = null, string title = null)
+        {
+            if (_classificationType != ClassificationType.Undetermined && _classificationType != ClassificationType.MultiClass)
+            {
+                throw new InvalidOperationException("Can't add a class sample to a training that is using Signal and Background");
+            }
+            _trainingSamples.Add(new SampleInfo() { _title = title, _eventClass = entClass, _sample = source, _isTrainingEvent = isTrainingEvent });
+            _classificationType = ClassificationType.MultiClass;
+
+            return this; 
+        }
 
         /// <summary>
         /// Add a background to our list of sources.
@@ -101,18 +119,57 @@ namespace TMVAUtilities
         /// <param name="source"></param>
         public Training<T> Background(IQueryable<T> source, string title = "", Expression<Func<T, bool>> isTrainingEvent = null)
         {
+            if (_classificationType != ClassificationType.Undetermined && _classificationType != ClassificationType.SignalBackground)
+            {
+                throw new InvalidOperationException("Background sample can't be added to a training that is using multple event classes");
+            }
+
             // Make sure the user isn't adding a selection when no other is present. We have to have
             // the same added all the time.
-            if (isTrainingEvent == null && _backgrounds.Where(b => b._isTrainingEvent != null).Any())
+            if (isTrainingEvent == null && Backgrounds().Where(b => b._isTrainingEvent != null).Any())
             {
                 throw new ArgumentException("A background sample with a training event selector has already been added - you can't add one with no training selector.");
             }
-            if (isTrainingEvent != null && _backgrounds.Where(b => b._isTrainingEvent == null).Any())
+            if (isTrainingEvent != null && Backgrounds().Where(b => b._isTrainingEvent == null).Any())
             {
                 throw new ArgumentException("A background sample with a training event selector has not been added - you can't add one with a training selector.");
             }
-            _backgrounds.Add(new SampleInfo() { _title = title, _sample = source, _isTrainingEvent = isTrainingEvent });
+            _trainingSamples.Add(new SampleInfo() { _title = title, _eventClass = "Background", _sample = source, _isTrainingEvent = isTrainingEvent });
+            _classificationType = ClassificationType.SignalBackground;
             return this;
+        }
+
+        /// <summary>
+        /// Track the classifications we might be doing.
+        /// </summary>
+        enum ClassificationType
+        {
+            SignalBackground,
+            MultiClass,
+            Undetermined
+        }
+
+        /// <summary>
+        /// Undetermined to start with, and then it settles down.
+        /// </summary>
+        private ClassificationType _classificationType = ClassificationType.Undetermined;
+
+        /// <summary>
+        /// Return the background samles
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<SampleInfo> Backgrounds()
+        {
+            return _trainingSamples.Where(s => s._eventClass == "Background");
+        }
+
+        /// <summary>
+        /// Return the signal samples
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<SampleInfo> Signals()
+        {
+            return _trainingSamples.Where(s => s._eventClass == "Signal");
         }
 
         /// <summary>
@@ -121,15 +178,21 @@ namespace TMVAUtilities
         /// <param name="source"></param>
         public Training<T> Signal(IQueryable<T> source, string title = "", Expression<Func<T, bool>> isTrainingEvent = null)
         {
-            if (isTrainingEvent == null && _signals.Where(b => b._isTrainingEvent != null).Any())
+            if (_classificationType != ClassificationType.Undetermined && _classificationType != ClassificationType.SignalBackground)
+            {
+                throw new InvalidOperationException("Background sample can't be added to a training that is using multple event classes");
+            }
+
+            if (isTrainingEvent == null && Signals().Where(b => b._isTrainingEvent != null).Any())
             {
                 throw new ArgumentException("A background sample with a training event selector has already been added - you can't add one with no training selector.");
             }
-            if (isTrainingEvent != null && _signals.Where(b => b._isTrainingEvent == null).Any())
+            if (isTrainingEvent != null && Signals().Where(b => b._isTrainingEvent == null).Any())
             {
                 throw new ArgumentException("A background sample with a training event selector has not been added - you can't add one with a training selector.");
             }
-            _signals.Add(new SampleInfo() { _title = title, _sample = source, _isTrainingEvent = isTrainingEvent });
+            _trainingSamples.Add(new SampleInfo() { _title = title, _eventClass = "Signal", _sample = source, _isTrainingEvent = isTrainingEvent });
+            _classificationType = ClassificationType.SignalBackground;
             return this;
         }
 
@@ -155,7 +218,7 @@ namespace TMVAUtilities
         /// <summary>
         /// Global tmva options for factory creation.
         /// </summary>
-        private string _tmva_options = "!V:DrawProgressBar=True:!Silent:AnalysisType=Classification";
+        private string _tmva_options = "!V:DrawProgressBar=True:!Silent";
 
         /// <summary>
         /// Return a list of used variable names
@@ -205,7 +268,7 @@ namespace TMVAUtilities
             outf.WriteLine();
             outf.WriteLine("How the variables are calculated");
             outf.WriteLine("======================");
-            var b = _backgrounds.First();
+            var b = _trainingSamples.First();
 
             foreach (var pname in p.Item2)
             {
@@ -237,19 +300,14 @@ namespace TMVAUtilities
             outf.WriteLine("======================");
             outf.WriteLine($"Global TMVA parameters: {_tmva_options}");
             outf.WriteLine($"Method {what.ToString()} with parameters '{method.BuildArgumentList(p.Item2)}'");
-            var allBackground = _backgrounds.Select(ms => ms._sample.Count()).Sum();
-            outf.WriteLine($"Total background events: {allBackground}");
-            foreach(var s in _backgrounds.Zip(Enumerable.Range(1,_backgrounds.Count), (bs, c) => Tuple.Create(bs,c)))
+            foreach (var eventClass in _trainingSamples.GroupBy(s => s._eventClass))
             {
-                var trainingEventsSelection = s.Item1._isTrainingEvent == null ? "" : $" (training events when ({s.Item1._isTrainingEvent.ToString()})";
-                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events{trainingEventsSelection}");
-            }
-            var allSignal = _signals.Select(ms => ms._sample.Count()).Sum();
-            outf.WriteLine($"Total signal events: {allSignal}");
-            foreach (var s in _signals.Zip(Enumerable.Range(1, _signals.Count), (bs, c) => Tuple.Create(bs, c)))
-            {
-                var trainingEventsSelection = s.Item1._isTrainingEvent == null ? "" : $" (training events when ({s.Item1._isTrainingEvent.ToString()})";
-                outf.WriteLine($"  Background input stream #{s.Item2}: {s.Item1._sample.Count()} events{trainingEventsSelection}");
+                outf.WriteLine($"{eventClass.Key} Total Events: {eventClass.Select(ms => ms._sample.Count()).Sum()}");
+                foreach (var s in eventClass.Zip(Enumerable.Range(1, eventClass.Count()), (bs, c) => Tuple.Create(bs, c)))
+                {
+                    var trainingEventsSelection = s.Item1._isTrainingEvent == null ? "" : $" (training events when ({s.Item1._isTrainingEvent.ToString()})";
+                    outf.WriteLine($"  {eventClass.Key} input stream #{s.Item2}: {s.Item1._sample.Count()} events{trainingEventsSelection}");
+                }
             }
         }
 
@@ -264,11 +322,6 @@ namespace TMVAUtilities
             {
                 throw new InvalidOperationException("Can't train twice!");
             }
-
-            var signals = _signals.SelectMany(s => ExtractTrainingAndTestingSamples(s)).ToArray();
-            var backgrounds = _backgrounds.SelectMany(s => ExtractTrainingAndTestingSamples(s)).ToArray();
-
-            var oldestInput = signals.Concat(backgrounds).Select(i => i.Item2.LastWriteTime).Max();
 
             // We need an ordered list of parameters for the next step
             var r = GetParameterAndWeightNames();
@@ -302,8 +355,12 @@ namespace TMVAUtilities
                 bldOptionsString.Append(m.BuildArgumentList(parameters_names));
             }
 
+            var trainingSamples = _trainingSamples.SelectMany(s => ExtractTrainingAndTestingSamples(s)).ToArray();
+
+            var oldestInput = trainingSamples.Select(i => i.Item2.LastWriteTime).Max();
+
             // signal and background files
-            foreach (var fname in signals.Concat(backgrounds).Select(s => s.Item2.FullName))
+            foreach (var fname in trainingSamples.Select(s => s.Item2.FullName))
             {
                 bldOptionsString.Append(fname);
             }
@@ -362,41 +419,69 @@ namespace TMVAUtilities
             {
 
                 // Create the factory.
-                var f = new ROOTNET.NTMVA.NFactory($"{jobName}-{hash}".AsTS(), output, _tmva_options.AsTS());
+                var options = _tmva_options +
+                    (_classificationType == ClassificationType.SignalBackground ? ":AnalysisType=Classification" : ":AnalysisType=Multiclass");
+                var f = new ROOTNET.NTMVA.NFactory($"{jobName}-{hash}".AsTS(), output, options.AsTS());
 
-                // Add signal and background. Each one has to be written out.
-                foreach (var sample in signals)
+                // Next, add the samples.
+                bool isSimpleSigBack = _classificationType == ClassificationType.SignalBackground;
+                foreach (var sample in trainingSamples)
                 {
                     switch (sample.Item3)
                     {
                         case FileTrainingType.IsTraining:
-                            f.AddSignalTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
+                            if (isSimpleSigBack)
+                            {
+                                if (sample.Item4 == "Signal")
+                                {
+                                    f.AddSignalTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
+                                } else
+                                {
+                                    f.AddBackgroundTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
+                                }
+                            } else
+                            {
+                                f.AddTree(sample.Item1, sample.Item4.AsTS(),
+                                    1.0, new NTCut(""), ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
+                            }
                             break;
                         case FileTrainingType.IsBoth:
-                            f.AddSignalTree(sample.Item1);
+                            if (isSimpleSigBack)
+                            {
+                                if (sample.Item4 == "Signal")
+                                {
+                                    f.AddSignalTree(sample.Item1);
+                                }
+                                else
+                                {
+                                    f.AddBackgroundTree(sample.Item1);
+                                }
+                            }
+                            else
+                            {
+                                f.AddTree(sample.Item1, sample.Item4.AsTS(), 1.0);
+                            }
                             break;
                         case FileTrainingType.IsTesting:
-                            f.AddSignalTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTesting);
+                            if (isSimpleSigBack)
+                            {
+                                if (sample.Item4 == "Signal")
+                                {
+                                    f.AddSignalTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTesting);
+                                }
+                                else
+                                {
+                                    f.AddBackgroundTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTesting);
+                                }
+                            }
+                            else
+                            {
+                                f.AddTree(sample.Item1, sample.Item4.AsTS(),
+                                    1.0, new NTCut(""), ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTesting);
+                            }
                             break;
                         default:
-                            throw new InvalidOperationException("Unknown value for FileTrainingTYpe!");
-                    }
-                }
-                foreach (var sample in backgrounds)
-                {
-                    switch (sample.Item3)
-                    {
-                        case FileTrainingType.IsTraining:
-                            f.AddBackgroundTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
-                            break;
-                        case FileTrainingType.IsBoth:
-                            f.AddBackgroundTree(sample.Item1);
-                            break;
-                        case FileTrainingType.IsTesting:
-                            f.AddBackgroundTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTesting);
-                            break;
-                        default:
-                            break;
+                            throw new InvalidOperationException($"Inavlid program state: Do not know how to add samples of type {sample.Item3}.");
                     }
                 }
 
@@ -410,7 +495,17 @@ namespace TMVAUtilities
                 // The weight
                 if (!string.IsNullOrWhiteSpace(weight_name))
                 {
-                    f.WeightExpression = weight_name.AsTS();
+                    if (_classificationType == ClassificationType.SignalBackground)
+                    {
+                        f.WeightExpression = weight_name.AsTS();
+                    }
+                    else
+                    {
+                        foreach (var c in _trainingSamples.Select(s => s._eventClass).Distinct())
+                        {
+                            f.SetWeightExpression(weight_name.AsTS(), c.AsTS());
+                        }
+                    }
                 }
 
                 // Now book all the methods that were requested
@@ -452,22 +547,22 @@ namespace TMVAUtilities
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType>> ExtractTrainingAndTestingSamples(SampleInfo s)
+        private static IEnumerable<Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType, string>> ExtractTrainingAndTestingSamples(SampleInfo s)
         {
             // If we aren't to split it at all, just go through "simply".
             if (s._isTrainingEvent == null)
             {
-                foreach (var v in s._sample.ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsBoth)))
+                foreach (var v in s._sample.ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsBoth, s._eventClass)))
                     yield return v;
             }
             else
             {
                 // We need to split it into signal and background
-                foreach (var v in s._sample.Where(s._isTrainingEvent).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTraining)))
+                foreach (var v in s._sample.Where(s._isTrainingEvent).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTraining, s._eventClass)))
                 {
                     yield return v;
                 }
-                foreach (var v in s._sample.Where(qevt => !s._isTrainingEvent.Invoke(qevt)).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTesting)))
+                foreach (var v in s._sample.Where(qevt => !s._isTrainingEvent.Invoke(qevt)).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTesting, s._eventClass)))
                 {
                     yield return v;
                 }
@@ -525,6 +620,21 @@ namespace TMVAUtilities
         {
             var t = new Training<T>();
             t.Signal(source, title, isTrainingEvent);
+            return t;
+        }
+
+        /// <summary>
+        /// Create a training environment, based on a source with a type and a partiular class.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="eventClassName"></param>
+        /// <param name="isTrainingEvent"></param>
+        /// <returns></returns>
+        public static Training<T> AsClass<T>(this IQueryable<T> source, string eventClassName = "", Expression<Func<T, bool>> isTrainingEvent = null)
+        {
+            var t = new Training<T>();
+            t.EventClass(source, eventClassName, isTrainingEvent);
             return t;
         }
 
