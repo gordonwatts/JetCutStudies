@@ -59,6 +59,7 @@ namespace JetMVAClassifierTraining
 
             // Class: LLP
             var signalSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
+                .Take(options.UseFullDataset ? 10000 : 2)
                 .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
                 .ToArray();
 
@@ -75,7 +76,7 @@ namespace JetMVAClassifierTraining
                 .FilterSignal();
 
             // Class: Multijet
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting);
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, !options.UseFullDataset);
 
             // Class: BIB
             var data15 = SampleMetaData.AllSamplesWithTag("data15")
@@ -93,6 +94,12 @@ namespace JetMVAClassifierTraining
                 .AsGoodJetStream();
 
             var data16TrainingAndTesting = data16;
+
+            if (!options.UseFullDataset)
+            {
+                data15TrainingAndTesting = data15TrainingAndTesting.Take(1000);
+                data16TrainingAndTesting = data16TrainingAndTesting.Take(1000);
+            }
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVAClassifierTraining.root"))

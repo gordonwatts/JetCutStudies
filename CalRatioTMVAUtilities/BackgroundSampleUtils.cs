@@ -16,10 +16,11 @@ namespace CalRatioTMVAUtilities
         /// <remarks>
         /// Take the same fraction of events from each source.
         /// </remarks>
-        public static IQueryable<TrainingTree> BuildBackgroundTrainingTreeDataSource(double eventsToUseForTrainingAndTesting)
+        public static IQueryable<TrainingTree> BuildBackgroundTrainingTreeDataSource(double eventsToUseForTrainingAndTesting, bool useOnlyOneSample = false)
         {
             // Get the number of events in each source.
-            var backgroundSources = CommandLineUtils.GetRequestedBackgroundSourceList();
+            var backgroundSources = CommandLineUtils.GetRequestedBackgroundSourceList()
+                .Take(useOnlyOneSample ? 1 : 1000);
             var backgroundEventsWithCounts = backgroundSources
                 .Select(b => b.Item2.AsGoodJetStream().AsTrainingTree())
                 .Select(b => Tuple.Create(b.Count(), b))
