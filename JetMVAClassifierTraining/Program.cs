@@ -147,7 +147,7 @@ namespace JetMVAClassifierTraining
 
                 // Build a job name.
                 var jobNameBuilder = new StringBuilder();
-                jobNameBuilder.Append($"Jet.MVATraining-");
+                jobNameBuilder.Append($"Jet.MVAClassification-");
                 bool first = true;
                 foreach (var v in training.UsedVariables())
                 {
