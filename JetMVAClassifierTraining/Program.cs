@@ -83,7 +83,7 @@ namespace JetMVAClassifierTraining
 
             // Class: BIB
             var data15 = SampleMetaData.AllSamplesWithTag("data15")
-                .Take(options.UseFullDataset ? 10000 : 1)
+                .Take(options.UseFullDataset ? 10000 : 10)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(DataEpoc.data15)
                 .AsGoodJetStream();
@@ -91,7 +91,7 @@ namespace JetMVAClassifierTraining
             var data15TrainingAndTesting = data15;
 
             var data16 = SampleMetaData.AllSamplesWithTag("data16")
-                .Take(options.UseFullDataset ? 10000 : 1)
+                .Take(options.UseFullDataset ? 10000 : 10)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(DataEpoc.data16)
                 .AsGoodJetStream();
@@ -100,8 +100,8 @@ namespace JetMVAClassifierTraining
 
             if (!options.UseFullDataset)
             {
-                data15TrainingAndTesting = data15TrainingAndTesting.Take(1000);
-                data16TrainingAndTesting = data16TrainingAndTesting.Take(1000);
+                data15TrainingAndTesting = data15TrainingAndTesting.Take(50000);
+                data16TrainingAndTesting = data16TrainingAndTesting.Take(50000);
             }
 
             // The file we will use to dump everything about this training.
@@ -111,7 +111,7 @@ namespace JetMVAClassifierTraining
                 var toMakeFlat = BuildFlatteningExpression(options.FlattenBy);
                 var flatBackgroundTrainingData = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat);
                 var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat);
-                var flatData15 = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat);
+                var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat);
                 var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat);
 
                 // Finally, plots of all the training input variables.
@@ -175,6 +175,7 @@ namespace JetMVAClassifierTraining
                 trainingResult.CopyToJobName(jobName);
 
                 // Now, for each sample, generate the weight plots
+                var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
                 var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
                     .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
@@ -187,8 +188,11 @@ namespace JetMVAClassifierTraining
                         .FilterLLPNear()
                         .AsTrainingTree();
 
-                    GenerateEfficiencyPlots(outputHistograms.mkdir(s.Item1), sEvents, cBDT, new string[] { "hss", "multijet", "bib" });
+                    GenerateEfficiencyPlots(trainingResultDir.mkdir(s.Item1), sEvents, cBDT, new string[] { "hss", "multijet", "bib" });
                 }
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), data15TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), data16TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), backgroundTrainingTree, cBDT, new string[] { "hss", "multijet", "bib" });
 
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();
