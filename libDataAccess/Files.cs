@@ -161,7 +161,7 @@ namespace libDataAccess
 
             var events = QueryablerecoTree.CreateQueriable(files.ToArray());
             events.IgnoreQueryCache = IgnoreQueires;
-            events.CleanupQuery = false;
+            events.CleanupQuery = true;
             return GenerateStream(events, 1.0);
         }
 

@@ -78,6 +78,17 @@ namespace TMVAUtilities
             return ExpressionUtils.BuildLambdaExpression(pnames, code);
         }
 
+        internal Expression<Func<T,float[]>> GetMVAMulticlassValues(string methodName, FileInfo weightFile)
+        {
+            // The center of it all is the code statement that will run everything given a list of inputs.
+            var pnames = GetParameterAndWeightNames().Item2;
+            var code = new TMVAReaderCodeGenerator<T>(methodName, weightFile, pnames);
+
+            // We are going to build up a lambda expression that takes T as an argument and returns a
+            // double.
+            return ExpressionUtils.BuildMulticlassLambdaExpression(pnames, code);
+        }
+
         /// <summary>
         /// Ignore the variables listed. Overrides the UseVariables call.
         /// </summary>

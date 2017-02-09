@@ -76,6 +76,15 @@ namespace TMVAUtilities
         }
 
         /// <summary>
+        /// Get an expression that will evaluate the MVA in a LINQTOTTree query.
+        /// </summary>
+        /// <returns></returns>
+        public Expression<Func<T, float[]>> GetMVAMulticlassValue()
+        {
+            return Training.GetMVAMulticlassValues(Name, WeightFile);
+        }
+
+        /// <summary>
         /// Track the parameter list options we are going to apply to this method.
         /// </summary>
         private List<Tuple<string, string, string>> _parameter_options = new List<Tuple<string, string, string>>();
@@ -169,5 +178,6 @@ namespace TMVAUtilities
         {
             Training.DumpUsageInfo(outf, this, WeightFile, What);
         }
+
     }
 }

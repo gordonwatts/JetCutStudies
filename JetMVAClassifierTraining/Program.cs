@@ -1,19 +1,22 @@
-﻿using CommandLine;
+﻿using CalRatioTMVAUtilities;
+using CommandLine;
 using libDataAccess;
 using libDataAccess.Utils;
+using LINQToTreeHelpers;
+using LINQToTreeHelpers.FutureUtils;
+using LINQToTTreeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
+using TMVAUtilities;
+using static CalRatioTMVAUtilities.BackgroundSampleUtils;
 using static CalRatioTMVAUtilities.PtReweightUtils;
 using static CalRatioTMVAUtilities.TrainingVariableUtils;
+using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Utils.CommandLineUtils;
-using static CalRatioTMVAUtilities.BackgroundSampleUtils;
 using static libDataAccess.Utils.SampleUtils;
-using LINQToTreeHelpers.FutureUtils;
-using CalRatioTMVAUtilities;
-using TMVAUtilities;
 
 namespace JetMVAClassifierTraining
 {
@@ -171,8 +174,44 @@ namespace JetMVAClassifierTraining
                 // the Jenkins artifacts to pick up only what we are producing this round.
                 trainingResult.CopyToJobName(jobName);
 
+                // Now, for each sample, generate the weight plots
+                var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
+                var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
+                    .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
+                var cBDT = m1.GetMVAMulticlassValue();
+                foreach (var s in signalTestSources)
+                {
+                    var sEvents = s.Item2
+                        .AsGoodJetStream()
+                        .FilterNonTrainingEvents()
+                        .FilterLLPNear()
+                        .AsTrainingTree();
+
+                    GenerateEfficiencyPlots(outputHistograms.mkdir(s.Item1), sEvents, cBDT, new string[] { "hss", "multijet", "bib" });
+                }
+
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();
+            }
+        }
+
+        /// <summary>
+        /// Generate plots for everything
+        /// </summary>
+        /// <param name="futureTDirectory"></param>
+        /// <param name="sEvents"></param>
+        /// <param name="cBDT"></param>
+        private static void GenerateEfficiencyPlots(FutureTDirectory outh, IQueryable<TrainingTree> source, Expression<Func<TrainingTree, float[]>> cBDT, string[] trainingClassNames)
+        {
+            var s1 = source
+                .Select(j => Tuple.Create(cBDT.Invoke(j), j.Weight));
+
+            foreach (var cinfo in trainingClassNames.Zip(Enumerable.Range(0, trainingClassNames.Length), (name, index) => Tuple.Create(name, index)))
+            {
+                s1
+                    .Select(n => Tuple.Create((double) n.Item1[cinfo.Item2], n.Item2))
+                    .FuturePlot(TrainingEventWeight.NameFormat, TrainingEventWeight.TitleFormat, TrainingEventWeight, $"weight_{cinfo.Item1}")
+                    .Save(outh);
             }
         }
     }

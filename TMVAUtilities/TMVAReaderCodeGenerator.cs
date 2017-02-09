@@ -37,7 +37,7 @@ namespace TMVAUtilities
         /// <returns></returns>
         public string[] IncludeFiles()
         {
-            return new string[] { "tmva/Reader.h" };
+            return new string[] { "tmva/Reader.h", "vector" };
         }
 
         /// <summary>
@@ -88,7 +88,14 @@ namespace TMVAUtilities
             }
 
             // Finally, we can calculate the result!
-            yield return $"MVAResultValue = readerUnique->EvaluateMVA(\"{_methodName}\");";
+            if (methodName == "MVAResultValue")
+            {
+                yield return $"MVAResultValue = readerUnique->EvaluateMVA(\"{_methodName}\");";
+            } else
+            {
+                // Get back a vector.
+                yield return $"MVAMultiResultValue = readerUnique->EvaluateMulticlass(\"{_methodName}\");";
+            }
         }
 
         /// <summary>
@@ -167,6 +174,71 @@ namespace TMVAUtilities
             throw new InvalidOperationException("This should never be called");
         }
         public double MVAResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12, double v13, double v14, double v15, double v16)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+
+        public float[] MVAMultiResultValue(double v1)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12, double v13)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12, double v13, double v14)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12, double v13, double v14, double v15)
+        {
+            throw new InvalidOperationException("This should never be called");
+        }
+        public float[] MVAMultiResultValue(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10, double v11, double v12, double v13, double v14, double v15, double v16)
         {
             throw new InvalidOperationException("This should never be called");
         }
