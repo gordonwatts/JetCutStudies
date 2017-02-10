@@ -235,3 +235,4 @@ JetCutStudies.VC.opendb
 *.root
 JetCutStudies.VC.db
 JetCutStudies.VC.VC.opendb
+*.marker
