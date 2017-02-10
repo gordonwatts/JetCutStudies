@@ -1,4 +1,5 @@
-﻿using LINQToTTreeLib.Files;
+﻿using libDataAccess.Utils;
+using LINQToTTreeLib.Files;
 using ROOTNET;
 using System;
 using System.Collections.Generic;
@@ -38,8 +39,19 @@ namespace TMVAUtilities
                 d = new DirectoryInfo(".");
             }
             var fname = new FileInfo(Path.Combine(d.FullName, string.IsNullOrWhiteSpace(sampleTitle) ? $"{_f_index}.training.root" : $"{sampleTitle}.training.root"));
+            var fmarker = new FileInfo(Path.Combine(d.FullName, string.IsNullOrWhiteSpace(sampleTitle) ? $"{_f_index}.training.root.marker" : $"{sampleTitle}.training.root.marker"));
             _f_index++;
-            var f = source.AsTTree(treeName: "TrainingTree", outputROOTFile: fname);
+
+            var f = fmarker
+                .ActionIfMissingMarker(() => source.AsTTree(treeName: "TrainingTree", outputROOTFile: fname),
+                                       () =>
+                                       {
+                                           foreach (var fToDelete in Directory.EnumerateFiles(fname.DirectoryName, $"{Path.GetFileNameWithoutExtension(fname.Name)}*.root"))
+                                           {
+                                               File.Delete(fToDelete);
+                                           }
+                                       }
+                                       );
 
             // Convert into open files
             var results = (from finfo in f
