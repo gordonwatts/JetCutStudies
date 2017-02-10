@@ -21,9 +21,16 @@ namespace TMVAUtilities
         /// </summary>
         private static int _f_index = 0;
 
+        /// <summary>
+        /// Convert a source to a TTree output file(s).
+        /// </summary>
+        /// <typeparam name="T">The object that we are to write out to the file as a tree. Needs to be something LINQToTTree understands.</typeparam>
+        /// <param name="source">Sequence to write out</param>
+        /// <param name="sampleTitle">The title to use with the TTree</param>
+        /// <returns>Array of open TTree's and the files that contain them.</returns>
         public static Tuple<ROOTNET.Interface.NTTree, FileInfo>[] ToTTreeAndFile<T> (this IQueryable<T> source, string sampleTitle = "")
         {
-            // Get the default directory. Look for a cxproj file, and if we don't find it
+            // Get the default directory. Look for a csproj file, and if we don't find it
             // just use where we are now.
             var d = FindDirectoryWithFileMatching("*.csproj");
             if (d == null)
