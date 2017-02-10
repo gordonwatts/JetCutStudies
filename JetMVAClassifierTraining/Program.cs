@@ -129,10 +129,10 @@ namespace JetMVAClassifierTraining
 
                 // Setup the training
                 var training = flatSignalTrainingData
-                    .AsClass("hss", isTrainingEvent: e => !(e.EventNumber % 3 == 1))
-                    .EventClass(flatBackgroundTrainingData, "Multijet", isTrainingEvent: e => !(e.EventNumber % 3 == 1))
-                    .EventClass(flatData16, "BIB", isTrainingEvent: e => !(e.EventNumber % 3 == 1))
-                    .EventClass(flatData15, "BIB", isTrainingEvent: e => !(e.EventNumber % 3 == 1))
+                    .AsClass("hss", isTrainingEvent: e => !(e.EventNumber % 3 == 1), title: "hss")
+                    .EventClass(flatBackgroundTrainingData, "Multijet", isTrainingEvent: e => !(e.EventNumber % 3 == 1), title: "multijet")
+                    .EventClass(flatData16, "BIB", isTrainingEvent: e => !(e.EventNumber % 3 == 1), title: "bib_16")
+                    .EventClass(flatData15, "BIB", isTrainingEvent: e => !(e.EventNumber % 3 == 1), title: "bib_15")
                     .UseVariables(varList);
 
                 // Create the BDT training and configure it.

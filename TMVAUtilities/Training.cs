@@ -569,11 +569,11 @@ namespace TMVAUtilities
             else
             {
                 // We need to split it into signal and background
-                foreach (var v in s._sample.Where(s._isTrainingEvent).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTraining, s._eventClass)))
+                foreach (var v in s._sample.Where(s._isTrainingEvent).ToTTreeAndFile($"{s._title}-training").Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTraining, s._eventClass)))
                 {
                     yield return v;
                 }
-                foreach (var v in s._sample.Where(qevt => !s._isTrainingEvent.Invoke(qevt)).ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTesting, s._eventClass)))
+                foreach (var v in s._sample.Where(qevt => !s._isTrainingEvent.Invoke(qevt)).ToTTreeAndFile($"{s._title}-testing").Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTesting, s._eventClass)))
                 {
                     yield return v;
                 }
@@ -642,10 +642,10 @@ namespace TMVAUtilities
         /// <param name="eventClassName"></param>
         /// <param name="isTrainingEvent"></param>
         /// <returns></returns>
-        public static Training<T> AsClass<T>(this IQueryable<T> source, string eventClassName = "", Expression<Func<T, bool>> isTrainingEvent = null)
+        public static Training<T> AsClass<T>(this IQueryable<T> source, string eventClassName = "", Expression<Func<T, bool>> isTrainingEvent = null, string title = null)
         {
             var t = new Training<T>();
-            t.EventClass(source, eventClassName, isTrainingEvent);
+            t.EventClass(source, eventClassName, isTrainingEvent, title);
             return t;
         }
 
