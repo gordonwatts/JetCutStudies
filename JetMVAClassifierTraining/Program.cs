@@ -1,5 +1,6 @@
 ﻿using CalRatioTMVAUtilities;
 using CommandLine;
+using DiVertAnalysis;
 using libDataAccess;
 using libDataAccess.Utils;
 using LINQToTreeHelpers;
@@ -53,6 +54,12 @@ namespace JetMVAClassifierTraining
 
             [Option("SmallTestingMenu", HelpText = "If present, then run on a small number of samples", Default = false)]
             public bool SmallTestingMenu { get; set; }
+
+            [Option("TrainEventsBIB16", HelpText = "How many events from data16 should be used in the training for bib16 (-1 is all, 0 is none)?", Default = -1)]
+            public int EventsToUseForTrainingAndTestingBIB16 { get; set; }
+
+            [Option("TrainEventsBIB15", HelpText = "How many events from data16 should be used in the training for bib15 (-1 is all, 0 is none)?", Default = -1)]
+            public int EventsToUseForTrainingAndTestingBIB15 { get; set; }
         }
 
         static void Main(string[] args)
@@ -82,27 +89,9 @@ namespace JetMVAClassifierTraining
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, !options.UseFullDataset);
 
             // Class: BIB
-            var data15 = SampleMetaData.AllSamplesWithTag("data15")
-                .Take(options.UseFullDataset ? 10000 : 10)
-                .SamplesAsSingleQueriable()
-                .AsBeamHaloStream(DataEpoc.data15)
-                .AsGoodJetStream();
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data15);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data16);
 
-            var data15TrainingAndTesting = data15;
-
-            var data16 = SampleMetaData.AllSamplesWithTag("data16")
-                .Take(options.UseFullDataset ? 10000 : 10)
-                .SamplesAsSingleQueriable()
-                .AsBeamHaloStream(DataEpoc.data16)
-                .AsGoodJetStream();
-
-            var data16TrainingAndTesting = data16;
-
-            if (!options.UseFullDataset)
-            {
-                data15TrainingAndTesting = data15TrainingAndTesting.Take(50000);
-                data16TrainingAndTesting = data16TrainingAndTesting.Take(50000);
-            }
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVAClassifierTraining.root"))
@@ -197,6 +186,65 @@ namespace JetMVAClassifierTraining
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();
             }
+        }
+
+        /// <summary>
+        /// Grab the BIB samles
+        /// </summary>
+        /// <param name="requestedNumberOfEvents">-1 for everything, or a number of requested</param>
+        /// <param name="bib_tag">The tag name we should use to do the lookup</param>
+        /// <returns></returns>
+        private static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc)
+        {
+            // If no events, then we need to just return everything
+            if (requestedNumberOfEvents == 0)
+            {
+                return null;
+            }
+
+            // Fetch all the data samples
+            var dataSamples = SampleMetaData.AllSamplesWithTag(epoc == DataEpoc.data15 ? "data15" : "data16");
+
+            // If we have a limitation on the number of events, then we need to measure our the # of events.
+            int countOfEvents = 0;
+            int countOfEventsOneBack = 0;
+            dataSamples = dataSamples
+                .TakeWhile(s =>
+                {
+                    if (requestedNumberOfEvents < 0)
+                    {
+                        return true;
+                    }
+                    var q = Files.GetSampleAsMetaData(s);
+                    countOfEventsOneBack = countOfEvents;
+                    countOfEvents += q.AsBeamHaloStream(epoc)
+                                        .AsGoodJetStream()
+                                        .Count();
+                    return countOfEvents < requestedNumberOfEvents;
+                })
+                .ToArray();
+
+            // The following is the tricky part. Now that we have a list of events, it is not likely that we have found a file boundary
+            // that matches the number of events. So we will have to do this a little carefully.
+
+            SampleMetaData theLastSample = null;
+            IEnumerable<SampleMetaData> allBut = dataSamples;
+            if (countOfEvents > 0 && countOfEvents > requestedNumberOfEvents)
+            {
+                // Take up to the last one.
+                allBut = dataSamples.Take(dataSamples.Count() - 1);
+                theLastSample = dataSamples.Last();
+            }
+
+            var data1 = allBut
+                .SamplesAsSingleQueriable()
+                .AsBeamHaloStream(epoc)
+                .AsGoodJetStream();
+
+            var data = theLastSample == null ? data1
+                : data1.Concat(Files.GetSampleAsMetaData(theLastSample).AsBeamHaloStream(epoc).AsGoodJetStream().Take(requestedNumberOfEvents - countOfEventsOneBack));
+
+            return data;
         }
 
         /// <summary>
