@@ -1,5 +1,6 @@
 ﻿using LINQToTTreeLib;
 using LINQToTTreeLib.Files;
+using LINQToTTreeLib.Variables;
 using ROOTNET;
 using System;
 using System.Collections.Generic;
@@ -262,7 +263,20 @@ namespace TMVAUtilities
             outf.WriteLine();
             outf.WriteLine("Calling TMVAReader");
             outf.WriteLine("======================");
-            outf.WriteLine("Replace v1-v5 with the appropriate values, and the path to the filename as needed.");
+            outf.WriteLine("Replace vXX with the appropriate values, and the path to the filename as needed.");
+            switch (_classificationType)
+            {
+                case ClassificationType.SignalBackground:
+                    outf.WriteLine("Return type from the EvaluateMVA is float");
+                    break;
+                case ClassificationType.MultiClass:
+                    outf.WriteLine("Return type from the EvaluateMulticlass is vector<float>");
+                    break;
+                case ClassificationType.Undetermined:
+                    throw new InvalidOperationException("Should never call without adding samples");
+                default:
+                    throw new InvalidOperationException("Should never call without adding samples");
+            }
             var code = new TMVAReaderCodeGenerator<T>(method.Name, weightFile, p.Item2);
             foreach (var i in (code.IncludeFiles() == null) ? Enumerable.Empty<string>() : code.IncludeFiles())
             {

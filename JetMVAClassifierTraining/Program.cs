@@ -8,6 +8,7 @@ using LINQToTreeHelpers.FutureUtils;
 using LINQToTTreeLib;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -162,6 +163,21 @@ namespace JetMVAClassifierTraining
                 // Copy to a common filename. We do this only because it makes
                 // the Jenkins artifacts to pick up only what we are producing this round.
                 trainingResult.CopyToJobName(jobName);
+
+                // And write out a text file that contains the information needed to use this cut.
+                var outf = File.CreateText(PathUtils.ControlFilename(jobName, new DirectoryInfo("."), n => $"{n}_{m1.Name}-Info.txt"));
+                try
+                {
+                    outf.WriteLine($"Using the MVA '{m1.Name}' trained in job '{trainingResult.JobName}'");
+                    outf.WriteLine();
+                    outf.WriteLine($"TMVAReader Weight File: {jobName}_{m1.Name}.weights.xml");
+                    outf.WriteLine();
+                    m1.DumpUsageInfo(outf);
+                }
+                finally
+                {
+                    outf.Close();
+                }
 
                 // Now, for each sample, generate the weight plots
                 var trainingResultDir = outputHistograms.mkdir("Results");
