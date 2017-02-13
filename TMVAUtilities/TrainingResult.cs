@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using libDataAccess.Utils;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TMVAUtilities
 {
@@ -30,38 +26,16 @@ namespace TMVAUtilities
             dir = dir == null ? new DirectoryInfo(".") : dir;
 
             // Copy over the training output root file.
-            var outputTrainingRootInfo = ControlFilename(name, dir, n => $"{n}.training.root");
+            var outputTrainingRootInfo = PathUtils.ControlFilename(name, dir, n => $"{n}.training.root");
             TrainingOutputFile.CopyTo(outputTrainingRootInfo, true);
 
             // Next, each of the weight files
             foreach (var m in MethodList)
             {
                 var originalWeightFile = m.WeightFile;
-                var finalName = ControlFilename (name, dir, n => $"{n}_{m.Name}.weights.xml");
+                var finalName = PathUtils.ControlFilename (name, dir, n => $"{n}_{m.Name}.weights.xml");
                 originalWeightFile.CopyTo(finalName, true);
             }
-        }
-
-        /// <summary>
-        /// Build a filename reference that is short enough.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="dir"></param>
-        /// <param name="buildName"></param>
-        /// <returns></returns>
-        private static string ControlFilename(string name, DirectoryInfo dir, Func<string, string> buildName)
-        {
-            var outputTrainingRootInfo = Path.Combine(dir.FullName, buildName(name));
-            var newName = name;
-            while (outputTrainingRootInfo.Length >= 260)
-            {
-                var segments = newName.Split('.');
-                var trimmed = segments
-                    .Select(s => s.Length > 4 ? s.Substring(1) : s);
-                newName = trimmed.Aggregate((o, n) => $"{o}.{n}");
-                outputTrainingRootInfo = Path.Combine(dir.FullName, buildName(newName));
-            }
-            return outputTrainingRootInfo;
         }
     }
 }

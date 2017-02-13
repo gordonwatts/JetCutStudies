@@ -26,7 +26,8 @@ namespace libDataAccess.Utils
                 var segments = newName.Split('.');
                 var trimmed = segments
                     .Select(s => s.Length > 4 ? s.Substring(1) : s);
-                newName = trimmed.Aggregate((o, n) => $"{o}.{n}");
+                var retrimmed = segments.Take(1).Concat(trimmed.Skip(1));
+                newName = retrimmed.Aggregate((o, n) => $"{o}.{n}");
                 outputTrainingRootInfo = Path.Combine(dir.FullName, buildName(newName));
             }
             return outputTrainingRootInfo;
