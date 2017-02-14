@@ -278,7 +278,7 @@ namespace JetMVAClassifierTraining
             {
                 s1
                     .Select(n => Tuple.Create((double) n.Item1[cinfo.Item2], n.Item2))
-                    .FuturePlot(TrainingEventWeight.NameFormat, TrainingEventWeight.TitleFormat, TrainingEventWeight, $"weight_{cinfo.Item1}")
+                    .FuturePlot(ClassifierEventWeight.NameFormat, ClassifierEventWeight.TitleFormat, ClassifierEventWeight, $"weight_{cinfo.Item1}")
                     .Save(outh);
             }
         }

@@ -108,6 +108,9 @@ namespace libDataAccess
         public static IPlotSpec<double> TrainingEventWeightFine =
             MakePlotterSpec<double>(100000, -1.0, 1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
 
+        public static IPlotSpec<double> ClassifierEventWeight =
+            MakePlotterSpec<double>(100, 0.0, 1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
+
         /// <summary>
         /// A pT plot of tracks associated with jets
         /// </summary>
