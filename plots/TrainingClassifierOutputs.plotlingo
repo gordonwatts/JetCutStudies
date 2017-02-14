@@ -1,0 +1,36 @@
+#
+# Simple 1D plots of all the training put variables we are going to use.
+#
+
+include ("common.plotlingo");
+
+#
+# All the types of plots
+#
+
+#
+# Plot the three signal classes
+#
+wts = [
+	{class_name => "hss"},
+	{class_name => "bib"},
+	{class_name => "multijet"}
+];
+
+Legend("hss" => {Color => 1, Title => "Signal"});
+Legend("multijet" => {Color => 2, Title => "Multijet"});
+Legend("bib" => {Color => 3, Title => "BIB"});
+
+all_samples = signalCompareSamples + ["data15", "data16", "jz"];
+
+for (sample, all_samples) {
+	plots = map(wts) {
+		f_training.Get("Results/{sample}/weightweight_{class_name}").tag(class_name);
+	};
+	plots
+		.plot()
+		.size(1200, 800)
+		.title("BDT Performance on {sample}")
+		.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
+		.xaxis("BDT Output");
+};
