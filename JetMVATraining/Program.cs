@@ -232,7 +232,7 @@ namespace JetMVATraining
                     cuts.Add(new CutInfo()
                     {
                         Title = m.Name,
-                        Cut = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js)) > nncut,
+                        Cut = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js)) > nncut.Value,
                         CutValue = js => cBDT.Invoke(TrainingUtils.TrainingTreeConverter.Invoke(js))
                     });
 
@@ -243,7 +243,7 @@ namespace JetMVATraining
                         outf.WriteLine($"Using the MVA '{m.Name}' trained in job '{trainingResult.JobName}'");
                         outf.WriteLine();
                         outf.WriteLine($"TMVAReader Weight File: {jobName}_{m.Name}.weights.xml");
-                        outf.WriteLine($"  MVAResultValue > {nncut} gives a total background fraction of {standardBackgroundEff.Value}");
+                        outf.WriteLine($"  MVAResultValue > {nncut.Value} gives a total background fraction of {standardBackgroundEff.Value}");
                         outf.WriteLine();
                         m.DumpUsageInfo(outf);
                     }

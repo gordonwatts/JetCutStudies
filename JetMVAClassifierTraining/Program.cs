@@ -217,9 +217,14 @@ namespace JetMVAClassifierTraining
                     .FilterNonTrainingEvents()
                     .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 2, name: "BIB");
 
-                FutureWriteLine(() => $"The MVA cut signal efficiency of {options.PrecisionValue} is {nncutSig}.");
-                FutureWriteLine(() => $"The MVA cut multijet efficiency of {options.PrecisionValue} is {nncutMultijet}.");
-                FutureWriteLine(() => $"The MVA cut BIB efficiency of {options.PrecisionValue} is {nncutBiB}.");
+                FutureWriteLine(() => $"The MVA cut signal efficiency of {options.PrecisionValue} is {nncutSig.Value}");
+                FutureWriteLine(() => $"The MVA cut multijet efficiency of {options.PrecisionValue} is {nncutMultijet.Value}");
+                FutureWriteLine(() => $"The MVA cut BIB efficiency of {options.PrecisionValue} is {nncutBiB.Value}");
+                var average = from nnSig in nncutSig
+                              from nnMul in nncutMultijet
+                              from nnBIB in nncutBiB
+                              select (nnSig + nnMul + nnBIB) / 3.0;
+                FutureWriteLine(() => $"The average MVA cut for {options.PrecisionValue} pass rate is {average.Value}");
 
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();

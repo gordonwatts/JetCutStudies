@@ -174,7 +174,7 @@ namespace CalRatioTMVAUtilities
         /// <param name="method">Method that made this classifier</param>
         /// <param name="name">The name of the histogram to cache</param>
         /// <returns></returns>
-        public static double FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, Method<TrainingTree> method,
+        public static IFutureValue<double> FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, Method<TrainingTree> method,
             int classIndex = 0, string name = "")
         {
             if (passFraction < 0 || passFraction > 1.0)
@@ -193,7 +193,7 @@ namespace CalRatioTMVAUtilities
             // And the center of that bin
             var binCenter = from b in bin from h in p select h.GetBinCenter(b);
 
-            return binCenter.Value;
+            return binCenter;
         }
 
         /// <summary>
