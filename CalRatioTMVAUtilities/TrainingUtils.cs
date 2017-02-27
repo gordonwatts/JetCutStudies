@@ -167,11 +167,15 @@ namespace CalRatioTMVAUtilities
         /// <summary>
         /// Determine the NN value for a pass value. Return it.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="passFraction"></param>
-        /// <param name="dir"></param>
+        /// <param name="source">Source of events to look for NN cut on</param>
+        /// <param name="passFraction">Find the cut for the fraction of events that should pass</param>
+        /// <param name="dir">Directory to write output to</param>
+        /// <param name="classIndex">For a mutli-class classifier, what class should we look at</param>
+        /// <param name="method">Method that made this classifier</param>
+        /// <param name="name">The name of the histogram to cache</param>
         /// <returns></returns>
-        public static double FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, Method<TrainingTree> m)
+        public static double FindNNCut(this IQueryable<TrainingTree> source, double passFraction, FutureTDirectory dir, Method<TrainingTree> method,
+            int classIndex = 0, string name = "")
         {
             if (passFraction < 0 || passFraction > 1.0)
             {
@@ -180,7 +184,7 @@ namespace CalRatioTMVAUtilities
 
             // dump the MVA output into a large histogram that has lots of bins so we can calculate.
             var p = source
-                .MakeNNPlot(m)
+                .MakeNNPlot(method, classIndex: classIndex, name: name)
                 .Save(dir);
 
             // Now, look through the plot, bin by bin, till we get past the total.
@@ -222,19 +226,33 @@ namespace CalRatioTMVAUtilities
         /// Build a nice plot of the training value
         /// </summary>
         /// <param name="source"></param>
+        /// <param name="classIndex">Which MVA class should it return</param>
+        /// <param name="method">Method that the training dwas done for.</param>
+        /// <param name="name">Name of the histogram to cache</param>
         /// <returns></returns>
-        internal static IFutureValue<ROOTNET.NTH1F> MakeNNPlot (this IQueryable<TrainingTree> source, Method<TrainingTree> m)
+        internal static IFutureValue<ROOTNET.NTH1F> MakeNNPlot (this IQueryable<TrainingTree> source, Method<TrainingTree> method,
+            int classIndex = 0, string name = "")
         {
             // Argument check
-            if (!m.WeightFile.Exists)
+            if (!method.WeightFile.Exists)
             {
-                throw new ArgumentException($"File {m.WeightFile.FullName} can't be located.");
+                throw new ArgumentException($"File {method.WeightFile.FullName} can't be located.");
+            }
+            if (!method.IsMultiClass && classIndex != 0)
+            {
+                throw new ArgumentException("Can't specify a class index if multi-class is set to false.");
             }
 
+            // If we are a multi-class, get back the proper class response. Otherwise,
+            // get back the single type of classifier output.
+            var cBDT = method.GetMVAMulticlassValue();
+            var mvaCalc = method.IsMultiClass
+                ? t => (double)(cBDT.Invoke(t)[classIndex])
+                : method.GetMVAValue();
+
             // Generate a pretty detailed plot
-            var mvaCalc = m.GetMVAValue();
             return source
-                .FuturePlot("mva_weights", "MVA Output Weights", 10000, -1.0, 1.0, t => mvaCalc.Invoke(t), weight: t => t.Weight);
+                .FuturePlot($"mva_weights{name}", $"MVA Output Weights {name}", 10000, -1.0, 1.0, t => mvaCalc.Invoke(t), weight: t => t.Weight);
         }
     }
 }

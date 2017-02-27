@@ -222,7 +222,12 @@ namespace TMVAUtilities
         /// <returns></returns>
         public Method<T> AddMethod(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions = "")
         {
-            var m = new Method<T>(what, methodTitle, methodOptions, this);
+            if (_classificationType == ClassificationType.Undetermined)
+            {
+                throw new InvalidOperationException("You can't call AddMethod before adding signal and background or class samples.");
+            }
+
+            var m = new Method<T>(what, methodTitle, methodOptions, this, _classificationType == ClassificationType.MultiClass);
             _methods.Add(m);
             return m;
         }

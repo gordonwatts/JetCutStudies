@@ -1,6 +1,5 @@
 ﻿using CalRatioTMVAUtilities;
 using CommandLine;
-using DiVertAnalysis;
 using libDataAccess;
 using libDataAccess.Utils;
 using LINQToTreeHelpers;
@@ -19,6 +18,7 @@ using static CalRatioTMVAUtilities.TrainingVariableUtils;
 using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Utils.CommandLineUtils;
 using static libDataAccess.Utils.SampleUtils;
+using static libDataAccess.Utils.FutureConsole;
 
 namespace JetMVAClassifierTraining
 {
@@ -61,6 +61,9 @@ namespace JetMVAClassifierTraining
 
             [Option("TrainEventsBIB15", HelpText = "How many events from data16 should be used in the training for bib15 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB15 { get; set; }
+
+            [Option("PrecisionValue", HelpText ="The fraction of events in each sample to use when calculating the training precision", Default = 0.90)]
+            public double PrecisionValue { get; set; }
         }
 
         static void Main(string[] args)
@@ -198,6 +201,25 @@ namespace JetMVAClassifierTraining
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), data15TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), data16TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), backgroundTrainingTree, cBDT, new string[] { "hss", "multijet", "bib" });
+
+                // Calculate the cut value for each output in order to determine the precision.
+                // Calculate where we have to place the cut in order to get the same over-all background efficiency.
+                var effhistDirectories = outputHistograms.mkdir("prec_calc");
+                var nncutSig = signalInCalOnly
+                    .AsTrainingTree()
+                    .FilterNonTrainingEvents()
+                    .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 0, name: "Signal");
+                var nncutMultijet = backgroundTrainingTree
+                    .FilterNonTrainingEvents()
+                    .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 1, name: "Multijet");
+                var nncutBiB = data15TrainingAndTesting
+                    .AsTrainingTree()
+                    .FilterNonTrainingEvents()
+                    .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 2, name: "BIB");
+
+                FutureWriteLine(() => $"The MVA cut signal efficiency of {options.PrecisionValue} is {nncutSig}.");
+                FutureWriteLine(() => $"The MVA cut multijet efficiency of {options.PrecisionValue} is {nncutMultijet}.");
+                FutureWriteLine(() => $"The MVA cut BIB efficiency of {options.PrecisionValue} is {nncutBiB}.");
 
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();

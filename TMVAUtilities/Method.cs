@@ -45,6 +45,11 @@ namespace TMVAUtilities
         }
 
         /// <summary>
+        /// Was this trained with just two classes or with multiple classes?
+        /// </summary>
+        public bool IsMultiClass { get; private set; }
+
+        /// <summary>
         /// What training are we part of?
         /// </summary>
         public Training<T> Training { get; private set; }
@@ -53,10 +58,11 @@ namespace TMVAUtilities
         /// Can only be created as part of a training, so this is hidden
         /// from everyone outside.
         /// </summary>
-        internal Method(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions, Training<T> parent)
+        internal Method(ROOTNET.Interface.NTMVA.NTypes.EMVA what, string methodTitle, string methodOptions, Training<T> parent, bool isMultiClass)
         {
             this.What = what;
             this.Name = methodTitle;
+            this.IsMultiClass = isMultiClass;
 
             if (!string.IsNullOrWhiteSpace(methodOptions))
             {
