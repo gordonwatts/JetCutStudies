@@ -226,6 +226,22 @@ namespace JetMVAClassifierTraining
                               select (nnSig + nnMul + nnBIB) / 3.0;
                 FutureWriteLine(() => $"The average MVA cut for {options.PrecisionValue} pass rate is {average.Value}");
 
+                // Next, calc the 90% eff for each sample, and the average
+                foreach (var s in signalTestSources)
+                {
+                    var nnCutTestSignal = s.Item2
+                        .AsGoodJetStream()
+                        .AsTrainingTree()
+                        .FilterNonTrainingEvents()
+                        .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 0, name: s.Item1);
+                    FutureWriteLine(() => $"The MVA cut {s.Item1} efficiency of {options.PrecisionValue} is {nnCutTestSignal.Value}");
+                    var a = from nnSig in nnCutTestSignal
+                            from nnMul in nncutMultijet
+                            from nnBIB in nncutBiB
+                            select (nnSig + nnMul + nnBIB) / 3.0;
+                    FutureWriteLine(() => $"  The average MVA cut for {s.Item1} for {options.PrecisionValue} pass rate is {a.Value}");
+                }
+
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();
             }
