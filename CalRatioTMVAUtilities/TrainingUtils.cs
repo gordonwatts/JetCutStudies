@@ -81,7 +81,9 @@ namespace CalRatioTMVAUtilities
         /// <returns></returns>
         public static IQueryable<TrainingTree> FilterNonTrainingEvents (this IQueryable<TrainingTree> source)
         {
-            return source.Where(t => t.EventNumber % 2 == 0);
+            return source == null
+                ? null
+                : source.Where(t => t.EventNumber % 2 == 0);
         }
 
         /// <summary>
@@ -102,7 +104,9 @@ namespace CalRatioTMVAUtilities
         /// <returns></returns>
         public static IQueryable<TrainingTree> AsTrainingTree(this IQueryable<JetStream> source)
         {
-            return source
+            return source == null
+                ? null
+                : source
                 .Where(j => j.JetInfo.Jet.pT < 550.0)
                 .Select(i => TrainingTreeConverter.Invoke(i));
         }
@@ -146,6 +150,11 @@ namespace CalRatioTMVAUtilities
         /// <returns></returns>
         public static IQueryable<TrainingTree> PlotTrainingVariables (this IQueryable<TrainingTree> source, FutureTDirectory dir, string tag)
         {
+            if (source == null)
+            {
+                return null;
+            }
+
             // Plots of all the items
             foreach (var p in _plotters)
             {

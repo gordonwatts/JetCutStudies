@@ -212,7 +212,9 @@ namespace JetMVAClassifierTraining
                 var nncutMultijet = backgroundTrainingTree
                     .FilterNonTrainingEvents()
                     .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 1, name: "Multijet");
-                var nncutBiB = data15TrainingAndTesting
+                var nncutBiB = data15TrainingAndTesting == null
+                    ? 0.5.AsFuture()
+                    : data15TrainingAndTesting
                     .AsTrainingTree()
                     .FilterNonTrainingEvents()
                     .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 2, name: "BIB");
@@ -314,6 +316,11 @@ namespace JetMVAClassifierTraining
         /// <param name="cBDT"></param>
         private static void GenerateEfficiencyPlots(FutureTDirectory outh, IQueryable<TrainingTree> source, Expression<Func<TrainingTree, float[]>> cBDT, string[] trainingClassNames)
         {
+            if (source == null)
+            {
+                return;
+            }
+
             var s1 = source
                 .Select(j => Tuple.Create(cBDT.Invoke(j), j.Weight));
 

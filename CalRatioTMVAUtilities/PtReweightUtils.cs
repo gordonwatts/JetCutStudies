@@ -72,6 +72,11 @@ namespace CalRatioTMVAUtilities
         /// <returns></returns>
         public static IQueryable<TrainingTree> FlattenBySpectra(this IQueryable<TrainingTree> source, Expression<Func<TrainingTree, double>> toFlattenBy, FutureTDirectory output, string samplePrefix)
         {
+            if (source == null)
+            {
+                return null;
+            }
+
             // Make a before plot of the pT spectra.
             source
                 .Select(j => Tuple.Create(toFlattenBy.Invoke(j), j.Weight))

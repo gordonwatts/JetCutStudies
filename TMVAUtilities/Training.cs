@@ -332,8 +332,8 @@ namespace TMVAUtilities
             outf.WriteLine($"Method {what.ToString()} with parameters '{method.BuildArgumentList(p.Item2)}'");
             foreach (var eventClass in _trainingSamples.GroupBy(s => s._eventClass))
             {
-                outf.WriteLine($"{eventClass.Key} Total Events: {eventClass.Select(ms => ms._sample.Count()).Sum()}");
-                foreach (var s in eventClass.Zip(Enumerable.Range(1, eventClass.Count()), (bs, c) => Tuple.Create(bs, c)))
+                outf.WriteLine($"{eventClass.Key} Total Events: {eventClass.Where(ms => ms._sample != null).Select(ms => ms._sample.Count()).Sum()}");
+                foreach (var s in eventClass.Where(ms => ms._sample != null).Zip(Enumerable.Range(1, eventClass.Count()), (bs, c) => Tuple.Create(bs, c)))
                 {
                     var trainingEventsSelection = s.Item1._isTrainingEvent == null ? "" : $" (training events when ({s.Item1._isTrainingEvent.ToString()})";
                     outf.WriteLine($"  {eventClass.Key} input stream #{s.Item2}: {s.Item1._sample.Count()} events{trainingEventsSelection}");
@@ -579,22 +579,25 @@ namespace TMVAUtilities
         /// <returns></returns>
         private static IEnumerable<Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType, string>> ExtractTrainingAndTestingSamples(SampleInfo s)
         {
-            // If we aren't to split it at all, just go through "simply".
-            if (s._isTrainingEvent == null)
+            if (s._sample != null)
             {
-                foreach (var v in s._sample.ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsBoth, s._eventClass)))
-                    yield return v;
-            }
-            else
-            {
-                // We need to split it into signal and background
-                foreach (var v in s._sample.Where(s._isTrainingEvent).ToTTreeAndFile($"{s._title}-training").Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTraining, s._eventClass)))
+                // If we aren't to split it at all, just go through "simply".
+                if (s._isTrainingEvent == null)
                 {
-                    yield return v;
+                    foreach (var v in s._sample.ToTTreeAndFile(s._title).Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsBoth, s._eventClass)))
+                        yield return v;
                 }
-                foreach (var v in s._sample.Where(qevt => !s._isTrainingEvent.Invoke(qevt)).ToTTreeAndFile($"{s._title}-testing").Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTesting, s._eventClass)))
+                else
                 {
-                    yield return v;
+                    // We need to split it into signal and background
+                    foreach (var v in s._sample.Where(s._isTrainingEvent).ToTTreeAndFile($"{s._title}-training").Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTraining, s._eventClass)))
+                    {
+                        yield return v;
+                    }
+                    foreach (var v in s._sample.Where(qevt => !s._isTrainingEvent.Invoke(qevt)).ToTTreeAndFile($"{s._title}-testing").Select(t => Tuple.Create(t.Item1, t.Item2, FileTrainingType.IsTesting, s._eventClass)))
+                    {
+                        yield return v;
+                    }
                 }
             }
         }
