@@ -37,16 +37,16 @@ namespace libDataAccess
         /// <remarks>
         /// TODO: Track quality cuts, not just track and pt
         /// </remarks>
-        public static IQueryable<JetInfoExtra> BuildSuperJetInfo(IQueryable<recoTree> background)
+        public static IQueryable<JetInfoExtra> BuildSuperJetInfo(IQueryable<recoTree> background, double pTCut = 40.0)
         {
             return background
-                .SelectMany(ev => ev.Jets.Where(j => IsGoodJet.Invoke(j)).Select(j => CreateJetInfoExtra.Invoke(ev, j)));
+                .SelectMany(ev => ev.Jets.Where(j => IsGoodJet.Invoke(j, pTCut)).Select(j => CreateJetInfoExtra.Invoke(ev, j)));
         }
 
         /// <summary>
         /// Test for good jets
         /// </summary>
-        public static Expression<Func<recoTreeJets, bool>> IsGoodJet = j => j.pT > 40.0 && Abs(j.eta) < CutConstants.JetEtaLimit && j.isGoodLLP;
+        public static Expression<Func<recoTreeJets, double, bool>> IsGoodJet = (j, ptcut) => j.pT > ptcut && Abs(j.eta) < CutConstants.JetEtaLimit && j.isGoodLLP;
     }
 
 }

@@ -31,11 +31,11 @@ namespace libDataAccess.Utils
         /// Turn an event sample into a jet sample.
         /// Apply default cuts as well.
         /// </summary>
-        public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source)
+        public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source, double pTCut = 40.0)
         {
             return source
                 .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, j), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber }))
-                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
+                .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
         }
 
@@ -73,11 +73,11 @@ namespace libDataAccess.Utils
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static IQueryable<JetStream> AsGoodFirstJetStream(this IQueryable<MetaData> source)
+        public static IQueryable<JetStream> AsGoodFirstJetStream(this IQueryable<MetaData> source, double pTCut = 40.0)
         {
             return source
                 .Select(e => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, e.Data.Jets.OrderByDescending(j => j.pT).First()), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber })
-                .Where(j => j.JetInfo.Jet.pT > 40.0 && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
+                .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
 
         }

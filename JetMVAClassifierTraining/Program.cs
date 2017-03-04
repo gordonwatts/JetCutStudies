@@ -64,6 +64,9 @@ namespace JetMVAClassifierTraining
 
             [Option("PrecisionValue", HelpText ="The fraction of events in each sample to use when calculating the training precision", Default = 0.90)]
             public double PrecisionValue { get; set; }
+
+            [Option("pTCut", HelpText ="The pT cut for jets in GeV. Defaults to 40.", Default = 40.0)]
+            public double pTCut { get; set; }
         }
 
         static void Main(string[] args)
@@ -84,17 +87,17 @@ namespace JetMVAClassifierTraining
 
             var signalUnfiltered = signalSources
                 .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
-                .AsGoodJetStream();
+                .AsGoodJetStream(options.pTCut);
 
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
             // Class: Multijet
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, !options.UseFullDataset);
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset);
 
             // Class: BIB
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data15);
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data16);
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data15, options.pTCut);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data16, options.pTCut);
 
 
             // The file we will use to dump everything about this training.
@@ -191,7 +194,7 @@ namespace JetMVAClassifierTraining
                 foreach (var s in signalTestSources)
                 {
                     var sEvents = s.Item2
-                        .AsGoodJetStream()
+                        .AsGoodJetStream(options.pTCut)
                         .FilterNonTrainingEvents()
                         .FilterLLPNear()
                         .AsTrainingTree();
@@ -232,7 +235,7 @@ namespace JetMVAClassifierTraining
                 foreach (var s in signalTestSources)
                 {
                     var nnCutTestSignal = s.Item2
-                        .AsGoodJetStream()
+                        .AsGoodJetStream(options.pTCut)
                         .AsTrainingTree()
                         .FilterNonTrainingEvents()
                         .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 0, name: s.Item1);
@@ -255,7 +258,7 @@ namespace JetMVAClassifierTraining
         /// <param name="requestedNumberOfEvents">-1 for everything, or a number of requested</param>
         /// <param name="bib_tag">The tag name we should use to do the lookup</param>
         /// <returns></returns>
-        private static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc)
+        private static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut)
         {
             // If no events, then we need to just return everything
             if (requestedNumberOfEvents == 0)
@@ -279,7 +282,7 @@ namespace JetMVAClassifierTraining
                     var q = Files.GetSampleAsMetaData(s);
                     countOfEventsOneBack = countOfEvents;
                     countOfEvents += q.AsBeamHaloStream(epoc)
-                                        .AsGoodJetStream()
+                                        .AsGoodJetStream(pTCut)
                                         .Count();
                     return countOfEvents < requestedNumberOfEvents;
                 })
@@ -300,10 +303,10 @@ namespace JetMVAClassifierTraining
             var data1 = allBut
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(epoc)
-                .AsGoodJetStream();
+                .AsGoodJetStream(pTCut);
 
             var data = theLastSample == null ? data1
-                : data1.Concat(Files.GetSampleAsMetaData(theLastSample).AsBeamHaloStream(epoc).AsGoodJetStream().Take(requestedNumberOfEvents - countOfEventsOneBack));
+                : data1.Concat(Files.GetSampleAsMetaData(theLastSample).AsBeamHaloStream(epoc).AsGoodJetStream(pTCut).Take(requestedNumberOfEvents - countOfEventsOneBack));
 
             return data;
         }
