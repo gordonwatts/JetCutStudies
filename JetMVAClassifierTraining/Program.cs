@@ -96,8 +96,8 @@ namespace JetMVAClassifierTraining
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset);
 
             // Class: BIB
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data15, options.pTCut);
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data16, options.pTCut);
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data15, options.pTCut);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data16, options.pTCut);
 
 
             // The file we will use to dump everything about this training.
