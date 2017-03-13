@@ -206,6 +206,36 @@ namespace CalRatioTMVAUtilities
         }
 
         /// <summary>
+        /// Calculate the training error (expected_value - wt)^2 average for a particular sample.
+        /// </summary>
+        /// <param name="source">Training events we are going to look at</param>
+        /// <param name="method">The TMVA method to look at these items</param>
+        /// <returns></returns>
+        public static IFutureValue<double> CalcTrainingError(this IQueryable<TrainingTree> source, Method<TrainingTree> method, int classIndex, double expectedValue)
+        {
+            // Quick checks.
+            if (!method.WeightFile.Exists)
+            {
+                throw new ArgumentException($"File {method.WeightFile.FullName} can't be located.");
+            }
+            if (!method.IsMultiClass && classIndex != 0)
+            {
+                throw new ArgumentException("Can't specify a class index if multi-class is set to false.");
+            }
+
+            // Get the sum and the count, and then the average.
+            var count = source.FutureCount();
+
+            var cBDT = method.GetMVAMulticlassValue();
+            var mvaCalc = method.IsMultiClass
+                ? t => (double)(cBDT.Invoke(t)[classIndex])
+                : method.GetMVAValue();
+            var sum = source.Select(e => (expectedValue - mvaCalc.Invoke(e)) * (expectedValue - mvaCalc.Invoke(e))).FutureSum();
+
+            return from c in count from s in sum select (c == 0 ? 0.0 : (s / c));
+        }
+
+        /// <summary>
         /// Calculate the pass fraction for a bin.
         /// </summary>
         /// <param name="h">Histogram we are to examine (assume 1D)</param>

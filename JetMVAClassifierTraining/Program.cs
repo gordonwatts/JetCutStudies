@@ -222,9 +222,26 @@ namespace JetMVAClassifierTraining
                     .FilterNonTrainingEvents()
                     .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 2, name: "BIB");
 
+                var nnAvgSig = signalInCalOnly
+                    .AsTrainingTree()
+                    .FilterNonTrainingEvents()
+                    .CalcTrainingError(m1, 0, 1.0);
+                var nnAvgBack = backgroundTrainingTree
+                    .FilterNonTrainingEvents()
+                    .CalcTrainingError(m1, 1, 1.0);
+                var nnAvgBiB = data15TrainingAndTesting == null
+                    ? 0.5.AsFuture()
+                    : data15TrainingAndTesting
+                    .AsTrainingTree()
+                    .FilterNonTrainingEvents()
+                    .CalcTrainingError(m1, 2, 1.0);
+
                 FutureWriteLine(() => $"The MVA cut signal efficiency of {options.PrecisionValue} is {nncutSig.Value}");
                 FutureWriteLine(() => $"The MVA cut multijet efficiency of {options.PrecisionValue} is {nncutMultijet.Value}");
                 FutureWriteLine(() => $"The MVA cut BIB efficiency of {options.PrecisionValue} is {nncutBiB.Value}");
+                FutureWriteLine(() => $"The MVA average error for signal efficiency is {nnAvgSig.Value}");
+                FutureWriteLine(() => $"The MVA average error for multijet efficiency is {nnAvgBack.Value}");
+                FutureWriteLine(() => $"The MVA average error for BIB efficiency is {nnAvgBiB.Value}");
                 var average = from nnSig in nncutSig
                               from nnMul in nncutMultijet
                               from nnBIB in nncutBiB
@@ -234,17 +251,21 @@ namespace JetMVAClassifierTraining
                 // Next, calc the 90% eff for each sample, and the average
                 foreach (var s in signalTestSources)
                 {
-                    var nnCutTestSignal = s.Item2
+                    var interestingEvents = s.Item2
                         .AsGoodJetStream(options.pTCut)
                         .AsTrainingTree()
-                        .FilterNonTrainingEvents()
+                        .FilterNonTrainingEvents();
+                    var nnCutTestSignal = interestingEvents
                         .FindNNCut(options.PrecisionValue, effhistDirectories, m1, 0, name: s.Item1);
+                    var nnError = interestingEvents
+                        .CalcTrainingError(m1, 0, 1.0);
                     FutureWriteLine(() => $"The MVA cut {s.Item1} efficiency of {options.PrecisionValue} is {nnCutTestSignal.Value}");
                     var a = from nnSig in nnCutTestSignal
                             from nnMul in nncutMultijet
                             from nnBIB in nncutBiB
                             select (nnSig + nnMul + nnBIB) / 3.0;
                     FutureWriteLine(() => $"  The average MVA cut for {s.Item1} for {options.PrecisionValue} pass rate is {a.Value}");
+                    FutureWriteLine(() => $"  The MVA error for {s.Item1} is {nnError.Value}");
                 }
 
                 // Done. Dump all output.
