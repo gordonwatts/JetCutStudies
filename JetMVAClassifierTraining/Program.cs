@@ -253,6 +253,7 @@ namespace JetMVAClassifierTraining
                 {
                     var interestingEvents = s.Item2
                         .AsGoodJetStream(options.pTCut)
+                        .FilterSignal()
                         .AsTrainingTree()
                         .FilterNonTrainingEvents();
                     var nnCutTestSignal = interestingEvents
