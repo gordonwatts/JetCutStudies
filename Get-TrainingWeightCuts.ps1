@@ -24,7 +24,6 @@ if ($Average) {
 	$search = "The MVA cut "
 }
 $lines = $log | ? {$_.Contains($search)}
-$lines | Write-Host
 
 # Search for the numbers we car about
 if ($Average) {
@@ -32,7 +31,6 @@ if ($Average) {
 } else {
 	$matchPattern = '^The MVA cut (?<sample>[^ ]+) efficiency of 0.9 is (?<cut>[0-9\.]+)$'
 }
-Write-Host $matchPattern
 
 $info = $lines | % {$_.Trim() -match $matchPattern} | % {"$($Matches["sample"]), $($Matches["cut"])" }
 Write-Output $info
