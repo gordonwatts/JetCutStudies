@@ -265,7 +265,7 @@ namespace JetMVAClassifierTraining
                             from nnBIB in nncutBiB
                             select (nnSig + nnMul + nnBIB) / 3.0;
                     FutureWriteLine(() => $"  The average MVA cut for {s.Item1} for {options.PrecisionValue} pass rate is {a.Value}");
-                    FutureWriteLine(() => $"  The MVA average error for {s.Item1} is {nnAvgBiB.Value}");
+                    FutureWriteLine(() => $"  The MVA average error for {s.Item1} is {nnError.Value}");
                 }
 
                 // Done. Dump all output.
