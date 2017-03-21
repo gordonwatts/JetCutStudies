@@ -1,5 +1,4 @@
-﻿using libDataAccess.Utils;
-using System.IO;
+﻿using System.IO;
 
 namespace TMVAUtilities
 {
@@ -26,14 +25,14 @@ namespace TMVAUtilities
             dir = dir == null ? new DirectoryInfo(".") : dir;
 
             // Copy over the training output root file.
-            var outputTrainingRootInfo = PathUtils.ControlFilename(name, dir, n => $"{n}.training.root");
+            var outputTrainingRootInfo = FileInfoUtils.ControlFilename(name, dir, n => $"{n}.training.root");
             TrainingOutputFile.CopyTo(outputTrainingRootInfo, true);
 
             // Next, each of the weight files
             foreach (var m in MethodList)
             {
                 var originalWeightFile = m.WeightFile;
-                var finalName = PathUtils.ControlFilename (name, dir, n => $"{n}_{m.Name}.weights.xml");
+                var finalName = FileInfoUtils.ControlFilename (name, dir, n => $"{n}_{m.Name}.weights.xml");
                 originalWeightFile.CopyTo(finalName, true);
             }
         }

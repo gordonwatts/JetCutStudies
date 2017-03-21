@@ -325,6 +325,10 @@
       <HintPath>..\packages\ROOT.NET.Dynamic.5.34.36.13\lib\net40\WrapperPlumbingLibrary.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Z.ExtensionMethods, Version=2.0.10.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.ExtensionMethods.2.0.10\lib\net45\Z.ExtensionMethods.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpressionUtilities.cs" />
@@ -345,12 +349,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\libDataAccess\DiVertAnalysisROOTLINQ.csproj">
-      <Project>{8694CC04-FBE1-4A4A-88D2-910D02941248}</Project>
-      <Name>DiVertAnalysisROOTLINQ</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\TSelectorTemplate.cxx">
