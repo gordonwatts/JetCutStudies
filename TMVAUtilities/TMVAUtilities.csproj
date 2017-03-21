@@ -348,6 +348,7 @@
     <None Include="ConfigData\default.classmethodmappings">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TMVAUtilities.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
