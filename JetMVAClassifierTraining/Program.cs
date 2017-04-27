@@ -239,9 +239,9 @@ namespace JetMVAClassifierTraining
                 FutureWriteLine(() => $"The MVA cut signal efficiency of {options.PrecisionValue} is {nncutSig.Value}");
                 FutureWriteLine(() => $"The MVA cut multijet efficiency of {options.PrecisionValue} is {nncutMultijet.Value}");
                 FutureWriteLine(() => $"The MVA cut BIB efficiency of {options.PrecisionValue} is {nncutBiB.Value}");
-                FutureWriteLine(() => $"The MVA average error for signal efficiency is {nnAvgSig.Value}");
-                FutureWriteLine(() => $"The MVA average error for multijet efficiency is {nnAvgBack.Value}");
-                FutureWriteLine(() => $"The MVA average error for BIB efficiency is {nnAvgBiB.Value}");
+                FutureWriteLine(() => $"The MVA average error for signal is {nnAvgSig.Value}");
+                FutureWriteLine(() => $"The MVA average error for multijet is {nnAvgBack.Value}");
+                FutureWriteLine(() => $"The MVA average error for BIB is {nnAvgBiB.Value}");
                 var average = from nnSig in nncutSig
                               from nnMul in nncutMultijet
                               from nnBIB in nncutBiB
@@ -253,6 +253,7 @@ namespace JetMVAClassifierTraining
                 {
                     var interestingEvents = s.Item2
                         .AsGoodJetStream(options.pTCut)
+                        .FilterSignal()
                         .AsTrainingTree()
                         .FilterNonTrainingEvents();
                     var nnCutTestSignal = interestingEvents
@@ -265,7 +266,7 @@ namespace JetMVAClassifierTraining
                             from nnBIB in nncutBiB
                             select (nnSig + nnMul + nnBIB) / 3.0;
                     FutureWriteLine(() => $"  The average MVA cut for {s.Item1} for {options.PrecisionValue} pass rate is {a.Value}");
-                    FutureWriteLine(() => $"  The MVA error for {s.Item1} is {nnError.Value}");
+                    FutureWriteLine(() => $"  The MVA average error for {s.Item1} is {nnError.Value}");
                 }
 
                 // Done. Dump all output.

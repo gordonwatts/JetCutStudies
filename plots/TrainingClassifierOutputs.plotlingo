@@ -19,9 +19,9 @@ wts = [
 
 Legend("hss" => {Color => 1, Title => "Signal"});
 Legend("multijet" => {Color => 2, Title => "Multijet"});
-Legend("bib" => {Color => 3, Title => "BIB"});
+Legend("bib" => {Color => 4, Title => "BIB"});
 
-all_samples = signalCompareSamples + ["data15", "data16", "jz"];
+all_samples = signalCompareSamples + ["data15", "data16", "jz", "600pi150lt5m"];
 
 for (sample, all_samples) {
 	plots = map(wts) {
@@ -30,7 +30,9 @@ for (sample, all_samples) {
 	plots
 		.plot()
 		.size(1200, 800)
+		.drawingOptionAfter(0,"HIST ")
 		.title("BDT Performance on {sample}")
+		.logy()
 		.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
 		.xaxis("BDT Output");
 };

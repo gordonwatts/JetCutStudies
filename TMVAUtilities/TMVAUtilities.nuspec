@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>1.0.$build$-beta1</version>
+    <title>$title$</title>
+    <authors>G. Watts (UW)</authors>
+    <owners>G. Watts (UW)</owners>
+    <projectUrl>https://github.com/gordonwatts/JetCutStudies</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Utilities to use against TMVA</description>
+    <releaseNotes>Get back to work! Who has time for release notes??</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Physics DataAnalysis LHC ROOT LINQToROOT</tags>
+  </metadata>
+</package>

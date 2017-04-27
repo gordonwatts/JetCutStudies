@@ -130,8 +130,9 @@ namespace CalRatioTMVAUtilities
         /// <param name="weight">Convert the incoming sequence to a weight</param>
         /// <param name="builder">rebuild the incoming sequence, with a new over all weight</param>
         /// <param name="normalization">The normalization of the final sequence (defaults to one)</param>
-        /// <returns></returns>
-        public static IQueryable<T> ReweightToFlat<T,U>(this IQueryable<T> source, IPlotSpec<U> plotter, Expression<Func<T,U>> converter, Expression<Func<T,double>> weight, Expression<Func<T, double, T>> builder, double normalization = 1.0)
+        /// <param name="reBinWithMin">If less than zero, do nothing. Otherwise, rebin the histogram to make sure that every bin has at least this fractional error assuming sqrt(N) statistics.</param>
+        /// <returns>The reweighted sequence</returns>
+        public static IQueryable<T> ReweightToFlat<T,U>(this IQueryable<T> source, IPlotSpec<U> plotter, Expression<Func<T,U>> converter, Expression<Func<T,double>> weight, Expression<Func<T, double, T>> builder, double normalization = 1.0, double reBinWithMinFracError = -1)
         {
             // First, get the spectra. We will process that into a re-weighting.
             var ptSpecra = source
@@ -139,8 +140,25 @@ namespace CalRatioTMVAUtilities
                 .FuturePlot($"bogus_name_{_plotIndex}", "bogus_title", plotter);
             _plotIndex++;
 
-            // Re weight
+            // Rebin, if requested
             var reweightSpectr = ptSpecra.Value;
+            if (reBinWithMinFracError > 0)
+            {
+                // Determine the minimum number of events per bin
+                int minEventsPerBin = (int)(1.0 / (reBinWithMinFracError * reBinWithMinFracError));
+
+                // Next, go through the histogram determining the bins that we will have to have as a minimum,
+                // so this by "chunking" the bins.
+                var binning = from iSourceBin in Enumerable.Range(1, reweightSpectr.NbinsX)
+                              select new
+                              {
+                                  x_low = reweightSpectr.Xaxis.GetBinLowEdge(iSourceBin),
+                                  x_high = reweightSpectr.Xaxis.GetBinUpEdge(iSourceBin),
+                                  content = reweightSpectr.GetBinContent(iSourceBin)
+                              };
+            }
+            
+            // Re weight
             foreach (var b in Enumerable.Range(0, reweightSpectr.NbinsX + 1))
             {
                 var v = reweightSpectr.GetBinContent(b);
