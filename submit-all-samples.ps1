@@ -13,7 +13,7 @@ Param(
 process {
 
 	$jobName = "DiVertAnalysis"
-	$jobVersion = 13
+	$jobVersion = 14
 
 	# Submit each one for processing
 	$samples `
