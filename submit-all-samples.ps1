@@ -24,7 +24,7 @@ process {
 end {
 
 	$jobName = "DiVertAnalysis"
-	$jobVersion = 14
+	$jobVersion = 15
 
 	# Submit each one for processing
 	$allSamples `
