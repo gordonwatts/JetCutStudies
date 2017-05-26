@@ -26,12 +26,14 @@ end {
 	$jobName = "DiVertAnalysis"
 	$jobVersion = 15
 
+	$v = $PSBoundParameters['Verbose'] -eq $true
+
 	# Submit each one for processing
 	$allSamples `
-		| Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion `
+		| Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion -Verbose:$v `
 		| % {@{Dataset = $_.Name
 				Task = $_.ID
-				Status = Get-GridJobInfo -JobStatus $_.ID
+				Status = Get-GridJobInfo -Verbose:$v -JobStatus $_.ID
 				}} `
 		| % { New-Object PSObject -Property $_ }
 }
