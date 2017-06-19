@@ -289,7 +289,7 @@ namespace JetMVAClassifierTraining
             }
 
             // Fetch all the data samples
-            var dataSamples = SampleMetaData.AllSamplesWithTag(epoc == DataEpoc.data15 ? "data15" : "data16");
+            var dataSamples = SampleMetaData.AllSamplesWithTag(epoc == DataEpoc.data15 ? "data15_new" : "data16");
 
             // If we have a limitation on the number of events, then we need to measure our the # of events.
             int countOfEvents = 0;
