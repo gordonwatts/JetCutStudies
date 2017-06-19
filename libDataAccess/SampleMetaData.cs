@@ -122,7 +122,7 @@ namespace libDataAccess
                     .Select(l => l.Split(","))
                     .Where(lst => lst.Length >= 3)
                     .Where(lst => lst[1].IsValidDouble() && lst[2].IsValidDouble() && lst[3].IsValidInt32())
-                    .Select(lst => new SampleMetaData(lst[0], lst[1].ToDouble(), lst[3].ToInt32(), lst[2].ToDouble(), lst.Length >= 5 ? lst[4] : "", lst[5], lst[6].Split('+')))
+                    .Select(lst => new SampleMetaData(lst[0].Trim(), lst[1].ToDouble(), lst[3].ToInt32(), lst[2].ToDouble(), lst.Length >= 5 ? lst[4] : "", lst[5].Trim(), lst[6].Trim().Split('+')))
                     .ToArray();
             }
         }
