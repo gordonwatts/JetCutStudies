@@ -199,13 +199,14 @@ namespace GenericPerformancePlots
                     .PlotBasicDataPlots(sigdir, "withLLP");
             });
 
+            NoGCExecute(() =>
+            {
+                signalJets
+                    .Where(j => j.Jet.LLP.IsGoodIndex())
+                    .Where(j => LLPInCalorimeter.Invoke(j.Jet.LLP))
+                    .PlotBasicDataPlots(sigdir, "withLLPInCal");
+            });
 #if false
-            signalJets
-                .Where(j => j.Jet.LLP.IsGoodIndex())
-                .Where(j => LLPInCalorimeter.Invoke(j.Jet.LLP))
-                .PlotBasicDataPlots(sigdir, "withLLPInCal");
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
 
             // Some basic info about the LLP's
             // TODO: make sure this is part of the LLPInvestigations guy.
