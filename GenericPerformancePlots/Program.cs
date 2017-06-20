@@ -72,31 +72,32 @@ namespace GenericPerformancePlots
             {
                 // First, lets do a small individual thing for each individual background sample.
                 var bkgDir = outputHistograms.mkdir("background");
-#if true
-                GC.Collect();
+
                 Console.WriteLine("Making background plots.");
                 foreach (var background in backgroundSamples)
                 {
                     Console.WriteLine(background.Item2);
-                    BuildSuperJetInfo(background.Item1.Select(md => md.Data))
+                    NoGCExecute(() =>
+                    {
+                        BuildSuperJetInfo(background.Item1.Select(md => md.Data))
                         .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
+                    });
                 }
-#endif
-#if true
+
                 Console.WriteLine("data15");
-                BuildSuperJetInfo(data15.Select(d => d.Data))
-                    .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                NoGCExecute(() =>
+                {
+                    BuildSuperJetInfo(data15.Select(d => d.Data))
+                        .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
+                });
+
                 Console.WriteLine("data16");
-                BuildSuperJetInfo(data16.Select(d => d.Data))
-                    .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-#endif
-#if true
+                NoGCExecute(() =>
+                {
+                    BuildSuperJetInfo(data16.Select(d => d.Data))
+                        .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
+                });
+
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots. 
                 Console.WriteLine("Making the signal/background plots.");
@@ -104,12 +105,12 @@ namespace GenericPerformancePlots
                 {
                     Console.WriteLine(sample.Item2);
                     var w = outputHistograms.mkdir(sample.Item2);
-                    var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), w);
-                    DumpResults($"Sample {sample.Item2}:", status);
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
+                    NoGCExecute(() =>
+                    {
+                        var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), w);
+                        DumpResults($"Sample {sample.Item2}:", status);
+                    });
                 }
-#endif
                 // Write out the histograms
                 outputHistograms.Write();
                 outputHistograms.Close();
@@ -132,7 +133,21 @@ namespace GenericPerformancePlots
             }
         }
 
-        private static void NoGCExecute (long noGCBuffer, Action a)
+        /// <summary>
+        /// Run an action with the GC suppressed (as much as it can)
+        /// </summary>
+        /// <remarks>
+        /// This is done because there is a bug in an interaction between ROOT and the GC. Finalizers are were
+        /// most objects are deleted. But if on the main thread something is being created at the same time, you
+        /// can run into a race condition. Turnning off the GC temporarily suppresses the running of the Finalizers
+        /// for a short while - as long as memory allocation doesn't get out of hand. When this bug is actually fixed
+        /// we might be ok to remove this.
+        /// 
+        /// Might need to wait until ROOT v6 before that is the case.
+        /// </remarks>
+        /// <param name="noGCBuffer"></param>
+        /// <param name="a"></param>
+        private static void NoGCExecute (Action a)
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -163,22 +178,21 @@ namespace GenericPerformancePlots
             var backgroundJets = BuildSuperJetInfo(background);
             var signalJets = BuildSuperJetInfo(signal);
 
-            const long noGCBuffer = 1024 * 1024 * 30;
-            NoGCExecute(noGCBuffer, () =>
+            NoGCExecute(() =>
             {
                 backgroundJets
                     .PlotBasicDataPlots(outputHistograms.mkdir("background"), "all");
             });
 
             var sigdir = outputHistograms.mkdir("signal");
-            NoGCExecute(noGCBuffer, () =>
+            NoGCExecute(() =>
             {
                 signalJets
                     .PlotBasicDataPlots(sigdir, "all");
             });
 
             var result = new List<IFutureValue<string>>();
-            NoGCExecute(noGCBuffer, () =>
+            NoGCExecute(() =>
             {
                 signalJets
                     .Where(j => j.Jet.LLP.IsGoodIndex())
