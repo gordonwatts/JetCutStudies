@@ -4,7 +4,10 @@
 [CmdletBinding()]
 Param(
   [Parameter(Mandatory=$True, HelpMessage="The samples to submit against", Position=1, ValueFromPipeline=$True)]
-   [string]$samples
+   [string]$samples,
+
+  [Parameter(HelpMessage="The version of the analysis job to submit")]
+   [int]$jobVersion = 15
 )
 
 #
@@ -24,7 +27,6 @@ process {
 end {
 
 	$jobName = "DiVertAnalysis"
-	$jobVersion = 15
 
 	$v = $PSBoundParameters['Verbose'] -eq $true
 
