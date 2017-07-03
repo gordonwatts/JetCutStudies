@@ -11,13 +11,14 @@ Param(
   [Parameter(HelpMessage="Get all files to CERN")]
   [Switch]$DownloadToCERN,
   [Parameter(HelpMessage="Get all files to UW")]
-  [Switch]$DownloadToUW
+  [Switch]$DownloadToUW,
+  [Parameter(HelpMessage="Job version to download")]
+  [int]$jobVersion=15
 )
 
 begin {
 	# What we will be working with
 	$jobName = "DiVertAnalysis"
-	$jobVersion = 15
 
 	# build extra download flags
 	$flags = ""
