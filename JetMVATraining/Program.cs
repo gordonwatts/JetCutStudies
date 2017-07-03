@@ -103,7 +103,7 @@ namespace JetMVATraining
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting);
 
             // Get the beam-halo samples to use for testing and training
-            var data15 = SampleMetaData.AllSamplesWithTag("data15")
+            var data15 = SampleMetaData.AllSamplesWithTag("data15_new")
                 .Take(options.UseFullDataset ? 10000 : 1)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(DataEpoc.data15)

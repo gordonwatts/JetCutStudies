@@ -56,8 +56,8 @@ namespace GenericPerformancePlots
                 .ToArray();
 
             // Get the beam-halo samples to use for testing and training
-            var data15 = SampleMetaData.AllSamplesWithTag("data15")
-                .Take(opt.UseFullDataset ? 10000 : 1)
+            var data15 = SampleMetaData.AllSamplesWithTag("data15_new")
+                .Take(opt.UseFullDataset ? 10000 : 2)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data15);
 
@@ -72,38 +72,50 @@ namespace GenericPerformancePlots
             {
                 // First, lets do a small individual thing for each individual background sample.
                 var bkgDir = outputHistograms.mkdir("background");
-#if true
-                GC.Collect();
+
                 Console.WriteLine("Making background plots.");
                 foreach (var background in backgroundSamples)
                 {
                     Console.WriteLine(background.Item2);
-                    BuildSuperJetInfo(background.Item1.Select(md => md.Data))
+                    NoGCExecute(() =>
+                    {
+                        BuildSuperJetInfo(background.Item1.Select(md => md.Data))
                         .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
-                    GC.Collect();
+                    });
                 }
-#endif
-                BuildSuperJetInfo(data15.Select(d => d.Data))
-                    .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
-                GC.Collect();
-                BuildSuperJetInfo(data16.Select(d => d.Data))
-                    .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
-                GC.Collect();
 
-#if false
+                Console.WriteLine("data15");
+                NoGCExecute(() =>
+                {
+                    BuildSuperJetInfo(data15.Select(d => d.Data))
+                        .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
+                });
+
+                Console.WriteLine("data16");
+                NoGCExecute(() =>
+                {
+                    BuildSuperJetInfo(data16.Select(d => d.Data))
+                        .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
+                });
+
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
-                // performance plots.
+                // performance plots. 
                 Console.WriteLine("Making the signal/background plots.");
                 foreach (var sample in signalSamples)
                 {
-                    var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), outputHistograms.mkdir(sample.Item2));
-                    DumpResults($"Sample {sample.Item2}:", status);
-                    GC.Collect();
+                    Console.WriteLine(sample.Item2);
+                    var w = outputHistograms.mkdir(sample.Item2);
+                    NoGCExecute(() =>
+                    {
+                        var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), w);
+                        DumpResults($"Sample {sample.Item2}:", status);
+                    });
                 }
-#endif
                 // Write out the histograms
                 outputHistograms.Write();
                 outputHistograms.Close();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
         }
 
@@ -122,6 +134,39 @@ namespace GenericPerformancePlots
         }
 
         /// <summary>
+        /// Run an action with the GC suppressed (as much as it can)
+        /// </summary>
+        /// <remarks>
+        /// This is done because there is a bug in an interaction between ROOT and the GC. Finalizers are were
+        /// most objects are deleted. But if on the main thread something is being created at the same time, you
+        /// can run into a race condition. Turnning off the GC temporarily suppresses the running of the Finalizers
+        /// for a short while - as long as memory allocation doesn't get out of hand. When this bug is actually fixed
+        /// we might be ok to remove this.
+        /// 
+        /// Might need to wait until ROOT v6 before that is the case.
+        /// </remarks>
+        /// <param name="noGCBuffer"></param>
+        /// <param name="a"></param>
+        private static void NoGCExecute (Action a)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            var oldMode = System.Runtime.GCSettings.LatencyMode;
+            try
+            {
+                System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
+                a();
+            } finally
+            {
+                System.Runtime.GCSettings.LatencyMode = oldMode;
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
+        /// <summary>
         /// Allow for studying multiple samples
         /// </summary>
         /// <param name="background"></param>
@@ -133,29 +178,45 @@ namespace GenericPerformancePlots
             var backgroundJets = BuildSuperJetInfo(background);
             var signalJets = BuildSuperJetInfo(signal);
 
-            backgroundJets
-                .PlotBasicDataPlots(outputHistograms.mkdir("background"), "all");
+            NoGCExecute(() =>
+            {
+                backgroundJets
+                    .PlotBasicDataPlots(outputHistograms.mkdir("background"), "all");
+            });
 
             var sigdir = outputHistograms.mkdir("signal");
-            signalJets
-                .PlotBasicDataPlots(sigdir, "all");
-            signalJets
-                .Where(j => j.Jet.LLP.IsGoodIndex())
-                .PlotBasicDataPlots(sigdir, "withLLP");
-            signalJets
-                .Where(j => j.Jet.LLP.IsGoodIndex())
-                .Where(j => LLPInCalorimeter.Invoke(j.Jet.LLP))
-                .PlotBasicDataPlots(sigdir, "withLLPInCal");
+            NoGCExecute(() =>
+            {
+                signalJets
+                    .PlotBasicDataPlots(sigdir, "all");
+            });
 
+            var result = new List<IFutureValue<string>>();
+            NoGCExecute(() =>
+            {
+                signalJets
+                    .Where(j => j.Jet.LLP.IsGoodIndex())
+                    .PlotBasicDataPlots(sigdir, "withLLP");
+            });
+
+            NoGCExecute(() =>
+            {
+                signalJets
+                    .Where(j => j.Jet.LLP.IsGoodIndex())
+                    .Where(j => LLPInCalorimeter.Invoke(j.Jet.LLP))
+                    .PlotBasicDataPlots(sigdir, "withLLPInCal");
+            });
+#if false
 
             // Some basic info about the LLP's
             // TODO: make sure this is part of the LLPInvestigations guy.
             // LLPBasicInfo(signal.SelectMany(s => s.LLPs), signal.SelectMany(s => s.Jets), outputHistograms.mkdir("signalLLP"));
 
             // Do the CalR and NTrk plots
-            var result = new List<IFutureValue<string>>();
             var rtot = CalSigAndBackgroundSeries(signalJets, backgroundJets, "all", outputHistograms.mkdir("sigrtback"));
             result.AddRange(result);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             // Next, as a function of pT
             foreach (var ptRegion in Constants.PtRegions)
@@ -174,12 +235,15 @@ namespace GenericPerformancePlots
 
                 result.AddRange(r);
             }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             // Dump out the number of events so everyone can see.
             var status = from nB in background.FutureCount()
                          from nS in signal.FutureCount()
                          select string.Format("Signal events: {0} Background events: {1}", nS, nB);
             result.Add(status);
+#endif
             return result;
         }
 
