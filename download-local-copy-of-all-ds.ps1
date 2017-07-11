@@ -13,7 +13,10 @@ Param(
   [Parameter(HelpMessage="Get all files to UW")]
   [Switch]$DownloadToUW,
   [Parameter(HelpMessage="Job version to download")]
-  [int]$jobVersion=15
+  [int]$jobVersion=15,
+  [Parameter(HelpMessage="The iteration, defaults to zero")]
+  [int]$jobIteration = 0
+
 )
 
 begin {
@@ -43,15 +46,15 @@ process {
     }
 	
 	# Kick off a download job if the job is finished.
-	$j = Get-GRIDJobInfo -JobStatus -JobName $jobName -JobVersion $jobVersion -DatasetName $_
+	$j = Get-GRIDJobInfo -JobStatus -JobName $jobName -JobVersion $jobVersion -JobIteration $jobIteration -DatasetName  $_
 	if (($j -ne "finished") -and ($j -ne "done")) {
 		Write-Host "Skipping $_ - it is in state $j"
 	} else {
 		Write-Host "Starting $_"
 		$job = Start-Job -Name $_ -ScriptBlock {
-			param ($sample, $jobName, $jobVersion, $flags)
-			Invoke-Expression "Get-GRIDDataset -JobName $jobName -JobVersion $jobVersion -JobSourceDatasetName $sample $flags"
-		} -ArgumentList $_, $jobName, $jobVersion, $flags
+			param ($sample, $jobName, $jobVersion, $flags, $jobIteration)
+			Invoke-Expression "Get-GRIDDataset -JobName $jobName -JobVersion $jobVersion -JobIteration $jobIteration -JobSourceDatasetName $sample $flags"
+		} -ArgumentList $_, $jobName, $jobVersion, $flags, $jobIteration
 		$downloadJobs += $job
 	}
 }

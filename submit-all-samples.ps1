@@ -7,7 +7,10 @@ Param(
    [string]$samples,
 
   [Parameter(HelpMessage="The version of the analysis job to submit")]
-   [int]$jobVersion = 15
+   [int]$jobVersion = 15,
+
+  [Parameter(HelpMessage="The iteration, defaults to zero")]
+	[int]$jobIteration = 0
 )
 
 #
@@ -32,7 +35,7 @@ end {
 
 	# Submit each one for processing
 	$allSamples `
-		| Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion -Verbose:$v `
+		| Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion -Verbose:$v -jobIteration $jobIteration `
 		| % {@{Dataset = $_.Name
 				Task = $_.ID
 				Status = Get-GridJobInfo -Verbose:$v -JobStatus $_.ID
