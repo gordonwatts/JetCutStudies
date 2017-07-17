@@ -1,0 +1,17 @@
+#
+# What does CalR look like?
+#
+
+include ("mass_dependency.plotlingo");
+
+#
+# Plots of CalR as a function of sample
+#
+
+plots = map(sample, samples) {
+  f_generic.Get("{sample}/signal/pTwithLLPInCal").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("Jet pT for Jets With Cal Decay")
+	.LegendOptions({"drawbox" => "false", "placement" => "UpperRight"});

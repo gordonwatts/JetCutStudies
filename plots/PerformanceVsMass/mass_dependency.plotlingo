@@ -1,0 +1,21 @@
+#
+# Common stuff
+#
+
+# File we are looking at...
+f_generic = jenkins ("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/GenericPerformancePlots/lastSuccessfulBuild/artifact/GenericPerformancePlots.root");
+
+samples = ["125pi5lt5m", "125pi25lt5m", "600pi150lt9m", "1000pi400lt5m"];
+
+Legend("1000pi400lt5m" => {Color => 8, Title => "1000/400 - 5m"});
+Legend("600pi150lt9m" => {Color => 1, Title => "600/150 - 9m"});
+Legend("600pi50lt5m" => {Color => 6, Title => "600/50 - 5m"});
+Legend("400pi100lt9m" => {Color => 3, Title => "400/100 - 9m"});
+Legend("400pi100lt5m" => {Color => 4, Title => "400/100 - 5m"});
+Legend("400pi50lt5m" => {Color => 11, Title => "400/50 - 5m"});
+Legend("200pi25lt5m" => {Color => 2, Title => "200/25 - 5m"});
+Legend("125pi25lt5m" => {Color => 9, Title => "125/25 - 5m"});
+Legend("125pi5lt5m" => {Color => 7, Title => "125/5 - 5m"});
+
+set_default_canvas_size(1200, 600);
+plotformats=["png", "svg"];
