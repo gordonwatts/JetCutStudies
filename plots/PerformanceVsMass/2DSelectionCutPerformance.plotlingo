@@ -1,0 +1,52 @@
+#
+# What does NTrack look like?
+#
+
+include ("common.plotlingo");
+
+#
+# These are 2D plots, so we really don't want stats boxes.
+#
+TurnOffStatBoxes();
+UseSmoothGradient();
+
+#
+# All the types of plots
+#
+
+plottypes = [
+	{title => "CalRatio vs Jet pT", xaxis => "CalRatio", yaxis => "Jet p_{T} [GeV]", name => "CalRvspT", xcut=>true, ycut=>true},
+	{title => "NTrack vs Jet pT", xaxis => "NTrack", yaxis => "Jet p_{T} [GeV]", name => "NTrkvspT", xcut=>false, ycut=>true},
+	{title => "SumPT vs Jet pT", xaxis => "Sum _{T} [GeV]", yaxis => "Jet p_{T} [GeV]", name => "SumPtvspT", xcut=>false, ycut=>true},
+	{title => "MaxPT vs Jet pT", xaxis => "Max _{T} [GeV]", yaxis => "Jet p_{T} [GeV]", name => "MaxPtvspT", xcut=>false, ycut=>true},
+	{title => "CalRatio vs NTrk", xaxis => "CalRatio", yaxis => "NTrack", name => "CalRvsNTrk", xcut=>true, ycut=>false},
+	{title => "CalRatio vs SumPt", xaxis => "CalRatio", yaxis => "Sum p_{T} [GeV]", name => "CalRvsSumPt", xcut=>true, ycut=>false},
+	{title => "CalRatio vs MaxPt", xaxis => "CalRatio", yaxis => "Max p_{T} [GeV]", name => "CalRvsMaxTrk", xcut=>true, ycut=>false}
+];
+
+#
+# Plots of CalR vs pT per sample for the signal.
+#
+for (plottypes) {
+	for (sample, samples) {
+	  f.Get("{sample}/signal/{name}withLLPInCal")
+		.asEfficiency(xcut, ycut)
+		.plot()
+		.xaxis(xaxis)
+		.yaxis(yaxis)
+		.size(1200, 800)
+		.addDrawOption("COLZ")
+		.title("{title} for Sample {sample}");
+	};
+
+	# Same for the background.
+
+	f.Get("200-25/background/{name}all")
+		.asEfficiency(xcut, ycut)
+		.plot()
+		.xaxis(xaxis)
+		.yaxis(yaxis)
+		.size(1200, 800)
+		.addDrawOption("COLZ")
+		.title("{title} for QCD");
+};

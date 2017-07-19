@@ -4,14 +4,23 @@
 
 include ("mass_dependency.plotlingo");
 
+plot_names = [{pname => "pT", name => "Jet pT", xmarg => -0.15},
+			  {pname => "eta", name => "Jet eta", xmarg => -0.15},
+			  {pname => "ntracks", name => "Jet NTracks", xmarg => -0.15},
+			  {pname => "jetWidth", name => "Jet Width", xmarg => -0.15},
+			  {pname => "CalR", name => "Jet CalRatio", xmarg => -0.15}
+			 ];
+
 #
 # Plots of CalR as a function of sample
 #
 
-plots = map(sample, samples) {
-  f_generic.Get("{sample}/signal/pTwithLLPInCal").tag(sample).normalize();
-};
+map (plot_names) {
+	plots = map(sample, samples) {
+	  f_generic.Get("{sample}/signal/{pname}withLLPInCal").tag(sample).normalize();
+	};
 
-plots.plot()
-	.title("Jet pT for Jets With Cal Decay")
-	.LegendOptions({"drawbox" => "false", "placement" => "UpperRight"});
+	plots.plot()
+		.title("{name} for Jets With Cal Decay")
+		.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", xmarg => xmarg});
+};

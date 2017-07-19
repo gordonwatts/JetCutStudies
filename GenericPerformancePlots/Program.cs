@@ -16,6 +16,7 @@ using static System.Linq.Enumerable;
 using static libDataAccess.Utils.Constants;
 using static libDataAccess.Utils.CommandLineUtils;
 using ROOTNET.Globals;
+using CommandLine;
 
 namespace GenericPerformancePlots
 {
@@ -23,7 +24,8 @@ namespace GenericPerformancePlots
     {
         class Options : CommonOptions
         {
-
+            [Option("ReducedSignalSamples", Default = false, HelpText = "Use the first 5 signal samples - good for testing.")]
+            public bool ReducedSignalSamples { get; set; }
         }
 
         /// <summary>
@@ -54,6 +56,12 @@ namespace GenericPerformancePlots
             var signalSamples = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "hss")
                 .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
                 .ToArray();
+            if (opt.ReducedSignalSamples)
+            {
+                signalSamples = signalSamples
+                    .Take(5)
+                    .ToArray();
+            }
 
             // Get the beam-halo samples to use for testing and training
             var data15 = SampleMetaData.AllSamplesWithTag("data15_new")
@@ -189,6 +197,8 @@ namespace GenericPerformancePlots
             {
                 signalJets
                     .PlotBasicDataPlots(sigdir, "all");
+                signalJets
+                    .PlotBasicSignalPlots(sigdir, "all");
             });
 
             var result = new List<IFutureValue<string>>();
@@ -197,6 +207,9 @@ namespace GenericPerformancePlots
                 signalJets
                     .Where(j => j.Jet.LLP.IsGoodIndex())
                     .PlotBasicDataPlots(sigdir, "withLLP");
+                signalJets
+                    .Where(j => j.Jet.LLP.IsGoodIndex())
+                    .PlotBasicSignalPlots(sigdir, "withLLP");
             });
 
             NoGCExecute(() =>
@@ -205,6 +218,10 @@ namespace GenericPerformancePlots
                     .Where(j => j.Jet.LLP.IsGoodIndex())
                     .Where(j => LLPInCalorimeter.Invoke(j.Jet.LLP))
                     .PlotBasicDataPlots(sigdir, "withLLPInCal");
+                signalJets
+                    .Where(j => j.Jet.LLP.IsGoodIndex())
+                    .Where(j => LLPInCalorimeter.Invoke(j.Jet.LLP))
+                    .PlotBasicSignalPlots(sigdir, "withLLPInCal");
             });
 #if false
 

@@ -111,7 +111,7 @@ namespace TrainingTestResults
                 JetPtPlotJetStream,
                 JetETPlotJetStream,
                 JetEtaPlotJetStream,
-                JetLxyPlotJetStream,
+                JetLLPLxyPlotJetStream,
                 JetCalRPlotJetStream,
                 JetStreamSumPt,
                 JetStreamMaxPt,

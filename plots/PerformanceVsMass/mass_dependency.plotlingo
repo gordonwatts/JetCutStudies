@@ -18,4 +18,4 @@ Legend("125pi25lt5m" => {Color => 9, Title => "125/25 - 5m"});
 Legend("125pi5lt5m" => {Color => 7, Title => "125/5 - 5m"});
 
 set_default_canvas_size(1200, 600);
-plotformats=["png", "svg"];
+plotformats=["png"];

@@ -266,14 +266,18 @@ namespace libDataAccess
         /// <summary>
         /// Raw plotter for Lxy
         /// </summary>
-        public static IPlotSpec<double> JetLxyPlotRaw =
+        public static IPlotSpec<double> JetLLPLxyPlotRaw =
             MakePlotterSpec<double>(80, 0.0, 8.0, j => j, nFormat: "Lxy{0}", tFormat: "Lxy for {0}; Lxy [m]");
+        public static IPlotSpec<recoTreeJets> JetLLPLxyPlot;
+        public static IPlotSpec<JetStream> JetLLPLxyPlotJetStream;
 
         /// <summary>
-        /// Plot from recoTreeJets
+        /// Plot the pT of the LLP
         /// </summary>
-        public static IPlotSpec<recoTreeJets> JetLxyPlot;
-        public static IPlotSpec<JetStream> JetLxyPlotJetStream;
+        public static IPlotSpec<double> JetLLPPtPlotRaw =
+            MakePlotterSpec<double>(150, 0.0, 750, j => j, nFormat: "LLPPt{0}", tFormat: "LLP pT for {0}; pT [GeV]");
+        public static IPlotSpec<recoTreeJets> JetLLPPtPlot;
+        public static IPlotSpec<JetStream> JetLLPPtPlotJetStream;
 
         /// <summary>
         /// Plot of CalR vs Jet Pt
@@ -416,7 +420,8 @@ namespace libDataAccess
             JetWidthPlot = JetWidthPlotRaw.FromType<double, recoTreeJets>(j => j.width);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetPhiPlot = JetPhiPlotRaw.FromType<double, recoTreeJets>(j => j.phi);
-            JetLxyPlot = JetLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
+            JetLLPLxyPlot = JetLLPLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
+            JetLLPPtPlot = JetLLPPtPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.pT / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
             JetCalRPlotFine = JetCalRPlotFineRaw.FromType<double, recoTreeJets>(j => j.logRatio);
 
@@ -427,7 +432,8 @@ namespace libDataAccess
             JetPtPlotJetStream = JetPtPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetETPlotJetStream = JetETPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetEtaPlotJetStream = JetEtaPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j=> j.Weight);
-            JetLxyPlotJetStream = JetLxyPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+            JetLLPLxyPlotJetStream = JetLLPLxyPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
+            JetLLPPtPlotJetStream = JetLLPPtPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetCalRPlotJetStream = JetCalRPlot.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetCalRPlotFineJetStream = JetCalRPlotFine.FromType<recoTreeJets, JetStream>(j => j.JetInfo.Jet, weight: j => j.Weight);
             JetStreamSumPt = JetExtraSumPt.FromType<JetInfoExtra, JetStream>(j => j.JetInfo, weight: j => j.Weight);

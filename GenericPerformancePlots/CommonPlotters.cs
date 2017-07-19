@@ -1,6 +1,7 @@
 ﻿using libDataAccess;
 using LINQToTreeHelpers;
 using LINQToTreeHelpers.FutureUtils;
+using LINQToTTreeLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,30 @@ namespace GenericPerformancePlots
     /// </summary>
     static class CommonPlotters
     {
+        /// <summary>
+        /// Plot a few basic LLP things for jets that have LLP's associated with them.
+        /// </summary>
+        /// <param name="jets"></param>
+        /// <param name="saveDir"></param>
+        /// <param name="nameAddition"></param>
+        /// <returns></returns>
+        public static IQueryable<JetInfoExtra> PlotBasicSignalPlots(this IQueryable<JetInfoExtra> jets, FutureTDirectory saveDir, string nameAddition)
+        {
+            jets
+                .Where(j => j.Jet.LLP.IsGoodIndex())
+                .Select(j => j.Jet)
+                .FuturePlot(JetLLPLxyPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .Where(j => j.Jet.LLP.IsGoodIndex())
+                .Select(j => j.Jet)
+                .FuturePlot(JetLLPPtPlot, nameAddition)
+                .Save(saveDir);
+
+            return jets;
+        }
+
         /// <summary>
         /// Make generic plots of pT, CalRatio, etc. for all jets
         /// </summary>

@@ -1,0 +1,71 @@
+#
+# Simple 1D plots of all the training put variables we are going to use.
+#
+
+include ("common.plotlingo");
+
+#
+# All the types of plots
+#
+
+plottypes = [
+	{title => "Maximum Track pT", xaxis => "Max pT [GeV]", name => "MaxTrkPt"},
+	{title => "Sum of all Track pT", xaxis => "Sum Track pT [GeV]", name => "sumTrkPt"},
+	{title => "Number of Tracks", xaxis => "N Tracks", name => "ntracks"},
+	{title => "Jet Eta", xaxis => "{\eta}", name => "eta"},
+	{title => "Jet Phi", xaxis => "{\phi}", name => "phi"},
+	{title => "Jet p_{T}", xaxis => "Jet p_{T} [GeV]", name => "pT"},
+	{title => "CalRatio", xaxis => "CalRatio", name => "CalR"},
+	{title => "Jet Width", xaxis => "Width", name => "jetWidth"},
+	{title => "DR to closest 2 GeV Track", xaxis => "DR", name => "DR2GeVTrack"},
+//	{title => "Jet Energy Density", xaxis => "Energy [GeV]", name => "EnergyDensity"},
+//	{title => "Jet Latitudinal spread", xaxis => "Jet Latitude", name => "JetLat"},
+//	{title => "Jet Longitudinal spread", xaxis => "Jet Logitude", name => "JetLong"},
+//	{title => "Radius (xyz) of first Jet Cluster", xaxis => "R [m]", name => "FirstClusterR"},
+//	{title => "Jet Shower Center", xaxis => "Jet Shower Center [m]", name => "ShowerCenter"},
+	{title => "Layer 1 Fraction in Hadronic", xaxis => "Hadronic L1 Fraction", name => "HadronicL1Frac"},
+//	{title => "Time Delta to Expected BIB Jet (Minus)", xaxis => "Timing [ns]", name => "BIBDeltaPlusTiming"},
+	{title => "Time Delta to Expected BIB Jet (Plus)", xaxis => "Timing [ns]", name => "BIBDeltaPlusTiming"}
+];
+
+#
+# Legend info
+#
+
+Legend("signal" => {Color => 2, Title => "Signal"});
+Legend("background" => {Color => 1, Title => "Multijet"});
+Legend("bib15" => {Color => 3, Title => "data15 BIB"});
+Legend("bib16" => {Color => 4, Title => "data16 BIB"});
+
+#
+# Plots of CalR vs pT per sample for the signal.
+#
+wts = [
+	{name_add => "", title_add => "", norm => 1},
+	{name_add => "_unweighted", title_add => " (unweighted)", norm => 1},
+	{name_add => "_unweighted", title_add => " (unweighted unnormalized)", norm => 0}
+];
+
+for (plottypes) {
+    for (wts) {
+		sig = f_training.Get("signal/{name}training_signal{name_add}").minimum(0);
+		bac = f_training.Get("background/{name}training_background{name_add}").minimum(0);
+		data15 = f_training.Get("data15/{name}training_bib15{name_add}").minimum(0);
+		data16 = f_training.Get("data16/{name}training_bib16{name_add}").minimum(0);
+
+		if(norm) {
+			sig = sig.normalize();
+			bac = bac.normalize();
+			data15 = data15.normalize();
+			data16 = data16.normalize();
+		};
+
+		[sig,bac,data15,data16]
+			.plot()
+			.size(1200, 800)
+			.drawingOptionAfter(0,"HIST ")
+			.title("{title}{title_add}")
+			.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", "xmarg" => 0.0})
+			.xaxis(xaxis);
+	};
+};

@@ -1,0 +1,40 @@
+#
+# What does NTrack look like?
+#
+
+include ("common.plotlingo");
+
+#
+# Plots of CalR as a function of sample
+#
+
+plots = map(sample, samples) {
+  f.Get("{sample}/sigrtback/NtrkLLPJCal_sig").tag(sample).normalize();
+};
+
+plots.plot()
+	.title("Log Ratio for Jets With Cal Decay")
+	.LegendOptions({"drawbox" => "false", "placement" => "UpperLeft", "xmarg" => 0.2});
+
+#
+# Look at it by pT range
+#
+
+for(ptRange, ptBins) {
+	plots = map(sample, samples) {
+	  f.Get("{sample}/sigrtback_{ptRange}/NtrkLLPJCal_sig").tag(sample).normalize();
+	};
+	plots.plot()
+		.title("NTrack Jets With Cal Decay with p_{T} {ptRange}")
+		.LegendOptions({"drawbox" => "false", "placement" => "UpperLeft", "xmarg" => 0.2});
+};
+
+background = map(ptRange, ptBins) {
+	  f.Get("600-100/sigrtback_{ptRange}/Ntrk_back").tag(ptRange).normalize();	
+};
+
+background
+    .plot()
+	.title("NTrack for QCD Jets by p_{T} Range")
+	.logy()
+	.LegendOptions({"drawbox" => "false"});

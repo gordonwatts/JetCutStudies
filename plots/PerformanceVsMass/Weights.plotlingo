@@ -1,0 +1,186 @@
+#
+# Look at training weights for signal
+#
+
+#include ("common.plotlingo");
+#TurnOffStatBoxes();
+
+# The various trainings that we are looking at
+
+trainings = [
+	{title => "Default", name => "13VariableLxy"},
+	{title => "No DR", name => "13VariableLxyNoDR"},
+	{title => "No DRNTrack", name => "13VariableLxyNoDRNTrack"}
+];
+
+MVAPlots = [
+	{mvaName => "weightAll"},
+	{mvaName => "CalRF"}
+];
+
+Legend("weightAll" => {Color => 1, Title => "MVA"});
+Legend("CalR" => {Color => 2, Title => "CalRatio"});
+Legend("CalRF" => {Color => 2, Title => "CalRatio"});
+
+Legend("13VariableLxy" => {Color => 1, Title => "Default Training"});
+Legend("13VariableLxyNoDR" => {Color => 2, Title => "No DR Training"});
+Legend("13VariableLxyNoDRNTrack" => {Color => 3, Title => "No DR NTRack Training"});
+
+background = "QCD";
+Legend("QCD" => {Color => 4, Title => "QCD"});
+
+#
+# Generate ROC plots
+#
+
+for (MVAPlots) {
+	for (trainings) {
+		# Get the MVA background
+		nnBackground = f_mvaTest.Get("{name}/{background}/{mvaName}").tag("QCD").normalize();
+
+		# Do the MVA output all on one plot
+
+		plots = map(sample, trainingSamples) {
+			f_mvaTest.Get("{name}/{sample}/{mvaName}").tag(sample).normalize();
+		};
+		plots = plots + [nnBackground];
+
+		reBinPlots = map(p, plots) {
+			p.rebinTo(200);
+		};
+		reBinPlots
+			.plot()
+			.size(1200,800)
+			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
+			.title("MVA {title} ({mvaName})");
+
+		integralPlots = map(p, plots) {
+			p.asIntegral();
+		};
+		integralPlots
+			.plot()
+			.size(1200,800)
+			.yaxis("Efficiency (signal)")
+			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
+			.title("MVA Integral {title} ({mvaName})");
+
+		# Next, look at the ROC curves
+
+		rocPlots = map (sample, trainingSamples) {
+			nnSignal = f_mvaTest.Get("{name}/{sample}/{mvaName}").tag(sample);
+			asROC(nnSignal, nnBackground, false, false);
+		};
+
+		rocPlots
+			.draw()
+			.logy()
+			.grid()
+			.size(1200,800)
+			.yaxis("Efficiency (J2-J4)")
+			.LegendOptions({drawbox => "true", scale => 0.8, placement => "LowerRight", ymarg => 0.14, scale => 0.8})
+			.title("ROC - MVA {title} ({mvaName})");
+	};
+};
+
+for (MVAPlots) {
+	for (sample, trainingSamples) {
+		# Do the MVA output all on one plot
+
+		plots = map(trainings) {
+			f_mvaTest.Get("{name}/{sample}/{mvaName}").tag(name).normalize();
+		};
+		plots = plots;
+
+		reBinPlots = map(p, plots) {
+			p.rebinTo(200);
+		};
+		reBinPlots
+			.plot()
+			.size(1200,800)
+			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
+			.title("MVAs on {sample} ({mvaName})");
+
+		integralPlots = map(p, plots) {
+			p.asIntegral();
+		};
+		integralPlots
+			.plot()
+			.size(1200,800)
+			.yaxis("Efficiency (signal)")
+			.LegendOptions({placement => "UpperLeft", drawbox => "false", xmarg => 0.12, scale => 0.8})
+			.title("MVA Integrals on {sample} ({mvaName})");
+
+		# Next, look at the ROC curves
+
+		rocPlots = map (trainings) {
+			nnBackground = f_mvaTest.Get("{name}/{background}/{mvaName}").tag("QCD").normalize();
+			nnSignal = f_mvaTest.Get("{name}/{sample}/{mvaName}").tag(name);
+			asROC(nnSignal, nnBackground, false, false);
+		};
+
+		rocPlots
+			.draw()
+			.logy()
+			.grid()
+			.size(1200,800)
+			.yaxis("Efficiency (J2-J4)")
+			.LegendOptions({drawbox => "true", scale => 0.8, placement => "LowerRight", ymarg => 0.14, scale => 0.8})
+			.title("ROC - MVAs on {sample} ({mvaName})");
+	};
+};
+
+//
+// Compare simple CalR performance to MVA performance
+//
+
+for (trainings) {
+	for(sample, trainingSamples) {
+		# Get the MVA backgrounds and signal
+		plotPairs = map(MVAPlots) {
+			b = f_mvaTest.Get("{name}/{background}/{mvaName}").normalize();
+			s = f_mvaTest.Get("{name}/{sample}/{mvaName}").normalize().tag(mvaName);
+			{"s" => s, "b" => b};
+		};
+
+		# Create a series of ROC plots
+		rocPlots = map(p, plotPairs) {
+			asROC(p["s"], p["b"], false, false);
+		};
+
+		# and draw them
+		rocPlots
+			.draw()
+			.logy()
+			.grid()
+			.size(1200,800)
+			.LegendOptions({placement => "LowerRight", drawbox => "true", scale => 0.8, ymarg => 0.14, scale => 0.8})
+			.title("ROC - CalR vs {title} - {sample}");
+	};
+};
+
+//
+// Generate input variable plots - where we calculate efficiencies by each input variable.
+//
+
+inputVariables = [
+	{vname => "pT", title => "pT", rebin => 20},
+	{vname => "eta", title => "Eta", rebin => 20},
+	{vname => "CalR", title => "CalR", rebin => 20},
+	{vname => "Lxy", title => "Lxy", rebin => 20}
+];
+
+allSamples = trainingSamples + ["QCD"];
+
+for (trainings) {
+	for (inputVariables) {
+		sampleEff = map(sample, allSamples) {
+			denom = f_mvaTest.Get("{name}/{sample}/{vname}").rebinTo(rebin).tag(sample);
+			num = f_mvaTest.Get("{name}/{sample}/{vname}MVA").rebinTo(rebin).tag(sample);
+			num / denom;
+		};
+
+		sampleEff
+			.plot()
+			.title("{name} - {vname} Efficiency");
+	};
+};

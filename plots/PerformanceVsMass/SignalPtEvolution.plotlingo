@@ -1,0 +1,36 @@
+#
+# Look at how the smaple evolves by pT.
+#
+
+include ("common.plotlingo");
+
+Legend("all" => {Color => 1, Title => "All Jets"});
+Legend("near" => {Color => 2, Title => "Near LLP"});
+Legend("cal" => {Color => 3, Title => "LLP Cal Decay"});
+
+# Look at how the pT evolves with various requirements
+for (sample, widthBugNonBug) {
+	hall  = f_generic.Get("{sample}/sigrtback/pTCalR_sig").tag("all");
+	hNearLJ  = f_generic.Get("{sample}/sigrtback/pTCalRLLPJ_sig").tag("near");
+	hCalLJ  = f_generic.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag("cal");
+
+	[hall, hNearLJ, hCalLJ]
+		.plot()
+		.title("p_{T} of Jets in Sample {sample}")
+		.yaxis("Number of Jets")
+		.logy()
+		.LegendOptions("drawbox" => "false");
+};
+
+# Now look at the pT evolution of the various samples.
+plots = map(sample, widthBugNonBug) {
+	f_generic.Get("{sample}/sigrtback/pTCalRLLPJCal_sig").tag(sample).normalize();
+};
+
+plots
+	.plot()
+	.title("p_{T} of Jets with Cal decay in all samples")
+	.yaxis("Jets")
+	.logy()
+	.size(1200,800)
+	.LegendOptions({drawbox => "false", scale => 0.55, placement => "LowerLeft", xmarg => 0.135, ymarg=>0.135});
