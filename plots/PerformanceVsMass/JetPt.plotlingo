@@ -8,6 +8,7 @@ plot_names = [{pname => "pT", name => "Jet pT", xmarg => -0.15},
 			  {pname => "eta", name => "Jet eta", xmarg => -0.15},
 			  {pname => "ntracks", name => "Jet NTracks", xmarg => -0.15},
 			  {pname => "jetWidth", name => "Jet Width", xmarg => -0.15},
+			  {pname => "Lxy", name => "LLP Lxy", xmarg => -0.15},
 			  {pname => "CalR", name => "Jet CalRatio", xmarg => -0.15}
 			 ];
 
