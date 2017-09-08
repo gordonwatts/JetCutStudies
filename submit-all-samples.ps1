@@ -35,7 +35,7 @@ end {
 
 	# Submit each one for processing
 	$allSamples `
-		| Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion -Verbose:$v -jobIteration $jobIteration `
+		| Invoke-GRIDJob -JobName $jobName -JobVersion $jobVersion -Verbose:$v -jobIteration $jobIteration -DoNotUsePandaTaskCache `
 		| % {@{Dataset = $_.Name
 				Task = $_.ID
 				Status = Get-GridJobInfo -Verbose:$v -JobStatus $_.ID
