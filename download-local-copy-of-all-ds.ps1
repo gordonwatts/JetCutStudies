@@ -15,8 +15,9 @@ Param(
   [Parameter(HelpMessage="Job version to download")]
   [int]$jobVersion=15,
   [Parameter(HelpMessage="The iteration, defaults to zero")]
-  [int]$jobIteration = 0
-
+  [int]$jobIteration = 0,
+  [Parameter(HelpMessage="Run right away")]
+  [Switch]$DownloadOneAtATime
 )
 
 begin {
@@ -29,7 +30,7 @@ begin {
 		$flags = "-nFiles 1 -Location Local"
 	}
 	if ($DownloadToCERN) {
-		$flags = "-Location CERNLLP-OffSite-linux"
+		$flags = "-Location CERNLLP-linux"
 	}
 	if ($DownloadToUW) {
 		$flags = "-Location UWTeV-linux"
@@ -51,11 +52,16 @@ process {
 		Write-Host "Skipping $_ - it is in state $j"
 	} else {
 		Write-Host "Starting $_"
-		$job = Start-Job -Name $_ -ScriptBlock {
-			param ($sample, $jobName, $jobVersion, $flags, $jobIteration)
-			Invoke-Expression "Get-GRIDDataset -JobName $jobName -JobVersion $jobVersion -JobIteration $jobIteration -JobSourceDatasetName $sample $flags"
-		} -ArgumentList $_, $jobName, $jobVersion, $flags, $jobIteration
-		$downloadJobs += $job
+		$cmd = "Get-GRIDDataset -JobName $jobName -JobVersion $jobVersion -JobIteration $jobIteration -JobSourceDatasetName $_ $flags"
+		if ($DownloadOneAtATime) {
+			Invoke-Expression $cmd
+		} else {
+			$job = Start-Job -Name $_ -ScriptBlock {
+				param ($cmd)
+				Invoke-Expression $cmd
+			} -ArgumentList $cmd
+			$downloadJobs += $job
+		}
 	}
 }
 
