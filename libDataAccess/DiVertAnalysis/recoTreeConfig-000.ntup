@@ -170,6 +170,9 @@
         <VariableInfo NETName="EHadLayer1" TTreeName="CalibJet_EH_layer1" />
         <VariableInfo NETName="EHadLayer2" TTreeName="CalibJet_EH_layer2" />
         <VariableInfo NETName="EHadLayer3" TTreeName="CalibJet_EH_layer3" />
+        <VariableInfo NETName="CalibJet_EH_layer3" TTreeName="CalibJet_EH_layer3" />
+        <VariableInfo NETName="Predicted_Lxy" TTreeName="CalibJet_Reg_Lxy" />
+        <VariableInfo NETName="Predicted_Lz" TTreeName="CalibJet_Reg_Lz" />
       </Variables>
     </ArrayGroup>
     <ArrayGroup Name="Tracks">

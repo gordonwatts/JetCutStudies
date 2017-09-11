@@ -148,6 +148,8 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_EH_layer1;
    TStlSimpleProxy<vector<double> >         CalibJet_EH_layer2;
    TStlSimpleProxy<vector<double> >         CalibJet_EH_layer3;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lxy;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lz;
    TStlSimpleProxy<vector<double> >         Track_pT;
    TStlSimpleProxy<vector<double> >         Track_eta;
    TStlSimpleProxy<vector<double> >         Track_phi;
@@ -428,7 +430,9 @@ public :
       CalibJet_EH_layer1                      (&fDirector,"CalibJet_EH_layer1"),
       CalibJet_EH_layer2                      (&fDirector,"CalibJet_EH_layer2"),
       CalibJet_EH_layer3                      (&fDirector,"CalibJet_EH_layer3"),
-      Track_pT                                (&fDirector,"Track_pT"),
+	  CalibJet_Reg_Lxy						  (&fDirector, "CalibJet_Reg_Lz"),
+	  CalibJet_Reg_Lz						  (&fDirector, "CalibJet_Reg_Lxy"),
+	  Track_pT                                (&fDirector,"Track_pT"),
       Track_eta                               (&fDirector,"Track_eta"),
       Track_phi                               (&fDirector,"Track_phi"),
       MSTracklet_eta                          (&fDirector,"MSTracklet_eta"),

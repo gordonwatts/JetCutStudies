@@ -244,6 +244,36 @@ namespace libDataAccess
         public static IPlotSpec<JetInfoExtra> JetExtraCalRPlot;
 
         /// <summary>
+        /// Predicted Lxy
+        /// </summary>
+        public static IPlotSpec<double> JetCalPredictedLxyPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 6, lxy => lxy,
+                "PredictedLxy{0}", "Predicted Lxy of {0} jets; Predicted Lxy [m]");
+        public static IPlotSpec<JetStream> JetCalPredictedLxyPlot;
+        public static IPlotSpec<JetInfoExtra> JetCalPredictedLxyPlotJetExtra;
+
+        public static IPlotSpec<double> JetCalPredictedLzPlotRaw =
+            MakePlotterSpec<double>(100, 0.0, 4, lxy => lxy,
+                "PredictedLz{0}", "Predicted Lz of {0} jets; Predicted Lz [m]");
+        public static IPlotSpec<JetStream> JetCalPredictedLzPlot;
+        public static IPlotSpec<JetInfoExtra> JetCalPredictedLzPlotJetExtra;
+
+        public static IPlotSpec<JetInfoExtra> JetCalPredictedLxyVsLxy =
+            MakePlotterSpec<JetInfoExtra>(50, 0.0, 10.0, j => j.Jet.Predicted_Lxy / 1000.0,
+                50, 0.0, 10.0, j => j.Jet.LLP.IsGoodIndex() ? j.Jet.LLP.Lxy / 1000.0 : 0.0,
+                "PredictedLxyVsLxy{0}", "Predicted Lxy vs actual Lxy for {0} jets; Predicted Lxy [m]; Lxy [m]");
+
+        public static IPlotSpec<JetInfoExtra> JetCalPredictedLzVsLz =
+            MakePlotterSpec<JetInfoExtra>(50, 0.0, 10.0, j => j.Jet.Predicted_Lz / 1000.0,
+                50, 0.0, 10.0, j => j.Jet.LLP.IsGoodIndex() ? j.Jet.LLP.Lz / 1000.0 : 0.0,
+                "PredictedLzVsLz{0}", "Predicted Lz vs actual Lz for {0} jets; Predicted Lz [m]; Lz [m]");
+
+        public static IPlotSpec<JetInfoExtra> JetCalPredictedLzVsPredictedLxy =
+            MakePlotterSpec<JetInfoExtra>(50, 0.0, 10.0, j => j.Jet.Predicted_Lxy / 1000.0,
+                50, 0.0, 10.0, j => j.Jet.Predicted_Lz / 1000.0,
+                "PredictedLzVsPredictedLxy{0}", "Predicted Lxy vs predicted Lz for {0} jets; Predicted Lxy [m]; Lz [m]");
+
+        /// <summary>
         /// Plot CalRatio vs Lxy for jets
         /// </summary>
         public static IPlotSpec<recoTreeJets> JetCalRVsLXYPlot =
@@ -420,8 +450,8 @@ namespace libDataAccess
             JetWidthPlot = JetWidthPlotRaw.FromType<double, recoTreeJets>(j => j.width);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetPhiPlot = JetPhiPlotRaw.FromType<double, recoTreeJets>(j => j.phi);
-            JetLLPLxyPlot = JetLLPLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
-            JetLLPPtPlot = JetLLPPtPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.pT : 0.0);
+            JetLLPLxyPlot = JetLLPLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy : 0.0);
+            JetLLPPtPlot = JetLLPPtPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.pT / 1000.0 : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
             JetCalRPlotFine = JetCalRPlotFineRaw.FromType<double, recoTreeJets>(j => j.logRatio);
 
@@ -450,6 +480,11 @@ namespace libDataAccess
             NTrackExtraPlot = NTrackPlot.FromType<IEnumerable<recoTreeTracks>, JetInfoExtra>(jinfo => jinfo.Tracks);
             TrackPtExtraPlot = TrackPtPlot.FromManyOfType((JetInfoExtra j) => j.Tracks);
             JetExtraCalRVsPtPlot = JetCalRVsPtPlot.FromType<recoTreeJets, JetInfoExtra>(jinfo => jinfo.Jet);
+
+            JetCalPredictedLxyPlot = JetCalPredictedLxyPlotRaw.FromType<double, JetStream>(j => j.JetInfo.Jet.Predicted_Lxy / 1000.0);
+            JetCalPredictedLzPlot = JetCalPredictedLzPlotRaw.FromType<double, JetStream>(j => j.JetInfo.Jet.Predicted_Lz / 1000.0);
+            JetCalPredictedLxyPlotJetExtra = JetCalPredictedLxyPlotRaw.FromType<double, JetInfoExtra>(j => j.Jet.Predicted_Lxy / 1000.0);
+            JetCalPredictedLzPlotJetExtra = JetCalPredictedLzPlotRaw.FromType<double, JetInfoExtra>(j => j.Jet.Predicted_Lz / 1000.0);
 
             PileUpWeight = PileUpWeightRaw.FromType<double, recoTree>(evt => evt.pileupEventWeight);
 

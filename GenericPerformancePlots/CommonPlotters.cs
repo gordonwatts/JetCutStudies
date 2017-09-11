@@ -134,6 +134,25 @@ namespace GenericPerformancePlots
                 .FuturePlot(JetMaxPtVsPtPlot, nameAddition)
                 .Save(saveDir);
 
+            jets
+                .FuturePlot(JetCalPredictedLzPlotJetExtra, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(JetCalPredictedLxyPlotJetExtra, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(JetCalPredictedLxyVsLxy, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(JetCalPredictedLzVsLz, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .FuturePlot(JetCalPredictedLzVsPredictedLxy, nameAddition)
+                .Save(saveDir);
 
             return jets;
         }
