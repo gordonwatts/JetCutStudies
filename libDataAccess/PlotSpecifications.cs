@@ -115,7 +115,7 @@ namespace libDataAccess
         /// A pT plot of tracks associated with jets
         /// </summary>
         public static IPlotSpec<recoTreeTracks> TrackPtPlot =
-            MakePlotterSpec<recoTreeTracks>(200, 0.0, 20.0, t => t.pT, "trkPt{0}", "Track pT for {0} tracks; pT");
+            MakePlotterSpec<recoTreeTracks>(200, 0.0, 20.0, t => t.pT, "trkPt{0}", "Track pT for {0} tracks; pT [GeV]");
 
         /// <summary>
         /// Sum pT of all tracks
@@ -421,7 +421,7 @@ namespace libDataAccess
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetPhiPlot = JetPhiPlotRaw.FromType<double, recoTreeJets>(j => j.phi);
             JetLLPLxyPlot = JetLLPLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
-            JetLLPPtPlot = JetLLPPtPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.pT / 1000.0 : 0.0);
+            JetLLPPtPlot = JetLLPPtPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.pT : 0.0);
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
             JetCalRPlotFine = JetCalRPlotFineRaw.FromType<double, recoTreeJets>(j => j.logRatio);
 

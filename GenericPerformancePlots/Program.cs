@@ -64,12 +64,12 @@ namespace GenericPerformancePlots
             }
 
             // Get the beam-halo samples to use for testing and training
-            var data15 = SampleMetaData.AllSamplesWithTag("data15_new")
+            var data15 = SampleMetaData.AllSamplesWithTag("data15_p2950")
                 .Take(opt.UseFullDataset ? 10000 : 2)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data15);
 
-            var data16 = SampleMetaData.AllSamplesWithTag("data16")
+            var data16 = SampleMetaData.AllSamplesWithTag("data16_p2950")
                 .Take(opt.UseFullDataset ? 10000 : 1)
                 .SamplesAsSingleQueriable()
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data16);
