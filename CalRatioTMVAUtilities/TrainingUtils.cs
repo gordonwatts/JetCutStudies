@@ -69,7 +69,7 @@ namespace CalRatioTMVAUtilities
                 FirstClusterRadius = i.JetInfo.Jet.FirstClusterR,
                 ShowerCenter = i.JetInfo.Jet.FirstClusterLambda,
                 EnergyDensity = i.JetInfo.Jet.FirstClusterEnergyDensity,
-                HadronicLayer1Fraction = (i.JetInfo.Jet.EHadLayer1 + i.JetInfo.Jet.EHadLayer2 + i.JetInfo.Jet.EHadLayer3) == 0 ? -1.0 : i.JetInfo.Jet.EHadLayer1 / (i.JetInfo.Jet.EHadLayer1 + i.JetInfo.Jet.EHadLayer2 + i.JetInfo.Jet.EHadLayer3),
+                HadronicLayer1Fraction = i.JetInfo.Jet.EHL1frac,
                 BIBDeltaTimingM = PlotSpecifications.CalcBIBMinusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
                 BIBDeltaTimingP = PlotSpecifications.CalcBIBPlusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
             };

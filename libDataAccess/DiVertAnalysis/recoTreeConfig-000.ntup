@@ -140,11 +140,12 @@
         <VariableInfo NETName="CalibJet_minDRTrkpt2" TTreeName="CalibJet_minDRTrkpt2" />
         <VariableInfo NETName="CalibJet_matchPassEmul" TTreeName="CalibJet_matchPassEmul" />
         <VariableInfo NETName="CalibJet_cluster_nClusters" TTreeName="CalibJet_cluster_nClusters" />
-        <VariableInfo NETName="FirstClusterR" TTreeName="CalibJet_cluster_lead_r" />
+        <VariableInfo NETName="FirstClusterR" TTreeName="CalibJet_cluster_lead_center" />
         <VariableInfo NETName="CalibJet_cluster_lead_x" TTreeName="CalibJet_cluster_lead_x" />
         <VariableInfo NETName="CalibJet_cluster_lead_y" TTreeName="CalibJet_cluster_lead_y" />
         <VariableInfo NETName="FirstClusterZ" TTreeName="CalibJet_cluster_lead_z" />
         <VariableInfo NETName="FirstClusterLxy" TTreeName="CalibJet_cluster_lead_Lxy" />
+        <VariableInfo NETName="EHL1frac" TTreeName="CalibJet_f_EH_l1frac" />
         <VariableInfo NETName="CalibJet_cluster_lead_ET" TTreeName="CalibJet_cluster_lead_ET" />
         <VariableInfo NETName="CalibJet_cluster_lead_pT" TTreeName="CalibJet_cluster_lead_pT" />
         <VariableInfo NETName="CalibJet_cluster_lead_eta" TTreeName="CalibJet_cluster_lead_eta" />
@@ -167,10 +168,6 @@
         <VariableInfo NETName="CalibJet_cluster_lead_dR_tojet" TTreeName="CalibJet_cluster_lead_dR_tojet" />
         <VariableInfo NETName="CalibJet_cluster_lead_fracE_ofjet" TTreeName="CalibJet_cluster_lead_fracE_ofjet" />
         <VariableInfo NETName="CalibJet_cluster_lead_jetEMF_revised" TTreeName="CalibJet_cluster_lead_jetEMF_revised" />
-        <VariableInfo NETName="EHadLayer1" TTreeName="CalibJet_EH_layer1" />
-        <VariableInfo NETName="EHadLayer2" TTreeName="CalibJet_EH_layer2" />
-        <VariableInfo NETName="EHadLayer3" TTreeName="CalibJet_EH_layer3" />
-        <VariableInfo NETName="CalibJet_EH_layer3" TTreeName="CalibJet_EH_layer3" />
         <VariableInfo NETName="Predicted_Lxy" TTreeName="CalibJet_Reg_Lxy" />
         <VariableInfo NETName="Predicted_Lz" TTreeName="CalibJet_Reg_Lz" />
       </Variables>

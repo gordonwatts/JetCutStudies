@@ -117,8 +117,9 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_maxTrkpT;
    TStlSimpleProxy<vector<double> >         CalibJet_minDRTrkpt2;
    TStlSimpleProxy<vector<bool> >           CalibJet_matchPassEmul;
+   TStlSimpleProxy<vector<double> >         CalibJet_f_EH_l1frac;
    TStlSimpleProxy<vector<int> >            CalibJet_cluster_nClusters;
-   TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_r;
+   TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_center;
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_x;
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_y;
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_z;
@@ -145,9 +146,6 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_dR_tojet;
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_fracE_ofjet;
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_jetEMF_revised;
-   TStlSimpleProxy<vector<double> >         CalibJet_EH_layer1;
-   TStlSimpleProxy<vector<double> >         CalibJet_EH_layer2;
-   TStlSimpleProxy<vector<double> >         CalibJet_EH_layer3;
    TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lxy;
    TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lz;
    TStlSimpleProxy<vector<double> >         Track_pT;
@@ -399,8 +397,9 @@ public :
       CalibJet_maxTrkpT                       (&fDirector,"CalibJet_maxTrkpT"),
       CalibJet_minDRTrkpt2                    (&fDirector,"CalibJet_minDRTrkpt2"),
       CalibJet_matchPassEmul                  (&fDirector,"CalibJet_matchPassEmul"),
+	  CalibJet_f_EH_l1frac					  (&fDirector,"CalibJet_f_EH_l1frac"),
       CalibJet_cluster_nClusters              (&fDirector,"CalibJet_cluster_nClusters"),
-      CalibJet_cluster_lead_r                 (&fDirector,"CalibJet_cluster_lead_r"),
+      CalibJet_cluster_lead_center            (&fDirector,"CalibJet_cluster_lead_center"),
       CalibJet_cluster_lead_x                 (&fDirector,"CalibJet_cluster_lead_x"),
       CalibJet_cluster_lead_y                 (&fDirector,"CalibJet_cluster_lead_y"),
       CalibJet_cluster_lead_z                 (&fDirector,"CalibJet_cluster_lead_z"),
@@ -427,11 +426,8 @@ public :
       CalibJet_cluster_lead_dR_tojet          (&fDirector,"CalibJet_cluster_lead_dR_tojet"),
       CalibJet_cluster_lead_fracE_ofjet       (&fDirector,"CalibJet_cluster_lead_fracE_ofjet"),
       CalibJet_cluster_lead_jetEMF_revised    (&fDirector,"CalibJet_cluster_lead_jetEMF_revised"),
-      CalibJet_EH_layer1                      (&fDirector,"CalibJet_EH_layer1"),
-      CalibJet_EH_layer2                      (&fDirector,"CalibJet_EH_layer2"),
-      CalibJet_EH_layer3                      (&fDirector,"CalibJet_EH_layer3"),
-	  CalibJet_Reg_Lxy						  (&fDirector, "CalibJet_Reg_Lxy"),
-	  CalibJet_Reg_Lz						  (&fDirector, "CalibJet_Reg_Lz"),
+	  CalibJet_Reg_Lxy						  (&fDirector,"CalibJet_Reg_Lxy"),
+	  CalibJet_Reg_Lz						  (&fDirector,"CalibJet_Reg_Lz"),
 	  Track_pT                                (&fDirector,"Track_pT"),
       Track_eta                               (&fDirector,"Track_eta"),
       Track_phi                               (&fDirector,"Track_phi"),
