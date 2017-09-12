@@ -259,8 +259,8 @@ namespace libDataAccess
         public static IPlotSpec<JetInfoExtra> JetCalPredictedLzPlotJetExtra;
 
         public static IPlotSpec<JetInfoExtra> JetCalPredictedLxyVsLxy =
-            MakePlotterSpec<JetInfoExtra>(50, 0.0, 10.0, j => j.Jet.Predicted_Lxy / 1000.0,
-                50, 0.0, 10.0, j => j.Jet.LLP.IsGoodIndex() ? j.Jet.LLP.Lxy / 1000.0 : 0.0,
+            MakePlotterSpec<JetInfoExtra>(50, 0.0, 7.0, j => j.Jet.Predicted_Lxy / 1000.0,
+                50, 0.0, 7.0, j => j.Jet.LLP.IsGoodIndex() ? j.Jet.LLP.Lxy / 1000.0 : 0.0,
                 "PredictedLxyVsLxy{0}", "Predicted Lxy vs actual Lxy for {0} jets; Predicted Lxy [m]; Lxy [m]");
 
         public static IPlotSpec<JetInfoExtra> JetCalPredictedLzVsLz =
