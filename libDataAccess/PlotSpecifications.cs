@@ -302,10 +302,18 @@ namespace libDataAccess
         public static IPlotSpec<JetStream> JetLLPLxyPlotJetStream;
 
         /// <summary>
+        /// Raw plotter for Lz
+        /// </summary>
+        public static IPlotSpec<double> JetLLPLzPlotRaw =
+            MakePlotterSpec<double>(80, 0.0, 6.0, j => j, nFormat: "Lz{0}", tFormat: "Lxy for {0}; Lxy [m]");
+        public static IPlotSpec<recoTreeJets> JetLLPLzPlot;
+        public static IPlotSpec<JetStream> JetLLPLzPlotJetStream;
+
+        /// <summary>
         /// Plot the pT of the LLP
         /// </summary>
         public static IPlotSpec<double> JetLLPPtPlotRaw =
-            MakePlotterSpec<double>(150, 0.0, 750, j => j, nFormat: "LLPPt{0}", tFormat: "LLP pT for {0}; pT [GeV]");
+            MakePlotterSpec<double>(150, 0.0, 800, j => j, nFormat: "LLPPt{0}", tFormat: "LLP pT for {0}; pT [GeV]");
         public static IPlotSpec<recoTreeJets> JetLLPPtPlot;
         public static IPlotSpec<JetStream> JetLLPPtPlotJetStream;
 
@@ -450,8 +458,11 @@ namespace libDataAccess
             JetWidthPlot = JetWidthPlotRaw.FromType<double, recoTreeJets>(j => j.width);
             JetEtaPlot = JetEtaPlotRaw.FromType<double, recoTreeJets>(j => j.eta);
             JetPhiPlot = JetPhiPlotRaw.FromType<double, recoTreeJets>(j => j.phi);
-            JetLLPLxyPlot = JetLLPLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy : 0.0);
+
+            JetLLPLxyPlot = JetLLPLxyPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lxy / 1000.0 : 0.0);
             JetLLPPtPlot = JetLLPPtPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.pT / 1000.0 : 0.0);
+            JetLLPLzPlot = JetLLPLzPlotRaw.FromType<double, recoTreeJets>(j => j.LLP.IsGoodIndex() ? j.LLP.Lz / 1000.0 : 0.0);
+
             JetCalRPlot = JetCalRPlotRaw.FromType<double, recoTreeJets>(j => j.logRatio);
             JetCalRPlotFine = JetCalRPlotFineRaw.FromType<double, recoTreeJets>(j => j.logRatio);
 

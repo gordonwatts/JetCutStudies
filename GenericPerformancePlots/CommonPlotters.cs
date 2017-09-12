@@ -35,7 +35,24 @@ namespace GenericPerformancePlots
             jets
                 .Where(j => j.Jet.LLP.IsGoodIndex())
                 .Select(j => j.Jet)
+                .FuturePlot(JetLLPLzPlot, nameAddition)
+                .Save(saveDir);
+
+
+            jets
+                .Where(j => j.Jet.LLP.IsGoodIndex())
+                .Select(j => j.Jet)
                 .FuturePlot(JetLLPPtPlot, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .Where(j => j.Jet.LLP.IsGoodIndex())
+                .FuturePlot(JetCalPredictedLxyVsLxy, nameAddition)
+                .Save(saveDir);
+
+            jets
+                .Where(j => j.Jet.LLP.IsGoodIndex())
+                .FuturePlot(JetCalPredictedLzVsLz, nameAddition)
                 .Save(saveDir);
 
             return jets;
@@ -140,14 +157,6 @@ namespace GenericPerformancePlots
 
             jets
                 .FuturePlot(JetCalPredictedLxyPlotJetExtra, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetCalPredictedLxyVsLxy, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetCalPredictedLzVsLz, nameAddition)
                 .Save(saveDir);
 
             jets
