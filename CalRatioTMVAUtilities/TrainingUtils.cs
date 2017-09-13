@@ -30,7 +30,7 @@ namespace CalRatioTMVAUtilities
         public int EventNumber;
         public double JetET;
         public double JetWidth;
-        public double JetDRTo2GeVTrack;
+        public double JetDRTo2GeVTrack; // Not used by default any longer
         public double EnergyDensity;
         public double HadronicLayer1Fraction;
         public double JetLat;
