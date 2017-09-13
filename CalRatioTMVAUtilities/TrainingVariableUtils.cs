@@ -46,7 +46,8 @@ namespace CalRatioTMVAUtilities
             BIBDeltaTimingPlus,
             BIBDeltaTimingMinus,
             PredictedLxy,
-            PredictedLz
+            PredictedLz,
+            InteractionsPerCrossing,
         }
 
         /// <summary>
@@ -128,6 +129,9 @@ namespace CalRatioTMVAUtilities
 
                 case TrainingVariables.PredictedLz:
                     return t => t.PredictedLz;
+
+                case TrainingVariables.InteractionsPerCrossing:
+                    return t => t.InteractionsPerCrossing;
 
                 default:
                     throw new NotImplementedException($"Unknown variable requested: {varName.ToString()}");

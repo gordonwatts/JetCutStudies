@@ -107,7 +107,8 @@ namespace CalRatioTMVAUtilities
                     BIBDeltaTimingM = t.BIBDeltaTimingM,
                     BIBDeltaTimingP = t.BIBDeltaTimingP,
                     PredictedLxy = t.PredictedLxy,
-                    PredictedLz = t.PredictedLz
+                    PredictedLz = t.PredictedLz,
+                    InteractionsPerCrossing = t.InteractionsPerCrossing,
                 });
 
             r

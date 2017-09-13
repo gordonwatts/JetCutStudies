@@ -23,6 +23,7 @@ namespace libDataAccess.Utils
         public double Weight;
         public int EventNumber;
         public int RunNumber;
+        public double InteractionsPerCrossing;
     }
 
     public static class SampleUtils
@@ -34,7 +35,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source, double pTCut = 40.0)
         {
             return source
-                .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, j), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber }))
+                .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, j), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber, InteractionsPerCrossing = e.Data.actualIntPerCrossing }))
                 .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
         }
@@ -76,7 +77,7 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> AsGoodFirstJetStream(this IQueryable<MetaData> source, double pTCut = 40.0)
         {
             return source
-                .Select(e => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, e.Data.Jets.OrderByDescending(j => j.pT).First()), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber })
+                .Select(e => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, e.Data.Jets.OrderByDescending(j => j.pT).First()), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber, InteractionsPerCrossing = e.Data.actualIntPerCrossing })
                 .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
 

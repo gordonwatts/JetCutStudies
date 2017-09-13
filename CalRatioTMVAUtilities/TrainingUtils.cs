@@ -41,6 +41,7 @@ namespace CalRatioTMVAUtilities
         public double BIBDeltaTimingP;
         public double PredictedLz;
         public double PredictedLxy;
+        public double InteractionsPerCrossing;
     }
 
     /// <summary>
@@ -75,7 +76,8 @@ namespace CalRatioTMVAUtilities
                 BIBDeltaTimingM = PlotSpecifications.CalcBIBMinusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
                 BIBDeltaTimingP = PlotSpecifications.CalcBIBPlusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
                 PredictedLxy = i.JetInfo.Jet.Predicted_Lxy,
-                PredictedLz = i.JetInfo.Jet.Predicted_Lz
+                PredictedLz = i.JetInfo.Jet.Predicted_Lz,
+                InteractionsPerCrossing = i.InteractionsPerCrossing,
             };
 
         /// <summary>
@@ -145,6 +147,8 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = ShowerCenterPlotRaw, ValueGetter = tu => tu.ShowerCenter },
             new PlotInfo() { Plotter = BIBDeltaPlusTimingPlotRaw, ValueGetter = tu => tu.BIBDeltaTimingP },
             new PlotInfo() { Plotter = BIBDeltaMinusTimingPlotRaw, ValueGetter = tu => tu.BIBDeltaTimingM },
+            new PlotInfo() { Plotter = JetCalPredictedLzPlotRaw, ValueGetter = tu => tu.PredictedLz},
+            new PlotInfo() { Plotter = JetCalPredictedLxyPlotRaw, ValueGetter = tu => tu.PredictedLxy},
         };
 
         /// <summary>
