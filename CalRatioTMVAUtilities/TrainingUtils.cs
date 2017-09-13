@@ -147,8 +147,9 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = ShowerCenterPlotRaw, ValueGetter = tu => tu.ShowerCenter },
             new PlotInfo() { Plotter = BIBDeltaPlusTimingPlotRaw, ValueGetter = tu => tu.BIBDeltaTimingP },
             new PlotInfo() { Plotter = BIBDeltaMinusTimingPlotRaw, ValueGetter = tu => tu.BIBDeltaTimingM },
-            new PlotInfo() { Plotter = JetCalPredictedLzPlotRaw, ValueGetter = tu => tu.PredictedLz},
-            new PlotInfo() { Plotter = JetCalPredictedLxyPlotRaw, ValueGetter = tu => tu.PredictedLxy},
+            new PlotInfo() { Plotter = JetCalPredictedLzPlotRaw, ValueGetter = tu => tu.PredictedLz / 1000.0},
+            new PlotInfo() { Plotter = JetCalPredictedLxyPlotRaw, ValueGetter = tu => tu.PredictedLxy / 1000.0},
+            new PlotInfo() { Plotter = EventInteractionsPerCossing, ValueGetter = tu => tu.InteractionsPerCrossing},
         };
 
         /// <summary>

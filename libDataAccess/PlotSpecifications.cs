@@ -239,6 +239,13 @@ namespace libDataAccess
         public static IPlotSpec<JetStream> JetCalRPlotFineJetStream;
 
         /// <summary>
+        /// Track the number of interactions per crossing
+        /// </summary>
+        public static IPlotSpec<double> EventInteractionsPerCossing =
+            MakePlotterSpec<double>(100, 0.0, 60.0, j => j,
+                "InteractionsPerCrossing{0}", "Number of Interactions Per Crossing for {0} jets");
+
+        /// <summary>
         /// 1D plot of cal ratio jets
         /// </summary>
         public static IPlotSpec<JetInfoExtra> JetExtraCalRPlot;
