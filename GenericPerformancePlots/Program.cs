@@ -87,23 +87,35 @@ namespace GenericPerformancePlots
                     Console.WriteLine(background.Item2);
                     NoGCExecute(() =>
                     {
+                        var d = bkgDir.mkdir(background.Item2);
+                        background.Item1.Select(m => (double) m.Data.actualIntPerCrossing)
+                            .FuturePlot(EventInteractionsPerCossing, "all")
+                            .Save(d);
                         BuildSuperJetInfo(background.Item1.Select(md => md.Data))
-                        .PlotBasicDataPlots(bkgDir.mkdir(background.Item2), "all");
+                        .PlotBasicDataPlots(d, "all");
                     });
                 }
 
                 Console.WriteLine("data15");
                 NoGCExecute(() =>
                 {
+                    var dr = bkgDir.mkdir("data15");
+                    data15.Select(m => (double) m.Data.actualIntPerCrossing)
+                        .FuturePlot(EventInteractionsPerCossing, "all")
+                        .Save(dr);
                     BuildSuperJetInfo(data15.Select(d => d.Data))
-                        .PlotBasicDataPlots(bkgDir.mkdir("data15"), "all");
+                        .PlotBasicDataPlots(dr, "all");
                 });
 
                 Console.WriteLine("data16");
                 NoGCExecute(() =>
                 {
+                    var dr = bkgDir.mkdir("data16");
+                    data16.Select(m => (double) m.Data.actualIntPerCrossing)
+                        .FuturePlot(EventInteractionsPerCossing, "all")
+                        .Save(dr);
                     BuildSuperJetInfo(data16.Select(d => d.Data))
-                        .PlotBasicDataPlots(bkgDir.mkdir("data16"), "all");
+                        .PlotBasicDataPlots(dr, "all");
                 });
 
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
