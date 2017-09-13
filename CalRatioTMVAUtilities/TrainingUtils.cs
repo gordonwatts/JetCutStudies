@@ -39,6 +39,8 @@ namespace CalRatioTMVAUtilities
         public double ShowerCenter;
         public double BIBDeltaTimingM;
         public double BIBDeltaTimingP;
+        public double PredictedLz;
+        public double PredictedLxy;
     }
 
     /// <summary>
@@ -72,6 +74,8 @@ namespace CalRatioTMVAUtilities
                 HadronicLayer1Fraction = i.JetInfo.Jet.EHL1frac,
                 BIBDeltaTimingM = PlotSpecifications.CalcBIBMinusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
                 BIBDeltaTimingP = PlotSpecifications.CalcBIBPlusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
+                PredictedLxy = i.JetInfo.Jet.Predicted_Lxy,
+                PredictedLz = i.JetInfo.Jet.Predicted_Lz
             };
 
         /// <summary>

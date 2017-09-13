@@ -18,6 +18,7 @@ namespace CalRatioTMVAUtilities
             Default5ET,
             DefaultAllpT,
             DefaultAllET,
+            Analysis2015pT,
             None
         }
 
@@ -43,7 +44,9 @@ namespace CalRatioTMVAUtilities
             FirstClusterRadius,
             ShowerCenter,
             BIBDeltaTimingPlus,
-            BIBDeltaTimingMinus
+            BIBDeltaTimingMinus,
+            PredictedLxy,
+            PredictedLz
         }
 
         /// <summary>
@@ -120,6 +123,12 @@ namespace CalRatioTMVAUtilities
                 case TrainingVariables.BIBDeltaTimingPlus:
                     return t => t.BIBDeltaTimingP;
 
+                case TrainingVariables.PredictedLxy:
+                    return t => t.PredictedLxy;
+
+                case TrainingVariables.PredictedLz:
+                    return t => t.PredictedLz;
+
                 default:
                     throw new NotImplementedException($"Unknown variable requested: {varName.ToString()}");
             }
@@ -153,6 +162,26 @@ namespace CalRatioTMVAUtilities
                     break;
 
                 case TrainingVariableSet.DefaultAllpT:
+                    result.Add(TrainingVariables.JetPt);
+                    result.Add(TrainingVariables.JetPhi);
+                    result.Add(TrainingVariables.CalRatio);
+                    result.Add(TrainingVariables.NTracks);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    result.Add(TrainingVariables.JetWidth);
+                    result.Add(TrainingVariables.EnergyDensity);
+                    result.Add(TrainingVariables.HadronicLayer1Fraction);
+                    result.Add(TrainingVariables.JetLat);
+                    result.Add(TrainingVariables.JetLong);
+                    result.Add(TrainingVariables.FirstClusterRadius);
+                    result.Add(TrainingVariables.ShowerCenter);
+                    result.Add(TrainingVariables.BIBDeltaTimingMinus);
+                    result.Add(TrainingVariables.BIBDeltaTimingPlus);
+                    result.Add(TrainingVariables.PredictedLz);
+                    result.Add(TrainingVariables.PredictedLxy);
+                    break;
+
+                case TrainingVariableSet.Analysis2015pT:
                     result.Add(TrainingVariables.JetPt);
                     result.Add(TrainingVariables.JetPhi);
                     result.Add(TrainingVariables.CalRatio);

@@ -106,6 +106,8 @@ namespace CalRatioTMVAUtilities
                     ShowerCenter = t.ShowerCenter,
                     BIBDeltaTimingM = t.BIBDeltaTimingM,
                     BIBDeltaTimingP = t.BIBDeltaTimingP,
+                    PredictedLxy = t.PredictedLxy,
+                    PredictedLz = t.PredictedLz
                 });
 
             r
