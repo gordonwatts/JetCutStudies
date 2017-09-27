@@ -1,0 +1,21 @@
+#
+# Common stuff
+#
+
+# File we are looking at...
+f_default_training = jenkins ("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVAClassifierTraining/lastSuccessfulBuild/artifact/JetMVAClassifierTraining.root");
+
+samples = ["125pi25lt5m", "200pi25lt5m", "400pi50lt5m", "600pi150lt5m", "1000pi400lt5m"];
+
+Legend("1000pi400lt5m" => {Color => 8, Title => "1000/400 - 5m"});
+Legend("600pi50lt5m" => {Color => 6, Title => "600/50 - 5m"});
+Legend("400pi50lt5m" => {Color => 11, Title => "400/50 - 5m"});
+Legend("200pi25lt5m" => {Color => 2, Title => "200/25 - 5m"});
+Legend("125pi25lt5m" => {Color => 9, Title => "125/25 - 5m"});
+
+Legend("weightweight_hss" => {Color => 1, Title => "Signal Weight"});
+Legend("weightweight_bib" => {Color => 2, Title => "BiB Weight"});
+Legend("weightweight_multijet" => {Color => 3, Title => "Multijet Weight"});
+
+#set_default_canvas_size(1200, 600);
+plotformats=["png"];
