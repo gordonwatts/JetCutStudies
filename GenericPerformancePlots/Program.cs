@@ -24,8 +24,8 @@ namespace GenericPerformancePlots
     {
         class Options : CommonOptions
         {
-            [Option("ReducedSignalSamples", Default = false, HelpText = "Use the first 5 signal samples - good for testing.")]
-            public bool ReducedSignalSamples { get; set; }
+            [Option("SmallTestingMenu", HelpText = "If present, then run on a small number of samples", Default = false)]
+            public bool SmallTestingMenu { get; set; }
         }
 
         /// <summary>
@@ -53,15 +53,14 @@ namespace GenericPerformancePlots
             var backgroundEvents = Files.GetAllJetSamples().Select(e => e.Data);
 
             // All the signal we are going to make plots of.
-            var signalSamples = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "hss")
+            var tags = new[] { "mc15c", "signal", "hss" };
+            if (opt.SmallTestingMenu)
+            {
+                tags = tags.Add("quick_compare").ToArray();
+            }
+            var signalSamples = SampleMetaData.AllSamplesWithTag(tags)
                 .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
                 .ToArray();
-            if (opt.ReducedSignalSamples)
-            {
-                signalSamples = signalSamples
-                    .Take(5)
-                    .ToArray();
-            }
 
             // Get the beam-halo samples to use for testing and training
             var data15 = SampleMetaData.AllSamplesWithTag("data15_p2950")
