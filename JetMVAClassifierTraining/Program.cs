@@ -59,7 +59,7 @@ namespace JetMVAClassifierTraining
             [Option("TrainEventsBIB16", HelpText = "How many events from data16 should be used in the training for bib16 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB16 { get; set; }
 
-            [Option("TrainEventsBIB15", HelpText = "How many events from data16 should be used in the training for bib15 (-1 is all, 0 is none)?", Default = -1)]
+            [Option("TrainEventsBIB15", HelpText = "How many events from data15 should be used in the training for bib15 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB15 { get; set; }
 
             [Option("PrecisionValue", HelpText ="The fraction of events in each sample to use when calculating the training precision", Default = 0.90)]
@@ -96,8 +96,8 @@ namespace JetMVAClassifierTraining
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset);
 
             // Class: BIB
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data15, options.pTCut);
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data16, options.pTCut);
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0 ? (options.UseFullDataset ? -1 : 25000) : options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut);
 
 
             // The file we will use to dump everything about this training.
