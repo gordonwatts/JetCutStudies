@@ -12,17 +12,8 @@ wnames = ["weightweight_hss", "weightweight_multijet", "weightweight_bib"];
 
 for (sname, samples) {
 	plots = map(w, wnames) {
-		f_default_training.Get("Results/{sname}/{w}").tag(w);
+		f_training_1.Get("Results/{sname}/{w}").tag(w);
 	};
 	plots.plot()
-		.title("Weights for {sname}");
+		.title("{build_1} - Weights for {sname}");
 };
-#map (plot_names) {
-#	plots = map(sample, samples) {
-#	  f_generic.Get("{sample}/signal/{pname}withLLPInCal").tag(sample).normalize();
-#	};
-
-#	plots.plot()
-#		.title("{name} for Jets With Cal Decay")
-#		.LegendOptions({"drawbox" => "false", "placement" => "UpperRight", xmarg => xmarg});
-#};
