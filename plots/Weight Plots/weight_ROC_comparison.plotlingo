@@ -1,0 +1,40 @@
+#
+# Compare the ROC curves for mutli-jet vs signal and bib vs signal
+#
+
+include ("weight_common.plotlingo");
+
+Legend("b1" => {Color => 1, Title => "{build_1} - No Lxy, Lz"});
+Legend("b2" => {Color => 2, Title => "{build_2} - Full Training"});
+
+ROC_types = ["jz", "data16"];
+
+#
+# plots of each type of weight by sample
+#
+
+#wnames = ["weightweight_hss", "weightweight_multijet", "weightweight_bib"];
+
+for (roc, ROC_types) {
+	for (sname, signal_only_samples) {
+		p_signal_1 = f_training_1.Get("Results/{sname}/weightweight_hss");
+		p_background_1 = f_training_1.Get("Results/{roc}/weightweight_hss");
+		p_signal_2 = f_training_2.Get("Results/{sname}/weightweight_hss");
+		p_background_2 = f_training_2.Get("Results/{roc}/weightweight_hss");
+
+		r_1 = asROC(p_signal_1, p_background_1, false, false).tag("b1");
+		r_2 = asROC(p_signal_2, p_background_2, false, false).tag("b2");
+
+		plots = [r_1, r_2];
+
+		plots
+			.draw()
+			.grid()
+			.logy()
+			.yaxis("Efficiency ({roc})")
+			.xaxis("Efficiency ({sname})")
+			.LegendOptions({drawbox => "true", scale => 0.8, placement => "UpperLeft", xmarg => 0.14})
+			.title("ROC - {sname} vs {roc}");
+
+	};
+};

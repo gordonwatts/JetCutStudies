@@ -4,9 +4,12 @@
 
 # File we are looking at...
 build_1 = 79;
+build_2 = 80;
 f_training_1 = jenkins ("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVAClassifierTraining/{build_1}/artifact/JetMVAClassifierTraining.root");
+f_training_2 = jenkins ("http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVAClassifierTraining/{build_2}/artifact/JetMVAClassifierTraining.root");
 
 samples = ["125pi25lt5m", "200pi25lt5m", "400pi50lt5m", "600pi150lt5m", "1000pi400lt5m", "jz", "data16"];
+signal_only_samples = ["125pi25lt5m", "200pi25lt5m", "400pi50lt5m", "600pi150lt5m", "1000pi400lt5m"];
 
 Legend("1000pi400lt5m" => {Color => 8, Title => "1000/400 - 5m"});
 Legend("600pi50lt5m" => {Color => 6, Title => "600/50 - 5m"});

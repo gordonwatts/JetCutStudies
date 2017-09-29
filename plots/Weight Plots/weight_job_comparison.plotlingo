@@ -1,0 +1,24 @@
+#
+# Compare the weights from different builds
+#
+
+include ("weight_common.plotlingo");
+
+Legend("b1" => {Color => 1, Title => "{build_1} - No Lxy, Lz"});
+Legend("b2" => {Color => 2, Title => "{build_2} - Full Training"});
+
+#
+# plots of each type of weight by sample
+#
+
+wnames = ["weightweight_hss", "weightweight_multijet", "weightweight_bib"];
+
+for (sname, samples) {
+	for (w, wnames) {
+		p1 = f_training_1.Get("Results/{sname}/{w}").tag("b1");
+		p2 = f_training_2.Get("Results/{sname}/{w}").tag("b2");
+		plots = [p1, p2];
+		plots.plot()
+			.title("Comparison of weights for {w} in {sname}");
+	};
+};
