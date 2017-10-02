@@ -112,7 +112,7 @@ namespace libDataAccess
             {
                 throw new DataSetHasNoFilesException($"Dataset {sample} has no files - remove it from the input list!");
             }
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
+            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles.AsURIs("localbash"));
             backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
             backgroundEvents.IgnoreQueryCache = IgnoreQueires;
 
@@ -159,7 +159,7 @@ namespace libDataAccess
                 var files = source
                 .SelectMany(s => GetFileList(s.Name));
 
-            var events = QueryablerecoTree.CreateQueriable(files.ToArray());
+            var events = QueryablerecoTree.CreateQueriable(files.AsURIs("localbash"));
             events.IgnoreQueryCache = IgnoreQueires;
             events.CleanupQuery = true;
             return GenerateStream(events, 1.0);
@@ -199,7 +199,7 @@ namespace libDataAccess
         public static IQueryable<recoTree> Get200pi25lt5m()
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig.AsURIs("localbash"));
             sigEvents.IgnoreQueryCache = IgnoreQueires;
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             return sigEvents;
@@ -208,7 +208,7 @@ namespace libDataAccess
         public static IQueryable<recoTree> Get400pi100lt9m()
         {
             var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig.AsURIs("localbash"));
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             sigEvents.IgnoreQueryCache = IgnoreQueires;
             return sigEvents;
@@ -217,10 +217,20 @@ namespace libDataAccess
         public static IQueryable<recoTree> Get600pi150lt9m()
         {
             var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig.AsURIs("localbash"));
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             sigEvents.IgnoreQueryCache = IgnoreQueires;
             return sigEvents;
+        }
+    }
+
+    static class FilesHelpers
+    {
+        static public Uri[] AsURIs (this IEnumerable<FileInfo> source, string protocal = "file")
+        {
+            return source
+                .Select(f => new Uri($"{protocal}://{f.FullName}"))
+                .ToArray();
         }
     }
 }
