@@ -471,7 +471,7 @@ namespace TMVAUtilities
             // Create the factory.
             var options = _tmva_options +
                     (_classificationType == ClassificationType.SignalBackground ? ":AnalysisType=Classification" : ":AnalysisType=Multiclass");
-            script.AppendLine($"TMVA::Factory *f = new TMVA::Factory($\"{jobName}-{hash}\", output, \"{options}\");");
+            script.AppendLine($"TMVA::Factory *f = new TMVA::Factory(\"{jobName}-{hash}\", output, \"{options}\");");
 
             // Next, add the samples.
             bool isSimpleSigBack = _classificationType == ClassificationType.SignalBackground;
@@ -480,7 +480,7 @@ namespace TMVAUtilities
             {
                 // Load up the file
                 script.AppendLine($"TFile *tfile_{count} = TFile::Open(\"<><>{sample.Item2}<><>\", \"READ\");");
-                script.AppendLine($"TTree *t_{count} = tfile_{count}->Get(\"{sample.Item1.Name}\");");
+                script.AppendLine($"TTree *t_{count} = static_cast<TTree*> (tfile_{count}->Get(\"{sample.Item1.Name}\"));");
 
                 // How we add it depends on what it is about the sample.
                 switch (sample.Item3)
