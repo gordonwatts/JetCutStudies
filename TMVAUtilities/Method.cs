@@ -130,12 +130,23 @@ namespace TMVAUtilities
         }
 
         /// <summary>
-        /// Use the parameters from here to add the list.
+        /// Book a TMVA method.
         /// </summary>
         /// <param name="f"></param>
         internal void Book(ROOTNET.NTMVA.NFactory f, List<string> parameterNames)
         {
             f.BookMethod(What, Name.AsTS(), BuildArgumentList(parameterNames).AsTS());
+        }
+
+        /// <summary>
+        /// Use the parameters from here to book a method in a script.
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <param name="factoryVariableName"></param>
+        /// <param name="parameterNames"></param>
+        internal void Book(StringBuilder commands, string factoryVariableName, List<string> parameterNames)
+        {
+            commands.AppendLine($"f->BookMethod({What.ToString()}, \"{Name}\", \"{BuildArgumentList(parameterNames)}\");");
         }
         
         /// <summary>

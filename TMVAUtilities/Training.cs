@@ -1,4 +1,5 @@
 ﻿using LINQToTTreeLib;
+using LINQToTTreeLib.ExecutionCommon;
 using LINQToTTreeLib.Files;
 using LINQToTTreeLib.Variables;
 using ROOTNET;
@@ -443,11 +444,168 @@ namespace TMVAUtilities
                 return resultObject;
             }
 
+            // Run the training
+            TrainInBash(jobName, weight_name, parameters_names, trainingSamples, hash, outputFile, hashFile);
+            return resultObject;
+        }
+
+        /// <summary>
+        /// Run the training in some version of root 6 in bash
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="weight_name"></param>
+        /// <param name="parameters_names"></param>
+        /// <param name="trainingSamples"></param>
+        /// <param name="hash"></param>
+        /// <param name="outputFile"></param>
+        /// <param name="hashFile"></param>
+        /// <returns></returns>
+        private void TrainInBash(string jobName, string weight_name, List<string> parameters_names, Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType, string>[] trainingSamples, int hash, FileInfo outputFile, FileInfo hashFile)
+        {
+            // Write commands to a buffer that we can then write out and execute.
+            var script = new StringBuilder();
+
+            // This is the file where most of the basic results from the training will be written.
+            script.AppendLine($"TFile *output = TFile::Open(\"<><>{outputFile.FullName}<><>\", \"RECREATE\");");
+
+            // Create the factory.
+            var options = _tmva_options +
+                    (_classificationType == ClassificationType.SignalBackground ? ":AnalysisType=Classification" : ":AnalysisType=Multiclass");
+            script.AppendLine($"TMVA::Factory *f = new TMVA::Factory($\"{jobName}-{hash}\", output, \"{options}\");");
+
+            // Next, add the samples.
+            bool isSimpleSigBack = _classificationType == ClassificationType.SignalBackground;
+            int count = 0;
+            foreach (var sample in trainingSamples)
+            {
+                // Load up the file
+                script.AppendLine($"TFile *tfile_{count} = TFile::Open(\"<><>{sample.Item2}<><>\", \"READ\");");
+                script.AppendLine($"TTree *t_{count} = tfile_{count}->Get(\"{sample.Item1.Name}\");");
+
+                // How we add it depends on what it is about the sample.
+                switch (sample.Item3)
+                {
+                    case FileTrainingType.IsTraining:
+                        if (isSimpleSigBack)
+                        {
+                            if (sample.Item4 == "Signal")
+                            {
+                                script.AppendLine($"f->AddSignalTree(t_{count}, 1.0, kTraining);");
+                            }
+                            else
+                            {
+                                script.AppendLine($"f->AddBackgroundTree(t_{count}, 1.0, kTraining);");
+                            }
+                        }
+                        else
+                        {
+                            script.AppendLine($"f->AddTree(t_{count}, \"{sample.Item4}\", 1.0, new TCut(\"\"), kTraining);");
+                        }
+                        break;
+                    case FileTrainingType.IsBoth:
+                        if (isSimpleSigBack)
+                        {
+                            if (sample.Item4 == "Signal")
+                            {
+                                script.AppendLine($"f->AddSignalTree(t_{count});");
+                            }
+                            else
+                            {
+                                script.AppendLine($"f->AddBackgroundTree(t_{count});");
+                            }
+                        }
+                        else
+                        {
+                            script.AppendLine($"f->AddTree(t_{count}, \"{sample.Item4}\", 1.0);");
+                        }
+                        break;
+                    case FileTrainingType.IsTesting:
+                        if (isSimpleSigBack)
+                        {
+                            if (sample.Item4 == "Signal")
+                            {
+                                script.AppendLine($"f->AddSignalTree(t_{count}, 1.0, kTesting);");
+                            }
+                            else
+                            {
+                                script.AppendLine($"f->AddBackgroundTree(t_{count}, 1.0, kTesting);");
+                            }
+                        }
+                        else
+                        {
+                            script.AppendLine($"f->AddTree(t_{count}, \"{sample.Item4}\", 1.0, new TCut(\"\"), kTesting);");
+                        }
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Inavlid program state: Do not know how to add samples of type {sample.Item3}.");
+                }
+                count++;
+            }
+
+            // Do the variables by looking through each item in object T.
+            // Use the windowing requests from the user.
+            foreach (var n in parameters_names)
+            {
+                script.AppendLine($"f->AddVariable(\"{n}\");");
+            }
+
+            // The weight
+            if (!string.IsNullOrWhiteSpace(weight_name))
+            {
+                if (_classificationType == ClassificationType.SignalBackground)
+                {
+                    script.AppendLine($"f->WeightExpression = \"{weight_name}\";");
+                }
+                else
+                {
+                    foreach (var c in _trainingSamples.Select(s => s._eventClass).Distinct())
+                    {
+                        script.AppendLine($"f->SetWeightExpression(\"{weight_name}\", \"{c}\");");
+                    }
+                }
+            }
+
+            // Now book all the methods that were requested
+            foreach (var m in _methods)
+            {
+                m.Book(script, "f", parameters_names);
+            }
+
+            // Finally, do the training.
+            script.AppendLine("f->TrainAllMethods();");
+
+            // And do the evaluation, etc.
+            script.AppendLine("f->TestAllMethods();");
+            script.AppendLine("f->EvaluateAllMethods();");
+
+            // Now, run the script!
+            LocalBashHelpers.RunROOTInBash("training", script.ToString(), new DirectoryInfo(System.Environment.CurrentDirectory));
+
+            // Write out the hash value
+            using (var wr = hashFile.CreateText())
+            {
+                wr.WriteLine(hash);
+            }
+        }
+
+        /// <summary>
+        /// Run the training in-process
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="weight_name"></param>
+        /// <param name="parameters_names"></param>
+        /// <param name="trainingSamples"></param>
+        /// <param name="hash"></param>
+        /// <param name="outputFile"></param>
+        /// <param name="hashFile"></param>
+        /// <param name="resultObject"></param>
+        /// <returns></returns>
+        private void TrainInProcess(string jobName, string weight_name, List<string> parameters_names, Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType, string>[] trainingSamples, int hash, FileInfo outputFile, FileInfo hashFile)
+        {
             // This is the file where most of the basic results from the training will be written.
             var output = NTFile.Open(outputFile.FullName, "RECREATE");
             try
             {
-
                 // Create the factory.
                 var options = _tmva_options +
                     (_classificationType == ClassificationType.SignalBackground ? ":AnalysisType=Classification" : ":AnalysisType=Multiclass");
@@ -465,11 +623,13 @@ namespace TMVAUtilities
                                 if (sample.Item4 == "Signal")
                                 {
                                     f.AddSignalTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
-                                } else
+                                }
+                                else
                                 {
                                     f.AddBackgroundTree(sample.Item1, 1.0, ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
                                 }
-                            } else
+                            }
+                            else
                             {
                                 f.AddTree(sample.Item1, sample.Item4.AsTS(),
                                     1.0, new NTCut(""), ROOTNET.Interface.NTMVA.NTypes.ETreeType.kTraining);
@@ -556,8 +716,6 @@ namespace TMVAUtilities
                 {
                     wr.WriteLine(hash);
                 }
-
-                return resultObject;
             }
             finally
             {
