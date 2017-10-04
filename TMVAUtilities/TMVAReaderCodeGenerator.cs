@@ -37,7 +37,7 @@ namespace TMVAUtilities
         /// <returns></returns>
         public string[] IncludeFiles()
         {
-            return new string[] { "tmva/Reader.h", "vector" };
+            return new string[] { "TMVA/Reader.h", "vector" };
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace TMVAUtilities
             }
 
             // Book the method.
-            yield return $"  readerUnique->BookMVA(\"{_methodName}\", \"{Escape(_weightFile.FullName)}\");";
+            yield return $"  readerUnique->BookMVA(\"{_methodName}\", \"<><>{Escape(_weightFile.FullName)}<><>\");";
             yield return "}";
 
             // Next, set the values of the arguments we want to evaluate.

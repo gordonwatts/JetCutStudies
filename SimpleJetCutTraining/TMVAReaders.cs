@@ -13,7 +13,7 @@ namespace SimpleJetCutTraining
     [CPPHelperClass]
     public static class TMVAReaders
     {
-        [CPPCode(IncludeFiles = new[] { "tmva/Reader.h"},
+        [CPPCode(IncludeFiles = new[] { "TMVA/Reader.h"},
             Code = new[] {
                 "vector<double> dataUnique;",
                 "dataUnique.push_back(a1);",
@@ -25,7 +25,7 @@ namespace SimpleJetCutTraining
             throw new NotImplementedException("THis should never get called!");
         }
 
-        [CPPCode(IncludeFiles = new[] { "tmva/Reader.h" },
+        [CPPCode(IncludeFiles = new[] { "TMVA/Reader.h" },
             Code = new[] {
                 "static bool initUnique = false;",
                 "static float logRUnique = 0.0;",
@@ -47,7 +47,7 @@ namespace SimpleJetCutTraining
             throw new NotImplementedException("THis should never get called!");
         }
 
-        [CPPCode(IncludeFiles = new[] { "tmva/Reader.h" },
+        [CPPCode(IncludeFiles = new[] { "TMVA/Reader.h" },
             Code = new[] {
                 "static bool initUnique = false;",
                 "static float logRUnique = 0.0;",
