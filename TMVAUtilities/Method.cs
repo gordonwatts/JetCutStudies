@@ -144,9 +144,9 @@ namespace TMVAUtilities
         /// <param name="commands"></param>
         /// <param name="factoryVariableName"></param>
         /// <param name="parameterNames"></param>
-        internal void Book(StringBuilder commands, string factoryVariableName, List<string> parameterNames)
+        internal void Book(StringBuilder commands, string factoryVariableName, string dataLoaderName, List<string> parameterNames)
         {
-            commands.AppendLine($"f->BookMethod({What.ToString()}, \"{Name}\", \"{BuildArgumentList(parameterNames)}\");");
+            commands.AppendLine($"f->BookMethod({dataLoaderName}, TMVA::Types::{What.ToString()}, \"{Name}\", \"{BuildArgumentList(parameterNames)}\");");
         }
         
         /// <summary>

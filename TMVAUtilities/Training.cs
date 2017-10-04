@@ -472,6 +472,7 @@ namespace TMVAUtilities
             var options = _tmva_options +
                     (_classificationType == ClassificationType.SignalBackground ? ":AnalysisType=Classification" : ":AnalysisType=Multiclass");
             script.AppendLine($"TMVA::Factory *f = new TMVA::Factory(\"{jobName}-{hash}\", output, \"{options}\");");
+            script.AppendLine("TMVA::DataLoader *dl = new TMVA::DataLoader();");
 
             // Next, add the samples.
             bool isSimpleSigBack = _classificationType == ClassificationType.SignalBackground;
@@ -490,16 +491,16 @@ namespace TMVAUtilities
                         {
                             if (sample.Item4 == "Signal")
                             {
-                                script.AppendLine($"f->AddSignalTree(t_{count}, 1.0, kTraining);");
+                                script.AppendLine($"dl->AddSignalTree(t_{count}, 1.0, TMVA::Types::kTraining);");
                             }
                             else
                             {
-                                script.AppendLine($"f->AddBackgroundTree(t_{count}, 1.0, kTraining);");
+                                script.AppendLine($"dl->AddBackgroundTree(t_{count}, 1.0, TMVA::Types::kTraining);");
                             }
                         }
                         else
                         {
-                            script.AppendLine($"f->AddTree(t_{count}, \"{sample.Item4}\", 1.0, new TCut(\"\"), kTraining);");
+                            script.AppendLine($"dl->AddTree(t_{count}, \"{sample.Item4}\", 1.0, \"\", TMVA::Types::kTraining);");
                         }
                         break;
                     case FileTrainingType.IsBoth:
@@ -507,16 +508,16 @@ namespace TMVAUtilities
                         {
                             if (sample.Item4 == "Signal")
                             {
-                                script.AppendLine($"f->AddSignalTree(t_{count});");
+                                script.AppendLine($"dl->AddSignalTree(t_{count});");
                             }
                             else
                             {
-                                script.AppendLine($"f->AddBackgroundTree(t_{count});");
+                                script.AppendLine($"dl->AddBackgroundTree(t_{count});");
                             }
                         }
                         else
                         {
-                            script.AppendLine($"f->AddTree(t_{count}, \"{sample.Item4}\", 1.0);");
+                            script.AppendLine($"dl->AddTree(t_{count}, \"{sample.Item4}\", 1.0);");
                         }
                         break;
                     case FileTrainingType.IsTesting:
@@ -524,16 +525,16 @@ namespace TMVAUtilities
                         {
                             if (sample.Item4 == "Signal")
                             {
-                                script.AppendLine($"f->AddSignalTree(t_{count}, 1.0, kTesting);");
+                                script.AppendLine($"dl->AddSignalTree(t_{count}, 1.0, TMVA::Types::kTesting);");
                             }
                             else
                             {
-                                script.AppendLine($"f->AddBackgroundTree(t_{count}, 1.0, kTesting);");
+                                script.AppendLine($"dl->AddBackgroundTree(t_{count}, 1.0, TMVA::Types::kTesting);");
                             }
                         }
                         else
                         {
-                            script.AppendLine($"f->AddTree(t_{count}, \"{sample.Item4}\", 1.0, new TCut(\"\"), kTesting);");
+                            script.AppendLine($"dl->AddTree(t_{count}, \"{sample.Item4}\", 1.0, \"\", TMVA::Types::kTesting);");
                         }
                         break;
                     default:
@@ -546,7 +547,7 @@ namespace TMVAUtilities
             // Use the windowing requests from the user.
             foreach (var n in parameters_names)
             {
-                script.AppendLine($"f->AddVariable(\"{n}\");");
+                script.AppendLine($"dl->AddVariable(\"{n}\");");
             }
 
             // The weight
@@ -554,13 +555,13 @@ namespace TMVAUtilities
             {
                 if (_classificationType == ClassificationType.SignalBackground)
                 {
-                    script.AppendLine($"f->WeightExpression = \"{weight_name}\";");
+                    script.AppendLine($"dl->SetWeightExpression(\"{weight_name}\");");
                 }
                 else
                 {
                     foreach (var c in _trainingSamples.Select(s => s._eventClass).Distinct())
                     {
-                        script.AppendLine($"f->SetWeightExpression(\"{weight_name}\", \"{c}\");");
+                        script.AppendLine($"dl->SetWeightExpression(\"{weight_name}\", \"{c}\");");
                     }
                 }
             }
@@ -568,7 +569,7 @@ namespace TMVAUtilities
             // Now book all the methods that were requested
             foreach (var m in _methods)
             {
-                m.Book(script, "f", parameters_names);
+                m.Book(script, "f", "dl", parameters_names);
             }
 
             // Finally, do the training.
