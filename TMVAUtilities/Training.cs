@@ -580,7 +580,7 @@ namespace TMVAUtilities
             script.AppendLine("f->EvaluateAllMethods();");
 
             // Now, run the script!
-            LocalBashHelpers.RunROOTInBash("training", script.ToString(), new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s));
+            LocalBashHelpers.RunROOTInBash("training", script.ToString(), new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s), verbose: true);
 
             // Write out the hash value
             using (var wr = hashFile.CreateText())
