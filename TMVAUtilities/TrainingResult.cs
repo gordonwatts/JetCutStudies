@@ -32,7 +32,11 @@ namespace TMVAUtilities
             foreach (var m in MethodList)
             {
                 var originalWeightFile = m.WeightFile;
-                var finalName = FileInfoUtils.ControlFilename (name, dir, n => $"{n}_{m.Name}.weights.xml");
+                if (!originalWeightFile.Exists)
+                {
+                    throw new FileNotFoundException($"Unable to find the weight file for trainign method {m.Name} - looked for it in '{m.WeightFile.FullName}'.");
+                }
+                var finalName = FileInfoUtils.ControlFilename(name, dir, n => $"{n}_{m.Name}.weights.xml");
                 originalWeightFile.CopyTo(finalName, true);
             }
         }

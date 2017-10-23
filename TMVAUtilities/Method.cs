@@ -40,7 +40,12 @@ namespace TMVAUtilities
         {
             get
             {
-                return new FileInfo(Path.Combine(new DirectoryInfo("weights").FullName, $"{Training.JobName}_{Name}.weights.xml"));
+                var f = new FileInfo(Path.Combine(new DirectoryInfo("weights").FullName, $"{Training.JobName}_{Name}.weights.xml"));
+                if (!f.Exists)
+                {
+                    f = new FileInfo(Path.Combine(f.Directory.Parent.FullName, "default", f.Directory.Name, f.Name));
+                }
+                return f;
             }
         }
 
