@@ -236,6 +236,6 @@ JetCutStudies.VC.opendb
 JetCutStudies.VC.db
 JetCutStudies.VC.VC.opendb
 *.marker
-/.vs/JetCutStudies/v15/sqlite3/storage.ide
 *.opendb
 *.db
+/.vs/
