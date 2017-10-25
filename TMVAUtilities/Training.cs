@@ -464,6 +464,7 @@ namespace TMVAUtilities
         {
             // Write commands to a buffer that we can then write out and execute.
             var script = new StringBuilder();
+            script.AppendLine("{");
 
             // This is the file where most of the basic results from the training will be written.
             script.AppendLine($"TFile *output = TFile::Open(\"<><>{outputFile.FullName}<><>\", \"RECREATE\");");
@@ -580,7 +581,8 @@ namespace TMVAUtilities
             script.AppendLine("f->EvaluateAllMethods();");
 
             // Now, run the script!
-            LocalBashHelpers.RunROOTInBash("training", script.ToString(), new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s), verbose: true);
+            script.AppendLine("}");
+            RemoteBashHelpers.RunROOTInBash("training", script.ToString(), new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s), verbose: true);
 
             // Write out the hash value
             using (var wr = hashFile.CreateText())
