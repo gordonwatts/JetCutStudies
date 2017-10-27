@@ -102,7 +102,7 @@ namespace libDataAccess
         {
             // Get the files and the places where those files are located.
             var ds = GetDatasetForJob(jobName, jobVersionNumber, dsname);
-            var allFiles = DatasetManager.ListOfFilesInDataset(ds).Take(nFiles);
+            var allFiles = DatasetManager.ListOfFilesInDataset(ds).Take(nFiles == 0 ? 10000 : nFiles);
             var places = DatasetManager.ListOfPlacesHoldingAllFiles(allFiles, maxDataTier: 60)
                 .Where(pl => avoidPlaces == null ? true : !avoidPlaces.Contains(pl))
                 .ToArray();
