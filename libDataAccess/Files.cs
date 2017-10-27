@@ -1,4 +1,5 @@
 ﻿using DiVertAnalysis;
+using LINQToTTreeLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -153,8 +154,8 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Given all the samples, return a single queriable. We assmue that all samples have exactly
-        /// the same format, so we can combine them w/out fear.
+        /// Given all the samples, return a single queriable.
+        /// The formats are going to be the same, but we do have to split by location, unfortunately.
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
@@ -165,9 +166,18 @@ namespace libDataAccess
                 .SelectMany(s => GetFileList(s.Name))
                 .ToArray();
 
-            var events = QueryablerecoTree.CreateQueriable(files);
-            events.IgnoreQueryCache = IgnoreQueires;
-            events.CleanupQuery = true;
+            var groupings = files
+                .GroupBy(u => u.Scheme + u.Host);
+
+            var events = groupings
+                .Select(g =>
+                {
+                    var queriable = QueryablerecoTree.CreateQueriable(g.ToArray());
+                    queriable.IgnoreQueryCache = IgnoreQueires;
+                    return queriable;
+                })
+                .Aggregate<QueriableTTree<recoTree>, IQueryable<recoTree>>(null, (accum, gsource) => accum == null ? gsource : accum.Concat(gsource));
+
             return GenerateStream(events, 1.0);
         }
 
