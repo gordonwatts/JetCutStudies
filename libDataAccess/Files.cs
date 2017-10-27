@@ -61,7 +61,7 @@ namespace libDataAccess
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
-        private static Uri[] GetFileList(string dsname)
+        private static Uri[] GetFileList(string dsname, string[] avoidPlaces = null)
         {
             TraceListener listener = null;
 
@@ -81,7 +81,8 @@ namespace libDataAccess
                 return GRIDJobs.FindJobUris(JobName,
                     JobVersionNumber,
                     dsname,
-                    NFiles);
+                    NFiles,
+                    avoidPlaces: avoidPlaces);
             } finally
             {
                 if (listener != null)
@@ -108,10 +109,10 @@ namespace libDataAccess
         /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
         /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
         /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true)
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true, string[] avoidPlaces = null)
         {
             // Build the query tree
-            var backgroundFiles = GetFileList(sample);
+            var backgroundFiles = GetFileList(sample, avoidPlaces);
             if (backgroundFiles.Length == 0)
             {
                 throw new DataSetHasNoFilesException($"Dataset {sample} has no files - remove it from the input list!");
@@ -146,9 +147,9 @@ namespace libDataAccess
         /// <param name="s"></param>
         /// <param name="weightByCrossSection">True if we should weight this sample by cross section or by 1</param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true)
+        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true, string[] avoidPlaces = null)
         {
-            return GetSampleAsMetaData(s.Name, weightByCrossSection);
+            return GetSampleAsMetaData(s.Name, weightByCrossSection, avoidPlaces);
         }
 
         /// <summary>

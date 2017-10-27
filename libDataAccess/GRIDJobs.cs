@@ -98,12 +98,14 @@ namespace libDataAccess
         /// <param name="nFiles"></param>
         /// <param name="statusUpdate"></param>
         /// <returns></returns>
-        internal static Uri[] FindJobUris(string jobName, int jobVersionNumber, string dsname, int nFiles, Action<string> statusUpdate = null)
+        internal static Uri[] FindJobUris(string jobName, int jobVersionNumber, string dsname, int nFiles, Action<string> statusUpdate = null, string[] avoidPlaces = null)
         {
             // Get the files and the places where those files are located.
             var ds = GetDatasetForJob(jobName, jobVersionNumber, dsname);
             var allFiles = DatasetManager.ListOfFilesInDataset(ds).Take(nFiles);
-            var places = DatasetManager.ListOfPlacesHoldingAllFiles(allFiles, maxDataTier: 60);
+            var places = DatasetManager.ListOfPlacesHoldingAllFiles(allFiles, maxDataTier: 60)
+                .Where(pl => avoidPlaces == null ? true : !avoidPlaces.Contains(pl))
+                .ToArray();
 
             // If there is no place, then we are done
             if (places.Length == 0)

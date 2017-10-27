@@ -153,17 +153,17 @@ namespace JetMVAClassifierTraining
 
                 // Build a job name.
                 var jobNameBuilder = new StringBuilder();
-                jobNameBuilder.Append($"JetMVAClass-");
-                bool first = true;
-                foreach (var v in training.UsedVariables())
-                {
-                    if (!first)
-                    {
-                        jobNameBuilder.Append(".");
-                    }
-                    first = false;
-                    jobNameBuilder.Append(v);
-                }
+                jobNameBuilder.Append($"JetMVAClassTrainingResult");
+                //bool first = true;
+                //foreach (var v in training.UsedVariables())
+                //{
+                //    if (!first)
+                //    {
+                //        jobNameBuilder.Append(".");
+                //    }
+                //    first = false;
+                //    jobNameBuilder.Append(v);
+                //}
                 var jobName = jobNameBuilder.ToString();
 
                 // Copy to a common filename. We do this only because it makes
@@ -189,7 +189,7 @@ namespace JetMVAClassifierTraining
                 var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
                 var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
-                    .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
+                    .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, avoidPlaces: new[] { "Local" })));
                 var cBDT = m1.GetMVAMulticlassValue();
                 foreach (var s in signalTestSources)
                 {
@@ -201,6 +201,7 @@ namespace JetMVAClassifierTraining
 
                     GenerateEfficiencyPlots(trainingResultDir.mkdir(s.Item1), sEvents, cBDT, new string[] { "hss", "multijet", "bib" });
                 }
+#if false
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), data15TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), data16TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), backgroundTrainingTree, cBDT, new string[] { "hss", "multijet", "bib" });
@@ -268,7 +269,7 @@ namespace JetMVAClassifierTraining
                     FutureWriteLine(() => $"  The average MVA cut for {s.Item1} for {options.PrecisionValue} pass rate is {a.Value}");
                     FutureWriteLine(() => $"  The MVA average error for {s.Item1} is {nnError.Value}");
                 }
-
+#endif
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();
             }
