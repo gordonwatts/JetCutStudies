@@ -61,7 +61,7 @@ namespace libDataAccess
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
-        private static FileInfo[] GetFileList(string dsname)
+        private static Uri[] GetFileList(string dsname)
         {
             TraceListener listener = null;
 
@@ -72,12 +72,16 @@ namespace libDataAccess
             }
 
             try {
-                return GRIDJobs.FindJobFiles(JobName,
+                //return GRIDJobs.FindJobFiles(JobName,
+                //    JobVersionNumber,
+                //    dsname,
+                //    nFiles: NFiles,
+                //    statusUpdate: l => Console.WriteLine(l),
+                //    intelligentLocal: true);
+                return GRIDJobs.FindJobUris(JobName,
                     JobVersionNumber,
                     dsname,
-                    nFiles: NFiles,
-                    statusUpdate: l => Console.WriteLine(l),
-                    intelligentLocal: true);
+                    NFiles);
             } finally
             {
                 if (listener != null)
@@ -98,8 +102,6 @@ namespace libDataAccess
             return GetSampleAsMetaData(sample.Name);
         }
 
-        public static string DefaultProtocal = "file";
-
         /// <summary>
         /// Returns the sample as metadata, including an extract cross section weight.
         /// </summary>
@@ -114,7 +116,7 @@ namespace libDataAccess
             {
                 throw new DataSetHasNoFilesException($"Dataset {sample} has no files - remove it from the input list!");
             }
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles.AsURIs(DefaultProtocal));
+            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
             backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
             backgroundEvents.IgnoreQueryCache = IgnoreQueires;
 
@@ -159,9 +161,10 @@ namespace libDataAccess
         {
             // Get all the files into a single large sequence.
                 var files = source
-                .SelectMany(s => GetFileList(s.Name));
+                .SelectMany(s => GetFileList(s.Name))
+                .ToArray();
 
-            var events = QueryablerecoTree.CreateQueriable(files.AsURIs(DefaultProtocal));
+            var events = QueryablerecoTree.CreateQueriable(files);
             events.IgnoreQueryCache = IgnoreQueires;
             events.CleanupQuery = true;
             return GenerateStream(events, 1.0);
@@ -201,7 +204,7 @@ namespace libDataAccess
         public static IQueryable<recoTree> Get200pi25lt5m()
         {
             var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig.AsURIs(DefaultProtocal));
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
             sigEvents.IgnoreQueryCache = IgnoreQueires;
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             return sigEvents;
@@ -210,7 +213,7 @@ namespace libDataAccess
         public static IQueryable<recoTree> Get400pi100lt9m()
         {
             var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig.AsURIs(DefaultProtocal));
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             sigEvents.IgnoreQueryCache = IgnoreQueires;
             return sigEvents;
@@ -219,7 +222,7 @@ namespace libDataAccess
         public static IQueryable<recoTree> Get600pi150lt9m()
         {
             var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig.AsURIs(DefaultProtocal));
+            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
             sigEvents.UseStatementOptimizer = UseCodeOptimizer;
             sigEvents.IgnoreQueryCache = IgnoreQueires;
             return sigEvents;

@@ -21,21 +21,7 @@ namespace libDataAccess
         /// <returns></returns>
         public static FileInfo[] FindJobFiles(string jobName, int jobVersion, string sourceDataset, int nFiles = 0, Action<string> statusUpdate = null, bool intelligentLocal = false, int timeoutDownloadSecs = 3600*4)
         {
-            // Find the job specification
-            var job = JobParser.FindJob(jobName, jobVersion);
-            if (job == null)
-            {
-                throw new ArgumentException($"Unable to find the definition of job {jobName} v{jobVersion}. Please create the jobspec files and re-run");
-            }
-
-            // Get the resulting job name for this guy.
-            var pandaJobName = job.ResultingDatasetName(sourceDataset) + "/";
-
-            string[] containers = GetContainersForPandJob(jobName, jobVersion, sourceDataset, pandaJobName);
-
-            // Get the dataset, and then see if we can't access it. If we have been instructed,
-            // try to make a local copy if it isn't here already.
-            var dataset = containers.First();
+            string dataset = GetDatasetForJob(jobName, jobVersion, sourceDataset);
             var uris = DatasetManager.ListOfFilesInDataset(dataset, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             if (nFiles != 0)
             {
@@ -48,7 +34,7 @@ namespace libDataAccess
             {
                 result = DatasetManager.MakeFilesLocal(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             }
-            catch (DatasetManager.NoLocalPlaceToCopyToException e) 
+            catch (DatasetManager.NoLocalPlaceToCopyToException e)
             {
                 if (statusUpdate != null)
                 {
@@ -74,6 +60,69 @@ namespace libDataAccess
             }
 
             return result.Select(furi => new FileInfo(furi.LocalPath)).ToArray();
+        }
+
+        /// <summary>
+        /// Return the dataset name for a job
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobVersion"></param>
+        /// <param name="sourceDataset"></param>
+        /// <returns></returns>
+        private static string GetDatasetForJob(string jobName, int jobVersion, string sourceDataset)
+        {
+            // Find the job specification
+            var job = JobParser.FindJob(jobName, jobVersion);
+            if (job == null)
+            {
+                throw new ArgumentException($"Unable to find the definition of job {jobName} v{jobVersion}. Please create the jobspec files and re-run");
+            }
+
+            // Get the resulting job name for this guy.
+            var pandaJobName = job.ResultingDatasetName(sourceDataset) + "/";
+
+            string[] containers = GetContainersForPandJob(jobName, jobVersion, sourceDataset, pandaJobName);
+
+            // Get the dataset, and then see if we can't access it. If we have been instructed,
+            // try to make a local copy if it isn't here already.
+            var dataset = containers.First();
+            return dataset;
+        }
+
+        /// <summary>
+        /// Fetch the Uri's of a set of data files
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobVersionNumber"></param>
+        /// <param name="dsname"></param>
+        /// <param name="nFiles"></param>
+        /// <param name="statusUpdate"></param>
+        /// <returns></returns>
+        internal static Uri[] FindJobUris(string jobName, int jobVersionNumber, string dsname, int nFiles, Action<string> statusUpdate = null)
+        {
+            // Get the files and the places where those files are located.
+            var ds = GetDatasetForJob(jobName, jobVersionNumber, dsname);
+            var allFiles = DatasetManager.ListOfFilesInDataset(ds).Take(nFiles);
+            var places = DatasetManager.ListOfPlacesHoldingAllFiles(allFiles, maxDataTier: 60);
+
+            // If there is no place, then we are done
+            if (places.Length == 0)
+            {
+                throw new FileNotFoundException($"Dataset {ds} was not found downloaded at any location I know about!");
+            }
+
+            // The places are sorted from best to worse. So start there.
+            var p = places.First();
+
+            // Now, get the uri's
+            var uris = DatasetManager.LocalPathToFiles(p, allFiles);
+
+            // We need to run these either locally or remotely.
+            var newScheme = p == "Local" ? "localwin" : "remotebash";
+
+            return uris
+                .Select(u => new UriBuilder(u) { Scheme = newScheme }.Uri)
+                .ToArray();
         }
 
         /// <summary>
