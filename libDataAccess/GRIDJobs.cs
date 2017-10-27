@@ -120,7 +120,8 @@ namespace libDataAccess
             var uris = DatasetManager.LocalPathToFiles(p, allFiles);
 
             // We need to run these either locally or remotely.
-            var newScheme = p == "Local" ? "localwin" : "remotebash";
+            // This is a huristic, sadly. Lets hope!
+            var newScheme = p.Contains("-linux") ? "remotebash" : "localwin";
 
             return uris
                 .Select(u => new UriBuilder(u) { Scheme = newScheme }.Uri)
