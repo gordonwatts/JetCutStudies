@@ -568,9 +568,11 @@ namespace TMVAUtilities
             }
 
             // Now book all the methods that were requested
+            var allWeightsFiles = new List<FileInfo>();
             foreach (var m in _methods)
             {
                 m.Book(script, "f", "dl", parameters_names);
+                allWeightsFiles.Add(m.WeightFile);
             }
 
             // Finally, do the training.
@@ -582,7 +584,10 @@ namespace TMVAUtilities
 
             // Now, run the script!
             script.AppendLine("}");
-            RemoteBashHelpers.RunROOTInBash("training", script.ToString(), new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s), verbose: true);
+            RemoteBashHelpers.RunROOTInBash("training", script.ToString(),
+                new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s),
+                verbose: true,
+                filesToReceive: allWeightsFiles);
 
             // Write out the hash value
             using (var wr = hashFile.CreateText())
