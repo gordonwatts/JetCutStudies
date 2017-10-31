@@ -587,7 +587,8 @@ namespace TMVAUtilities
             RemoteBashHelpers.RunROOTInBash("training", script.ToString(),
                 new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s),
                 verbose: true,
-                filesToReceive: allWeightsFiles);
+                filesToReceive: allWeightsFiles,
+                timeout: TimeSpan.FromHours(24));
 
             // Write out the hash value
             using (var wr = hashFile.CreateText())
