@@ -188,7 +188,6 @@ namespace JetMVAClassifierTraining
                 // Now, for each sample, generate the weight plots
                 var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
-                Files.IgnoreQueires = true;
                 var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
                     .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, avoidPlaces: new[] { "Local", "UWTeV" })));
                 var cBDT = m1.GetMVAMulticlassValue();
