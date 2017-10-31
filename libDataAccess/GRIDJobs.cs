@@ -107,6 +107,12 @@ namespace libDataAccess
                 .Where(pl => avoidPlaces == null ? true : !avoidPlaces.Contains(pl))
                 .ToArray();
 
+            Console.WriteLine($"-> Looking for {dsname}:");
+            foreach (var plc in places)
+            {
+                Console.WriteLine("  " + plc);
+            }
+
             // If there is no place, then we are done
             if (places.Length == 0)
             {
