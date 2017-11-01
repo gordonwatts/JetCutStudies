@@ -168,20 +168,9 @@ namespace JetMVAClassifierTraining
                 }
                 jobNameBuilder.Append($"-{jobNumber}");
 
-                //bool first = true;
-                //foreach (var v in training.UsedVariables())
-                //{
-                //    if (!first)
-                //    {
-                //        jobNameBuilder.Append(".");
-                //    }
-                //    first = false;
-                //    jobNameBuilder.Append(v);
-                //}
-                var jobName = jobNameBuilder.ToString();
-
                 // Copy to a common filename. We do this only because it makes
                 // the Jenkins artifacts to pick up only what we are producing this round.
+                var jobName = jobNameBuilder.ToString();
                 trainingResult.CopyToJobName(jobName);
 
                 // And write out a text file that contains the information needed to use this cut.
