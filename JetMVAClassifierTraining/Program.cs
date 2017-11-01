@@ -160,6 +160,14 @@ namespace JetMVAClassifierTraining
                 // Build a job name.
                 var jobNameBuilder = new StringBuilder();
                 jobNameBuilder.Append($"JetMVAClassTrainingResult");
+
+                var jobNumber = System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
+                if (string.IsNullOrWhiteSpace(jobNumber))
+                {
+                    jobNumber = "local";
+                }
+                jobNameBuilder.Append($"-{jobNumber}");
+
                 //bool first = true;
                 //foreach (var v in training.UsedVariables())
                 //{
