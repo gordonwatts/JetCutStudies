@@ -347,7 +347,7 @@ namespace TMVAUtilities
         /// </summary>
         /// <param name="jobName"></param>
         /// <returns></returns>
-        public TrainingResult<T> Train(string jobName)
+        public TrainingResult<T> Train(string jobName, bool forceTraining = false)
         {
             if (!string.IsNullOrWhiteSpace(JobName))
             {
@@ -423,6 +423,7 @@ namespace TMVAUtilities
 
             rerun = rerun || oldestInput > outputFile.LastWriteTime;
             rerun = rerun || !hashFile.Exists;
+            rerun = rerun || forceTraining;
 
             foreach (var m in _methods)
             {
