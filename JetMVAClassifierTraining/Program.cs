@@ -334,6 +334,16 @@ namespace JetMVAClassifierTraining
             var data = theLastSample == null ? data1
                 : data1.Concat(Files.GetSampleAsMetaData(theLastSample).AsBeamHaloStream(epoc).AsGoodJetStream(pTCut).Take(requestedNumberOfEvents - countOfEventsOneBack));
 
+            // Check that we did ok. This will prevent errors down the line that are rather confusing.
+            if (countOfEvents < requestedNumberOfEvents)
+            {
+                Console.WriteLine($"Warning - unable to get all the events requested for {epoc.ToString()}.");
+            }
+            if (countOfEvents == 0)
+            {
+                throw new InvalidOperationException($"Unable to get any events for {epoc.ToString()}!");
+            }
+
             return data;
         }
 

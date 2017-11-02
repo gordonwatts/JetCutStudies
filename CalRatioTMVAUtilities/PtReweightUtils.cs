@@ -32,6 +32,10 @@ namespace CalRatioTMVAUtilities
         /// <returns></returns>
         public static IQueryable<TrainingTree> FlattenTrainingTree(IQueryable<TrainingTree> backgroundTrainingTree, FutureTFile outputHistograms, Expression<Func<TrainingTree, double>> toMakeFlat)
         {
+            if (backgroundTrainingTree == null)
+            {
+                return null;
+            }
             return toMakeFlat == null
                 ? backgroundTrainingTree
                 : backgroundTrainingTree

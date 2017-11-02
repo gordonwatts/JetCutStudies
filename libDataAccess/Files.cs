@@ -130,7 +130,8 @@ namespace libDataAccess
                 try
                 {
                     var sampleInfo = SampleMetaData.LoadFromCSV(sample);
-                    xSectionWeight = sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count();
+                    var bkgEvents = backgroundEvents.Count();
+                    xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count());
                 }
                 catch (Exception e)
                 {
