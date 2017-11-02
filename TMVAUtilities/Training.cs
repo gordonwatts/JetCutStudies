@@ -386,7 +386,9 @@ namespace TMVAUtilities
                 bldOptionsString.Append(m.BuildArgumentList(parameters_names));
             }
 
-            var trainingSamples = _trainingSamples.SelectMany(s => ExtractTrainingAndTestingSamples(s)).ToArray();
+            var trainingSamples = _trainingSamples.SelectMany(s => ExtractTrainingAndTestingSamples(s))
+                .Where(s => s.Item1.GetEntries() > 0)
+                .ToArray();
 
             var oldestInput = trainingSamples.Select(i => i.Item2.LastWriteTime).Max();
 
