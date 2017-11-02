@@ -35,8 +35,15 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source, double pTCut = 40.0)
         {
             return source
-                .SelectMany(e => e.Data.Jets.Select(j => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, j), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber, InteractionsPerCrossing = e.Data.actualIntPerCrossing }))
-                .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
+                .SelectMany(e => e.Data.Jets
+                    .Where(j => IsGoodJet.Invoke(j, pTCut))
+                    .Select(j => new JetStream() {
+                        JetInfo = CreateJetInfoExtra.Invoke(e.Data, j),
+                        Weight = e.xSectionWeight,
+                        EventNumber = e.Data.eventNumber,
+                        RunNumber = e.Data.runNumber,
+                        InteractionsPerCrossing = e.Data.actualIntPerCrossing
+                    }))
                 ;
         }
 
