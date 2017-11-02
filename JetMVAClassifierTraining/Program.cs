@@ -144,6 +144,7 @@ namespace JetMVAClassifierTraining
                     .Option("MinNodeSize", options.BDTLeafMinFraction.ToString())
                     .Option("nCuts", "200")
                     .Option("BoostType", "Grad")
+                    .Option("NegWeightTreatment", "IgnoreNegWeightsInTraining")
                     ;
 
                 if (!string.IsNullOrWhiteSpace(options.VariableTransform))
