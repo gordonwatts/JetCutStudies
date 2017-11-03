@@ -158,19 +158,16 @@ namespace JetMVAClassifierTraining
                 // Do the training
                 var trainingResult = training.Train("JetMVAClassifier");
 
-                // Build a job name.
+                // Build a job name and coppy everything over to that for easy reference and so we can find the results.
                 var jobNameBuilder = new StringBuilder();
                 jobNameBuilder.Append($"JetMVAClassTrainingResult");
-
-                var jobNumber = System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
+                var jobNumber = Environment.GetEnvironmentVariable("BUILD_NUMBER");
                 if (string.IsNullOrWhiteSpace(jobNumber))
                 {
                     jobNumber = "local";
                 }
                 jobNameBuilder.Append($"-{jobNumber}");
 
-                // Copy to a common filename. We do this only because it makes
-                // the Jenkins artifacts to pick up only what we are producing this round.
                 var jobName = jobNameBuilder.ToString();
                 trainingResult.CopyToJobName(jobName);
 
@@ -338,7 +335,7 @@ namespace JetMVAClassifierTraining
             // Check that we did ok. This will prevent errors down the line that are rather confusing.
             if (countOfEvents < requestedNumberOfEvents)
             {
-                Console.WriteLine($"Warning - unable to get all the events requested for {epoc.ToString()}.");
+                Console.WriteLine($"Warning - unable to get all the events requested for {epoc.ToString()}. {countOfEvents} were found, and {requestedNumberOfEvents} events were requested.");
             }
             if (countOfEvents == 0 && requestedNumberOfEvents > 0)
             {
