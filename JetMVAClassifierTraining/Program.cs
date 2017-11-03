@@ -339,7 +339,7 @@ namespace JetMVAClassifierTraining
             {
                 Console.WriteLine($"Warning - unable to get all the events requested for {epoc.ToString()}.");
             }
-            if (countOfEvents == 0)
+            if (countOfEvents == 0 && requestedNumberOfEvents > 0)
             {
                 throw new InvalidOperationException($"Unable to get any events for {epoc.ToString()}!");
             }
