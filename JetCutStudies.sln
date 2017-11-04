@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plots", "Plots", "{B5DE55FA-3DC6-4A07-8472-E11AC38825A6}"
 EndProject
@@ -21,8 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		download-local-copy-of-all-ds.ps1 = download-local-copy-of-all-ds.ps1
 		dump-sample-output-ds.ps1 = dump-sample-output-ds.ps1
-		Get-TrainingWeightCuts.ps1 = Get-TrainingWeightCuts.ps1
 		Get-TrainingInfoAsTables.ps1 = Get-TrainingInfoAsTables.ps1
+		Get-TrainingWeightCuts.ps1 = Get-TrainingWeightCuts.ps1
 		libDataAccess\Sample Meta Data.csv = libDataAccess\Sample Meta Data.csv
 		submit-all-samples.ps1 = submit-all-samples.ps1
 	EndProjectSection
@@ -42,6 +42,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DumpTrainingInfo", "DumpTrainingInfo\DumpTrainingInfo.csproj", "{79548C6A-3BEF-457D-BE04-F89186EE4988}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetMVAClassifierTraining", "JetMVAClassifierTraining\JetMVAClassifierTraining.csproj", "{9D74AAA7-D428-418F-AFCF-D6358D865A65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVADumpTrainingTuples", "MVADumpTrainingTuples\MVADumpTrainingTuples.csproj", "{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +127,14 @@ Global
 		{9D74AAA7-D428-418F-AFCF-D6358D865A65}.Release|Any CPU.ActiveCfg = Release|x86
 		{9D74AAA7-D428-418F-AFCF-D6358D865A65}.Release|x86.ActiveCfg = Release|x86
 		{9D74AAA7-D428-418F-AFCF-D6358D865A65}.Release|x86.Build.0 = Release|x86
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Debug|x86.Build.0 = Debug|Any CPU
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Release|x86.ActiveCfg = Release|Any CPU
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,5 +149,9 @@ Global
 		{E7727AF8-3E1D-40F8-9A1B-D18FBB911C88} = {A757BE91-8CF3-44F4-811F-2D50937FE6E3}
 		{79548C6A-3BEF-457D-BE04-F89186EE4988} = {67D31CC5-7C1E-42A9-BE03-D799C1459A39}
 		{9D74AAA7-D428-418F-AFCF-D6358D865A65} = {A757BE91-8CF3-44F4-811F-2D50937FE6E3}
+		{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5} = {A757BE91-8CF3-44F4-811F-2D50937FE6E3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14F5AD5C-711A-4AC6-9B86-E15486D16B42}
 	EndGlobalSection
 EndGlobal

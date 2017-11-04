@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BB6EA814-9A72-4946-8C2A-ED9C6A165EB5}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MVADumpTrainingTuples</RootNamespace>
+    <AssemblyName>MVADumpTrainingTuples</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AtlasSSH, Version=3.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.3.5.3\lib\net451\AtlasSSH.dll</HintPath>
+    </Reference>
+    <Reference Include="AtlasWorkFlows, Version=3.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AtlasSSH.3.5.3\lib\net451\AtlasWorkFlows.dll</HintPath>
+    </Reference>
+    <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll</HintPath>
+    </Reference>
+    <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CredentialManagement.1.0.2\lib\net35\CredentialManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="DNS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DNS.1.2.3\lib\net40\DNS.dll</HintPath>
+    </Reference>
+    <Reference Include="Doddle.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=183ffec7490b24a9, processorArchitecture=MSIL">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build521\lib\net45\Doddle.Reporting.dll</HintPath>
+    </Reference>
+    <Reference Include="libCoreWrapper, Version=13.13.6037.39753, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Dynamic.5.34.36.13\lib\net40\libCoreWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libGpadWrapper, Version=13.13.6037.39953, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Graphing.5.34.36.13\lib\net40\libGpadWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libGraf3dWrapper, Version=13.13.6037.39983, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Graphing.5.34.36.13\lib\net40\libGraf3dWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libGrafWrapper, Version=13.13.6037.39934, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Tree.5.34.36.13\lib\net40\libGrafWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libHistWrapper, Version=13.13.6037.39881, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.36.13\lib\net40\libHistWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libMathCoreWrapper, Version=13.13.6037.39803, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.36.13\lib\net40\libMathCoreWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libNetWrapper, Version=13.13.6037.39826, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Tree.5.34.36.13\lib\net40\libNetWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libPhysicsWrapper, Version=13.13.6037.39836, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.36.13\lib\net40\libPhysicsWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libProofDrawWrapper, Version=13.13.6037.40594, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.PROOF.5.34.36.13\lib\net40\libProofDrawWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libProofPlayerWrapper, Version=13.13.6037.40621, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.PROOF.5.34.36.13\lib\net40\libProofPlayerWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libProofWrapper, Version=13.13.6037.40426, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.PROOF.5.34.36.13\lib\net40\libProofWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libRIOWrapper, Version=13.13.6037.39797, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.36.13\lib\net40\libRIOWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libThreadWrapper, Version=13.13.6037.39767, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Core.5.34.36.13\lib\net40\libThreadWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libTreePlayerWrapper, Version=13.13.6037.39954, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Tree.5.34.36.13\lib\net40\libTreePlayerWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="libTreeWrapper, Version=13.13.6037.39936, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Tree.5.34.36.13\lib\net40\libTreeWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="LINQToTreeHelpers, Version=0.50.6514.17557, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build521\lib\net45\LINQToTreeHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="LinqToTTreeInterfacesLib, Version=0.42.6512.35920, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build521\lib\net45\LinqToTTreeInterfacesLib.dll</HintPath>
+    </Reference>
+    <Reference Include="LINQToTTreeLib, Version=0.51.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build521\lib\net45\LINQToTTreeLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NVelocity, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\NVelocity.1.0.3\lib\NVelocity.dll</HintPath>
+    </Reference>
+    <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=640ff7d91e1d07da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.2.0.3-x-009-160302-230435\lib\net45\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Sprache, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sprache.2.1.0\lib\net40\Sprache.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Console, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Console.4.0.0-rc2-24027\lib\net46\System.Console.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.TypeExtensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.TypeExtensions.4.1.0-rc2-24027\lib\net46\System.Reflection.TypeExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WrapperPlumbingLibrary, Version=2.6.6037.39599, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ROOT.NET.Dynamic.5.34.36.13\lib\net40\WrapperPlumbingLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="ConfigData\default.classmethodmappings">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CalRatioTMVAUtilities\CalRatioTMVAUtilities.csproj">
+      <Project>{FECD7AD5-7CAE-44F2-8225-4B66AF61D7B5}</Project>
+      <Name>CalRatioTMVAUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libDataAccess\DiVertAnalysisROOTLINQ.csproj">
+      <Project>{8694CC04-FBE1-4A4A-88D2-910D02941248}</Project>
+      <Name>DiVertAnalysisROOTLINQ</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Templates\TSelectorTemplate.cxx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets" Condition="Exists('..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets'))" />
+    <Error Condition="!Exists('..\packages\LINQToTTree-Head.0.51.0-build521\build\LINQToTTree-Head.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LINQToTTree-Head.0.51.0-build521\build\LINQToTTree-Head.targets'))" />
+  </Target>
+  <Import Project="..\packages\LINQToTTree-Head.0.51.0-build521\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build521\build\LINQToTTree-Head.targets')" />
+</Project>
