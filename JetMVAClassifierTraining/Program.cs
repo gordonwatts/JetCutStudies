@@ -19,6 +19,7 @@ using static libDataAccess.PlotSpecifications;
 using static libDataAccess.Utils.CommandLineUtils;
 using static libDataAccess.Utils.SampleUtils;
 using static libDataAccess.Utils.FutureConsole;
+using LINQToTTreeLib.Files;
 
 namespace JetMVAClassifierTraining
 {
@@ -346,6 +347,18 @@ namespace JetMVAClassifierTraining
         }
 
         /// <summary>
+        /// For easy wrigint out to a csv file
+        /// </summary>
+        public class WeightInfo
+        {
+            public double Weight { get; set; }
+            public float HSSWeight { get; set; }
+            public float MultijetWeight { get; set; }
+            public float BIBWeight { get; set; }
+        }
+
+
+        /// <summary>
         /// Generate plots for everything
         /// </summary>
         /// <param name="futureTDirectory"></param>
@@ -361,12 +374,34 @@ namespace JetMVAClassifierTraining
             var s1 = source
                 .Select(j => Tuple.Create(cBDT.Invoke(j), j.Weight));
 
+            // Generate plots
             foreach (var cinfo in trainingClassNames.Zip(Enumerable.Range(0, trainingClassNames.Length), (name, index) => Tuple.Create(name, index)))
             {
                 s1
                     .Select(n => Tuple.Create((double) n.Item1[cinfo.Item2], n.Item2))
                     .FuturePlot(ClassifierEventWeight.NameFormat, ClassifierEventWeight.TitleFormat, ClassifierEventWeight, $"weight_{cinfo.Item1}")
                     .Save(outh);
+            }
+
+            // Generate a weight csv file
+            var files = s1
+                .Select(e => new WeightInfo() { Weight = e.Item2, HSSWeight = e.Item1[0], MultijetWeight = e.Item1[1], BIBWeight = e.Item1[2] })
+                .AsCSV(new FileInfo($"{outh.Directory.Name}.csv"));
+
+            // Copy the CSV files into a single file.
+            if (files.Length > 0)
+            {
+                var firstFile = files[0];
+                var finalFile = new FileInfo($"all-{outh.Directory.Name}.csv");
+                firstFile.CopyTo(finalFile.FullName);
+
+                if (files.Length > 1)
+                {
+                    foreach (var f in files.Skip(1))
+                    {
+                        File.AppendAllLines(finalFile.FullName, File.ReadLines(f.FullName).Skip(1));
+                    }
+                }
             }
         }
     }
