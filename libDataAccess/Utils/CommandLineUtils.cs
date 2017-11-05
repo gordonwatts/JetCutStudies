@@ -79,12 +79,12 @@ namespace libDataAccess.Utils
         /// Get the list of background samples depending on the option that was given to us.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<Tuple<string, IQueryable<MetaData>>> GetRequestedBackgroundSourceList()
+        public static IEnumerable<Tuple<string, IQueryable<MetaData>>> GetRequestedBackgroundSourceList(string[] avoidPlaces = null)
         {
             switch (RequstedBackgroundSample)
             {
                 case BackgroundSampleEnum.All:
-                    return SamplesAsNamedSequence(SampleMetaData.AllSamplesWithTag("mc15c", "background"));
+                    return SamplesAsNamedSequence(SampleMetaData.AllSamplesWithTag("mc15c", "background"), avoidPlaces);
 
                 case BackgroundSampleEnum.JZ2:
                     return new Tuple<string, IQueryable<MetaData>>[] {
@@ -111,10 +111,10 @@ namespace libDataAccess.Utils
         /// </summary>
         /// <param name="enumerable"></param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<string, IQueryable<MetaData>>> SamplesAsNamedSequence(IEnumerable<SampleMetaData> samples)
+        private static IEnumerable<Tuple<string, IQueryable<MetaData>>> SamplesAsNamedSequence(IEnumerable<SampleMetaData> samples, string[] avoidPlaces = null)
         {
             return samples
-                .Select(s => Tuple.Create(s.Name, Files.GetSampleAsMetaData(s)));
+                .Select(s => Tuple.Create(s.Name, Files.GetSampleAsMetaData(s, avoidPlaces: avoidPlaces)));
         }
 
         /// <summary>

@@ -203,9 +203,26 @@ namespace JetMVAClassifierTraining
 
                     GenerateEfficiencyPlots(trainingResultDir.mkdir(s.Item1), sEvents, cBDT, new string[] { "hss", "multijet", "bib" });
                 }
+
+                // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
+                // version of root than we have locally on windows.
+                var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0
+                    ? (options.UseFullDataset ? -1 : 25000)
+                    : options.EventsToUseForTrainingAndTestingBIB15
+                    , DataEpoc.data15, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" });
+                var bibi16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0
+                    ? (options.UseFullDataset ? -1 : 25000)
+                    : options.EventsToUseForTrainingAndTestingBIB16,
+                    DataEpoc.data16, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" });
+
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), bib15.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bibi16.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
+
+                var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset,
+                    new[] { "Local", "UWTeV" });
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), multijet, cBDT, new string[] { "hss", "multijet", "bib" });
+
 #if false
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), data15TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), data16TrainingAndTesting.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), backgroundTrainingTree, cBDT, new string[] { "hss", "multijet", "bib" });
 
                 // Calculate the cut value for each output in order to determine the precision.
@@ -283,7 +300,7 @@ namespace JetMVAClassifierTraining
         /// <param name="requestedNumberOfEvents">-1 for everything, or a number of requested</param>
         /// <param name="bib_tag">The tag name we should use to do the lookup</param>
         /// <returns></returns>
-        private static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut)
+        private static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null)
         {
             // If no events, then we need to just return everything
             if (requestedNumberOfEvents == 0)
@@ -304,7 +321,7 @@ namespace JetMVAClassifierTraining
                     {
                         return true;
                     }
-                    var q = Files.GetSampleAsMetaData(s);
+                    var q = Files.GetSampleAsMetaData(s, avoidPlaces: avoidPlaces);
                     countOfEventsOneBack = countOfEvents;
                     countOfEvents += q.AsBeamHaloStream(epoc)
                                         .AsGoodJetStream(pTCut)
@@ -326,12 +343,12 @@ namespace JetMVAClassifierTraining
             }
 
             var data1 = allBut
-                .SamplesAsSingleQueriable()
+                .SamplesAsSingleQueriable(avoidPlaces)
                 .AsBeamHaloStream(epoc)
                 .AsGoodJetStream(pTCut);
 
             var data = theLastSample == null ? data1
-                : data1.Concat(Files.GetSampleAsMetaData(theLastSample).AsBeamHaloStream(epoc).AsGoodJetStream(pTCut).Take(requestedNumberOfEvents - countOfEventsOneBack));
+                : data1.Concat(Files.GetSampleAsMetaData(theLastSample, avoidPlaces: avoidPlaces).AsBeamHaloStream(epoc).AsGoodJetStream(pTCut).Take(requestedNumberOfEvents - countOfEventsOneBack));
 
             // Check that we did ok. This will prevent errors down the line that are rather confusing.
             if (countOfEvents < requestedNumberOfEvents)
@@ -393,7 +410,7 @@ namespace JetMVAClassifierTraining
             {
                 var firstFile = files[0];
                 var finalFile = new FileInfo($"all-{outh.Directory.Name}.csv");
-                firstFile.CopyTo(finalFile.FullName);
+                firstFile.CopyTo(finalFile.FullName, overwrite: true);
 
                 if (files.Length > 1)
                 {

@@ -160,11 +160,11 @@ namespace libDataAccess
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> source)
+        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> source, string[] avoidPlaces = null)
         {
             // Get all the files into a single large sequence.
                 var files = source
-                .SelectMany(s => GetFileList(s.Name))
+                .SelectMany(s => GetFileList(s.Name, avoidPlaces))
                 .ToArray();
 
             var groupings = files
