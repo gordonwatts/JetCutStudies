@@ -190,7 +190,7 @@ namespace JetMVAClassifierTraining
                 var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
                 var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
-                    .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, avoidPlaces: new[] { "Local", "UWTeV" })));
+                    .Select(info => (name: info.NickName, file: Files.GetSampleAsMetaData(info, avoidPlaces: new[] { "Local", "UWTeV" })));
                 var cBDT = m1.GetMVAMulticlassValue();
                 foreach (var s in signalTestSources)
                 {
