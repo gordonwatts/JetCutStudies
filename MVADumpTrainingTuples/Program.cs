@@ -91,21 +91,26 @@ namespace MVADumpTrainingTuples
 
                 var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat)
                     .AsTTree("DataTree", "Multijet Training Tree", new FileInfo("multijet.root"));
+                CopyFilesOver(backgroundTrees, "multijet");
 
                 var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat)
                     .AsTTree("DataTree", "Signal Training Tree", new FileInfo("signal.root"));
-
-                var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
-                    .AsTTree("DataTree", "BIB15 Training Tree", new FileInfo("bib15.root"));
-
-                var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
-                    .AsTTree("DataTree", "BIB16 Training Tree", new FileInfo("bib16.root"));
-
-                CopyFilesOver(backgroundTrees, "multijet");
                 CopyFilesOver(flatSignalTrainingData, "signal");
-                CopyFilesOver(flatData15, "bib15");
-                CopyFilesOver(flatData16, "bib16");
 
+
+                if (options.EventsToUseForTrainingAndTestingBIB15 != 0)
+                {
+                    var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
+                        .AsTTree("DataTree", "BIB15 Training Tree", new FileInfo("bib15.root"));
+                    CopyFilesOver(flatData15, "bib15");
+                }
+
+                if (options.EventsToUseForTrainingAndTestingBIB16 != 0)
+                {
+                    var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
+                        .AsTTree("DataTree", "BIB16 Training Tree", new FileInfo("bib16.root"));
+                    CopyFilesOver(flatData16, "bib16");
+                }
             }
 
             // Done. Dump all output.
