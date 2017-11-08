@@ -1,22 +1,18 @@
-﻿using CommandLine;
+﻿using CalRatioTMVAUtilities;
+using CommandLine;
 using libDataAccess;
 using libDataAccess.Utils;
+using LINQToTreeHelpers.FutureUtils;
+using LINQToTTreeLib.Files;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static CalRatioTMVAUtilities.BackgroundSampleUtils;
 using static CalRatioTMVAUtilities.PtReweightUtils;
-using static CalRatioTMVAUtilities.TrainingVariableUtils;
-using static libDataAccess.PlotSpecifications;
+using static libDataAccess.Utils.BIBSamples;
 using static libDataAccess.Utils.CommandLineUtils;
-using static libDataAccess.Utils.SampleUtils;
 using static libDataAccess.Utils.FutureConsole;
-using LINQToTreeHelpers.FutureUtils;
-using CalRatioTMVAUtilities;
-using LINQToTTreeLib.Files;
-using System.IO;
+using static libDataAccess.Utils.SampleUtils;
 
 namespace MVADumpTrainingTuples
 {
@@ -131,75 +127,6 @@ namespace MVADumpTrainingTuples
             {
                 f.original.CopyTo(f.newfile.FullName, overwrite: true);
             }
-        }
-
-        /// <summary>
-        /// Grab the BIB samles
-        /// </summary>
-        /// <param name="requestedNumberOfEvents">-1 for everything, or a number of requested</param>
-        /// <param name="bib_tag">The tag name we should use to do the lookup</param>
-        /// <returns></returns>
-        private static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut)
-        {
-            // If no events, then we need to just return everything
-            if (requestedNumberOfEvents == 0)
-            {
-                return null;
-            }
-
-            // Fetch all the data samples
-            var dataSamples = SampleMetaData.AllSamplesWithTag(epoc == DataEpoc.data15 ? "data15_p2950" : "data16_p2950");
-
-            // If we have a limitation on the number of events, then we need to measure our the # of events.
-            int countOfEvents = 0;
-            int countOfEventsOneBack = 0;
-            dataSamples = dataSamples
-                .TakeWhile(s =>
-                {
-                    if (requestedNumberOfEvents < 0)
-                    {
-                        return true;
-                    }
-                    var q = Files.GetSampleAsMetaData(s);
-                    countOfEventsOneBack = countOfEvents;
-                    countOfEvents += q.AsBeamHaloStream(epoc)
-                                        .AsGoodJetStream(pTCut)
-                                        .Count();
-                    return countOfEvents < requestedNumberOfEvents;
-                })
-                .ToArray();
-
-            // The following is the tricky part. Now that we have a list of events, it is not likely that we have found a file boundary
-            // that matches the number of events. So we will have to do this a little carefully.
-
-            SampleMetaData theLastSample = null;
-            IEnumerable<SampleMetaData> allBut = dataSamples;
-            if (countOfEvents > 0 && countOfEvents > requestedNumberOfEvents)
-            {
-                // Take up to the last one.
-                allBut = dataSamples.Take(dataSamples.Count() - 1);
-                theLastSample = dataSamples.Last();
-            }
-
-            var data1 = allBut
-                .SamplesAsSingleQueriable()
-                .AsBeamHaloStream(epoc)
-                .AsGoodJetStream(pTCut);
-
-            var data = theLastSample == null ? data1
-                : data1.Concat(Files.GetSampleAsMetaData(theLastSample).AsBeamHaloStream(epoc).AsGoodJetStream(pTCut).Take(requestedNumberOfEvents - countOfEventsOneBack));
-
-            // Check that we did ok. This will prevent errors down the line that are rather confusing.
-            if (countOfEvents < requestedNumberOfEvents)
-            {
-                Console.WriteLine($"Warning - unable to get all the events requested for {epoc.ToString()}. {countOfEvents} were found, and {requestedNumberOfEvents} events were requested.");
-            }
-            if (countOfEvents == 0 && requestedNumberOfEvents > 0)
-            {
-                throw new InvalidOperationException($"Unable to get any events for {epoc.ToString()}!");
-            }
-
-            return data;
         }
     }
 }
