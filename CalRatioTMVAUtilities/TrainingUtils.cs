@@ -19,6 +19,7 @@ namespace CalRatioTMVAUtilities
     /// </summary>
     public class TrainingTree
     {
+        public int RunNumber;
         public double Weight;
         public double JetPt;
         public double JetPhi;
@@ -64,6 +65,7 @@ namespace CalRatioTMVAUtilities
                 SumPtOfAllTracks = i.JetInfo.AllTracks.Sum(t => t.pT),
                 MaxTrackPt = CalcMaxPt.Invoke(i.JetInfo.AllTracks),
                 EventNumber = i.EventNumber,
+                RunNumber = i.RunNumber,
                 JetET = i.JetInfo.Jet.ET,
                 JetWidth = i.JetInfo.Jet.width,
                 JetDRTo2GeVTrack = PlotSpecifications.CalcDR2GeVTrack.Invoke(i.JetInfo.AllTracks, i.JetInfo.Jet),
