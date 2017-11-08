@@ -345,9 +345,11 @@ namespace TMVAUtilities
         /// <summary>
         /// Run the training
         /// </summary>
-        /// <param name="jobName"></param>
-        /// <returns></returns>
-        public TrainingResult<T> Train(string jobName, bool forceTraining = false)
+        /// <param name="jobName">Name of the training job (used in filenames for output, etc.)</param>
+        /// <param name="forceTraining">If true, the force the training, even if all files are up to date</param>
+        /// <param name="verbose">If not set to null, called with lots of output</param>
+        /// <returns>A training result, including local access to the training files</returns>
+        public TrainingResult<T> Train(string jobName, bool forceTraining = false, Action<string> verbose = null)
         {
             if (!string.IsNullOrWhiteSpace(JobName))
             {
@@ -399,7 +401,9 @@ namespace TMVAUtilities
             }
 
             // Next, given these inputs, we can calculate the names of the output files.
+            verbose?.Invoke($"Training: Hash String: {bldOptionsString.ToString()}");
             var hash = bldOptionsString.ToString().GetHashCode();
+            verbose?.Invoke($"Traning: Hash value: {hash.ToString()}");
 
             JobName = $"{jobName}-{hash}";
 
@@ -411,24 +415,30 @@ namespace TMVAUtilities
             // [note this is redundant now the hash now exists in filenames that are output
             // by the training.]
             bool rerun = true;
-            if (hashFile.Exists)
+            verbose?.Invoke($"Training: Output file hash (exists: {hashFile.Exists}) name: {hashFile.FullName}");
+            verbose?.Invoke($"Training: output file (exists: {outputFile.Exists}) name: {outputFile.FullName}");
+            if (hashFile.Exists && outputFile.Exists)
             {
                 using (var rdr = hashFile.OpenText())
                 {
                     var s = rdr.ReadLine();
+                    verbose?.Invoke($"Training: Hash value read from file: {s}");
                     if (s == hash.ToString())
                     {
                         rerun = false;
+                        verbose?.Invoke("Training: Not going to rerun because of hash values");
                     }
                 }
             }
 
+            verbose?.Invoke($"Training: oldest input file: {oldestInput}; output file last write time: {outputFile.LastWriteTime}");
             rerun = rerun || oldestInput > outputFile.LastWriteTime;
-            rerun = rerun || !hashFile.Exists;
+            verbose?.Invoke($"Training: Force re-training: {forceTraining}");
             rerun = rerun || forceTraining;
 
             foreach (var m in _methods)
             {
+                verbose?.Invoke($"Training: Method {m.Name} weight file exists: {m.WeightFile.Exists} - {m.WeightFile.FullName}.");
                 rerun = rerun || !m.WeightFile.Exists;
             }
 
@@ -444,9 +454,11 @@ namespace TMVAUtilities
 
             if (!rerun)
             {
+                verbose?.Invoke("Training: No need to re-run");
                 return resultObject;
             }
 
+            verbose?.Invoke("Training: Starting re-run");
             // Run the training
             TrainInBash(jobName, weight_name, parameters_names, trainingSamples, hash, outputFile, hashFile);
             return resultObject;
