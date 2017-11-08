@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLPInvestigations", "LLPInvestigations\LLPInvestigations.csproj", "{112DE82B-7D5C-4E1C-A8DC-17EC721A01B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Training", "Training", "{A757BE91-8CF3-44F4-811F-2D50937FE6E3}"
+	ProjectSection(SolutionItems) = preProject
+		ScanSamples.ps1 = ScanSamples.ps1
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleJetCutTraining", "SimpleJetCutTraining\SimpleJetCutTraining.csproj", "{4CFA3572-3E9B-42D7-B60C-28829CCF7C11}"
 EndProject
