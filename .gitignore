@@ -239,3 +239,4 @@ JetCutStudies.VC.VC.opendb
 *.opendb
 *.db
 /.vs/
+/notebooks/.ipynb_checkpoints
