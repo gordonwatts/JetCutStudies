@@ -162,7 +162,7 @@ namespace JetMVAClassifierTraining
                 methods.Add(m1);
 
                 // Do the training
-                var trainingResult = training.Train("JetMVAClassifier", verbose: s => Console.WriteLine(s));
+                var trainingResult = training.Train("JetMVAClassifier");
 
                 // Build a job name and coppy everything over to that for easy reference and so we can find the results.
                 var jobNameBuilder = new StringBuilder();
