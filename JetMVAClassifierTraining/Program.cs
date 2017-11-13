@@ -211,17 +211,17 @@ namespace JetMVAClassifierTraining
 
                 // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
                 // version of root than we have locally on windows.
-                var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0
+                var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 <= 0
                     ? (options.UseFullDataset ? -1 : 25000)
                     : options.EventsToUseForTrainingAndTestingBIB15
                     , DataEpoc.data15, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" });
-                var bibi16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0
+                var bib16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 <= 0
                     ? (options.UseFullDataset ? -1 : 25000)
                     : options.EventsToUseForTrainingAndTestingBIB16,
                     DataEpoc.data16, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" });
 
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), bib15.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bibi16.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bib16.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
 
                 var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset,
                     new[] { "Local", "UWTeV" });
@@ -304,6 +304,8 @@ namespace JetMVAClassifierTraining
         /// </summary>
         public class WeightInfo
         {
+            public int RunNumber { get; set; }
+            public int EventNumber { get; set; }
             public double Weight { get; set; }
             public float HSSWeight { get; set; }
             public float MultijetWeight { get; set; }
@@ -325,7 +327,7 @@ namespace JetMVAClassifierTraining
             }
 
             var s1 = source
-                .Select(j => Tuple.Create(cBDT.Invoke(j), j.Weight));
+                .Select(j => Tuple.Create(cBDT.Invoke(j), j.Weight, j.RunNumber, j.EventNumber));
 
             // Generate plots
             foreach (var cinfo in trainingClassNames.Zip(Enumerable.Range(0, trainingClassNames.Length), (name, index) => Tuple.Create(name, index)))
@@ -338,7 +340,10 @@ namespace JetMVAClassifierTraining
 
             // Generate a weight csv file
             var files = s1
-                .Select(e => new WeightInfo() { Weight = e.Item2, HSSWeight = e.Item1[0], MultijetWeight = e.Item1[1], BIBWeight = e.Item1[2] })
+                .Select(e => new WeightInfo() {
+                    RunNumber = e.Item3, EventNumber = e.Item4,
+                    Weight = e.Item2, HSSWeight = e.Item1[0], MultijetWeight = e.Item1[1], BIBWeight = e.Item1[2]
+                })
                 .AsCSV(new FileInfo($"{outh.Directory.Name}.csv"));
 
             // Copy the CSV files into a single file.
