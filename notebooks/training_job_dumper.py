@@ -134,60 +134,94 @@ def calc_roc_with_bib_cut (sig, back, bib, bib_cut = 0.5):
     return (tpr, fpr, aroc, sig_eff, back_eff, bib_eff)
 
 # Generate a family of ROC curves
-def calc_roc_family (sig, back, bib, bib_cut_range = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]):
+def calc_roc_family (sig, back, bib, bib_cut_range = np.logspace(-3,0,30)):
     '''Calc ROC Curve for a family of bib cuts
     
     Args:
         sig - signal DataFrame
         back - background (jz) DataFrame
         bib - bib DataFrame
-        bib_cut_range - Value of all bib cuts to look at.
+        bib_cut_range - Value of bib efficiencies to look at. Actual cuts are determined from this
 
     Returns:
         all - DataFrame of truth and false postive rate, area under curve, sig, back, and bib eff, and the bib cut
     '''
-    all = [calc_roc_with_bib_cut (sig, back, bib, bib_cut = bc)+(bc,) for bc in bib_cut_range]
+    sorted_bib_values = bib[' BIBWeight'].sort_values()
+    lst_len = len(sorted_bib_values.index)-1
+    bib_cut_values = [sorted_bib_values.values[index] for index in [int(lst_len*cut_fraction) for cut_fraction in bib_cut_range]]
+    all = [calc_roc_with_bib_cut (sig, back, bib, bib_cut = bc)+(bc,) for bc in bib_cut_values]
     return pd.DataFrame(all, columns=['tpr', 'fpr', 'aroc', 'sig_eff', 'back_eff', 'bib_eff', 'bib_cut'])
 
 # Plot the efficiency for a single BIB sample
 def plot_eff_for_bib(ps, sample_name):
-    plt.figure(figsize=(10,10))
-    plt.plot(ps.bib_cut,ps.sig_eff, label='Sample {0}'.format(sample_name))
-    plt.plot(ps.bib_cut,ps.back_eff, label='Sample JZ')
-    plt.plot(ps.bib_cut,ps.bib_eff, label='Sample BIB')
+    '''Plot the Efficiency plots for a single sample
+    
+    Args:
+        ps - DataFrame of the sample we will look at
+        sample_name - Name of sample
+    '''
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot(111)
+    plt.plot(ps.bib_eff,ps.sig_eff, label='Sample {0}'.format(sample_name))
+    plt.plot(ps.bib_eff,ps.back_eff, label='Sample JZ')
+    plt.plot(ps.bib_eff,ps.bib_eff, label='Sample BIB')
     plt.ylim([0.0, 1.0])
-    plt.xlim([0.0, 1.0])
-    plt.xlabel('BIB Cut (all events with a BIB value less than this included)')
+    plt.xlim([0.001, 1.0])
+    plt.xlabel('BIB Fraction')
     plt.ylabel('Fraction of Events')
-    plt.title('{0}, JZ, and BIB Efficiencies as a function of BIB cut'.format(sample_name))
+    ax.set_xscale('log')
+    plt.grid(alpha=0.5, which='both')
+    plt.title('{0}, JZ, and BIB Efficiencies as a function of BIB Fraction'.format(sample_name))
     plt.legend()
 
 # Plot the eff of all samples on a single plot
 def plot_all_eff_for_bib(samples):
-    plt.figure(figsize=(10,10))
+    '''Plot the efficiency plots for all samples and JZ and BIB
+    
+    Args
+        samples - The df containing all singal samples ROC calculations with eff loaded
+    '''
+    fig = plt.figure(figsize=(15,10))
+    ax = fig.add_subplot(111)
     # Do the eff samples
     for s in samples:
-        plt.plot(samples[s].bib_cut,samples[s].sig_eff, label='Sample {0}'.format(s))
+        plt.plot(samples[s].bib_eff,samples[s].sig_eff, label='Sample {0}'.format(s))
     # Do the background
     abck=samples[list(samples.keys())[0]]
-    plt.plot(abck.bib_cut,abck.back_eff, label='Sample JZ')
-    plt.plot(abck.bib_cut,abck.bib_eff, label='Sample BIB')
+    plt.plot(abck.bib_eff,abck.back_eff, label='Sample JZ')
+    plt.plot(abck.bib_eff,abck.bib_eff, label='Sample BIB')
     # Get the plot in shape
     plt.ylim([0.0, 1.0])
-    plt.xlim([0.0, 1.0])
-    plt.xlabel('BIB Cut (all events with a BIB value less than this included)')
+    plt.xlim([0.001, 1.0])
+    plt.xlabel('BIB Fraction')
     plt.ylabel('Fraction of Events')
-    plt.title('Signal, JZ, and BIB Efficiencies as a function of BIB cut')
+    plt.title('Signal, JZ, and BIB Efficiencies as a function of BIB Fraction')
+    ax.set_xscale('log')
     plt.legend()
 
 # Plot a ROC family of plots
-def plot_roc_family_sample(sample_info_bib, sample_name, background_name = 'jz'):
-    f = plt.figure(figsize=(10,10))
+def plot_roc_family_sample(sample_info_bib, sample_name, background_name = 'JZ', nsamples=10):
+    '''Plot a family of scaled ROC curves
+    
+    Args:
+        sample_info_bib - Each row has a DF containing info on each bib cut point
+        sample_name - Name of the sample (for plot title)
+        background_name - Name of the background samples (JZ usually)
+        nsamples - sample the list of bib cuts (if there are too many)
+        
+    Returns
+        None
+        But matplotlib will be sitting at a plot
+    '''
+    resample = 1
+    if nsamples <= len(sample_info_bib.index):
+        resample = int(len(sample_info_bib.index)/nsamples)
+    f = plt.figure(figsize=(15,10))
     ax = f.add_subplot(111)
-    for index,r in sample_info_bib.iterrows():
+    for index,r in sample_info_bib.iloc[::-resample].iterrows():
         sig_scale = r.sig_eff
         back_scale = r.back_eff
-        ax.plot(r.fpr*back_scale, r.tpr*sig_scale, label='BIB Cut {0:0.2f} eff={1:0.2f} (AROC={2:0.3f})'.format(r.bib_cut, r.bib_eff, r.aroc))
+        ax.plot(r.fpr*back_scale, r.tpr*sig_scale, label='BIB Cut {0:0.4f} eff={1:0.3f} (AROC={2:0.3f})'.format(r.bib_cut, r.bib_eff, r.aroc))
     plt.xlim([0.0,1.0])
     plt.ylim([0.0,1.05])
     plt.ylabel('{0} Positive Rate'.format(sample_name))
