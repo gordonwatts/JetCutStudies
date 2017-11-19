@@ -229,6 +229,85 @@ def plot_roc_family_sample(sample_info_bib, sample_name, background_name = 'JZ',
     plt.title('ROC curves for {0} as a function of BIB cut'.format(sample_name))
     plt.legend()
 
+# Slice up a sample by a partiuclar weight
+def split_data_in_slices (sample, weight, divisions = 20):
+    '''Split a sample up along a given axis. In each bin calculate the average
+    
+    Args:
+        sample  -  The sample DataFrame we are going to split
+        weight - Name of weight axis to split by
+        divisions - How many equal sized bins to split this into
+    
+    Returns:
+        DataFrame with rows labeled by the lower edge of the sliced bin, and average
+        weight for HSS, MultiJet, and BIB, and a column with the # of events in each bin.
+    '''
+    s = sample.drop('Weight', axis=1)
+    pdiv = 1.0/divisions
+    slice_edges = [(b*pdiv, pdiv*(b+1)) for b in range(divisions)]
+
+    mean_evolution = {se[0]:s[(s[weight] >= se[0]) & (s[weight] < se[1])].mean() for se in slice_edges}
+    count = {se[0]:len(s[(s[weight] >= se[0]) & (s[weight] < se[1])].index) for se in slice_edges}
+
+    me = pd.DataFrame(mean_evolution).T
+    me['SliceCount']=pd.Series(list(count.values()), index=me.index)
+    return me
+
+# Split all the slices
+def split_data_in_slices_for_all (samples, weight, divisions = 20):
+    '''Split all the samples in the dict samples
+    
+    Args
+        samples - dict of all samples
+        weight - Name of weight axis to split along
+        divisions - how many equal bins to split things into
+        
+    Return
+        Dict of results
+    '''
+    return {name:split_data_in_slices(samples[name],weight,divisions) for name in samples}
+
+# Plot the # of events in each slice
+def plot_average_weights (sample, sample_name, slice_weight_name):
+    '''Plot the slice data for a particular sample
+    
+    Args
+        sample - slice data for the sample
+        sample_name - the name of the sample we will put on plot
+        weight_name - the weight name that was used to slice everything
+        
+    Returns
+        Plot drawn on the current figure.
+    '''
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot(111)
+    ax.plot(sample.index, sample[' HSSWeight'], label='HSS Weight')
+    ax.plot(sample.index, sample[' MultijetWeight'], label='JZ Weight')
+    ax.plot(sample.index, sample[' BIBWeight'], label="BIB Weight")
+    ax.set_xlabel('Bin in {0}'.format(slice_weight_name))
+    ax.set_ylabel('Average Weight Value')
+    ax.set_title('Average Weights in {0} bins for {1}'.format(slice_weight_name, sample_name))
+    plt.legend()
+
+# Plot the # of events in each slice.
+def plot_slice_sizes (sample, sample_name, slice_weight_name):
+    '''Plot the number of events in each slice
+    
+    Args
+        sample - Slice data for a sample
+        sample_name - name of the sample for plot title
+        slice_weight_name - name of weight that that is used to slice
+        
+    Returns
+        Default plot of the number of events
+    '''
+    fig = plt.figure(figsize=(15,10))
+    ax = fig.add_subplot(111)
+    ax.plot(sample.index, sample.SliceCount)
+    ax.set_xlabel('Bin in {0}'.format(slice_weight_name))
+    ax.set_ylabel('Number of Events in Bin')
+    ax.set_title('Events in each slice of {0} in {1}'.format(slice_weight_name, sample_name))
+
 # Call this to dump out plotting information in the location of jobdir.
 def training_job (jobdir, outputdir, jobindex):
     '''Dump all plots for a particular job.
@@ -247,11 +326,21 @@ def training_job (jobdir, outputdir, jobindex):
     bib_samples = load_mva_data_from_list(jobdir, bib_sample_names)
     mj_samples = load_mva_data_from_list(jobdir, mj_sample_names)
 
-    # Plot the raw MVA samples
+    # Plot the raw MVA values for the samples
     all_samples = {**signal_samples, **bib_samples, **mj_samples}
     for k in all_samples:
         plot_mva_sample(k, all_samples[k])
         plt.savefig("{0}/{1}-mva-{2}.png".format(outputdir, jobindex, k))
+
+    # See how the MVA's evolve as a function of the Jet and signal numbers
+    all_slices = {sname:split_data_in_slices_for_all(all_samples, sname) for sname in [' MultijetWeight', ' HSSWeight']}
+
+    for wt in all_slices:
+        for s in all_slices[wt]:
+            plot_average_weights(all_slices[wt][s], s, wt)
+            plt.savefig("{0}/{1}-slice-{2}-{3}.png".format(outputdir, jobindex, s, wt))
+            plot_slice_sizes(all_slices[wt][s], s, wt)
+            plt.savefig("{0}/{1}-slicesize-{2}-{3}.png".format(outputdir, jobindex, s, wt))
 
     # Get ROC info for all samples, and plot them
     p_samples = {sname:calc_roc_family(signal_samples[sname], mj_samples["jz"], bib_samples['data15']) for sname in signal_samples.keys()}
