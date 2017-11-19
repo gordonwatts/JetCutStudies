@@ -15,15 +15,16 @@ if (-not $(Test-Path $locationPath)) {
 }
 
 # Get the job output path
-$jobDownloadLocation = "$location\$jobID"
+$jobDownloadLocation = "$locationPath\$jobID"
 if (-not (Test-Path "$jobDownloadLocation\*" -Include *.csv)) {
 	Write-Progress -Activity "Creating Training Plots" -Status "Downloading Job Artifact"
-	$f = Get-JenkinsArtifact -JobUri http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVAClassifierTraining -JobId $jobID -ArtifactName all-csv-.zip
+	$f = Get-JenkinsArtifact -ArtifactName "all-csv-$jobID.zip" -JobUri http://higgs.phys.washington.edu:8080/job/CalRatio2016/job/JetMVAClassifierTraining -JobId $jobID -ErrorAction Stop
 	Write-Progress -Activity "Creating Training Plots" -Status "Uncompressing Job Datafiles"
+	$d = New-Item -ItemType Directory -Force -Path $jobDownloadLocation
 	Expand-Archive -Path $f.FullName -DestinationPath $jobDownloadLocation
 }
 
 # Next, run the python stuff. This might take a while.
 Write-Progress -Activity "Creating Training Plots" -Status "Generating Plots"
 $resultsLocation = "$locationPath\results"
-python .\notebooks\training_job_dumper.py "$jobDownloadLocation" "$resultsLocation" $jobId
+python .\notebooks\training_job_dumper.py "$jobDownloadLocation" "$resultsLocation" $jobID
