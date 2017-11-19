@@ -45,7 +45,7 @@ def plot_mva_sample(sample_name, sample_data):
     nbins = 100
     fig = plt.figure(figsize=(15,8))
     ax = fig.add_subplot(111)
-    plt.hist([sample_data[" HSSWeight"], sample_data[" MultijetWeight"], sample_data[" BIBWeight"]],
+    plt.hist([sample_data['HSSWeight'], sample_data['MultijetWeight'], sample_data['BIBWeight']],
              weights=[sample_data.Weight, sample_data.Weight, sample_data.Weight],
              bins=nbins,
              histtype = 'step', normed=True,
@@ -63,7 +63,7 @@ def plot_mva_samples(dict_of_samples):
         plt.show()
 
 # Calc all the info for a ROC curve
-def roc_curve_calc(signal, background, weight=' HSSWeight'):
+def roc_curve_calc(signal, background, weight='HSSWeight'):
     '''Calculate a ROC curve
     
     Args:
@@ -122,11 +122,11 @@ def calc_roc_with_bib_cut (sig, back, bib, bib_cut = 0.5):
         back_eff - how much background this bib cut removed
         bib_eff
     '''
-    gsig = sig[sig[' BIBWeight']<bib_cut]
+    gsig = sig[sig['BIBWeight']<bib_cut]
     sig_eff = len(gsig.index)/len(sig.index)
-    gback = back[back[' BIBWeight']<bib_cut]
+    gback = back[back['BIBWeight']<bib_cut]
     back_eff = len(gback.index)/len(back.index)
-    gbib = bib[bib[' BIBWeight']<bib_cut]
+    gbib = bib[bib['BIBWeight']<bib_cut]
     bib_eff = len(gbib.index)/len(bib.index)
     
     tpr, fpr, aroc = roc_curve_calc(gsig, gback)
@@ -146,7 +146,7 @@ def calc_roc_family (sig, back, bib, bib_cut_range = np.logspace(-3,0,30)):
     Returns:
         all - DataFrame of truth and false postive rate, area under curve, sig, back, and bib eff, and the bib cut
     '''
-    sorted_bib_values = bib[' BIBWeight'].sort_values()
+    sorted_bib_values = bib['BIBWeight'].sort_values()
     lst_len = len(sorted_bib_values.index)-1
     bib_cut_values = [sorted_bib_values.values[index] for index in [int(lst_len*cut_fraction) for cut_fraction in bib_cut_range]]
     all = [calc_roc_with_bib_cut (sig, back, bib, bib_cut = bc)+(bc,) for bc in bib_cut_values]
@@ -281,9 +281,9 @@ def plot_average_weights (sample, sample_name, slice_weight_name):
     '''
     fig = plt.figure(figsize=(10,10))
     ax = fig.add_subplot(111)
-    ax.plot(sample.index, sample[' HSSWeight'], label='HSS Weight')
-    ax.plot(sample.index, sample[' MultijetWeight'], label='JZ Weight')
-    ax.plot(sample.index, sample[' BIBWeight'], label="BIB Weight")
+    ax.plot(sample.index, sample['HSSWeight'], label='HSS Weight')
+    ax.plot(sample.index, sample['MultijetWeight'], label='JZ Weight')
+    ax.plot(sample.index, sample['BIBWeight'], label="BIB Weight")
     ax.set_xlabel('Bin in {0}'.format(slice_weight_name))
     ax.set_ylabel('Average Weight Value')
     ax.set_title('Average Weights in {0} bins for {1}'.format(slice_weight_name, sample_name))
@@ -331,26 +331,31 @@ def training_job (jobdir, outputdir, jobindex):
     for k in all_samples:
         plot_mva_sample(k, all_samples[k])
         plt.savefig("{0}/{1}-mva-{2}.png".format(outputdir, jobindex, k))
+        plt.close()
 
     # See how the MVA's evolve as a function of the Jet and signal numbers
-    all_slices = {sname:split_data_in_slices_for_all(all_samples, sname) for sname in [' MultijetWeight', ' HSSWeight']}
+    all_slices = {sname:split_data_in_slices_for_all(all_samples, sname) for sname in ['MultijetWeight', 'HSSWeight']}
 
     for wt in all_slices:
         for s in all_slices[wt]:
             plot_average_weights(all_slices[wt][s], s, wt)
             plt.savefig("{0}/{1}-slice-{2}-{3}.png".format(outputdir, jobindex, s, wt))
+            plt.close()
             plot_slice_sizes(all_slices[wt][s], s, wt)
             plt.savefig("{0}/{1}-slicesize-{2}-{3}.png".format(outputdir, jobindex, s, wt))
+            plt.close()
 
     # Get ROC info for all samples, and plot them
     p_samples = {sname:calc_roc_family(signal_samples[sname], mj_samples["jz"], bib_samples['data15']) for sname in signal_samples.keys()}
     for sname in p_samples.keys():
         plot_roc_family_sample(p_samples[sname], sname)
         plt.savefig("{0}/{1}-roc-{2}.png".format(outputdir, jobindex, sname))
+        plt.close()
 
     # Plot the efficiencies for all these samples on a single plot
     plot_all_eff_for_bib(p_samples)
     plt.savefig("{0}/{1}-eff.png".format(outputdir, jobindex))
+    plt.close()
 
 
 # If invoked from main
