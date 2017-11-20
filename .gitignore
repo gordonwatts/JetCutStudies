@@ -240,3 +240,4 @@ JetCutStudies.VC.VC.opendb
 *.db
 /.vs/
 /notebooks/.ipynb_checkpoints
+/plots/TMVAInputPlots/loadAllData.c
