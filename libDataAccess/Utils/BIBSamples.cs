@@ -21,6 +21,17 @@ namespace libDataAccess.Utils
         /// <returns></returns>
         public static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null)
         {
+            if (avoidPlaces != null)
+                throw new NotImplementedException();
+
+            var tag = epoc == DataEpoc.data15 ? "data15_p2950" : "data16_p2950";
+            var tagUri = new Uri($"tagcollection://{tag}");
+
+            var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
+            return Files.GenerateStream(queriable, 1.0)
+                .AsBeamHaloStream(epoc)
+                .AsGoodJetStream(pTCut);
+#if false
             // If no events, then we need to just return everything
             if (requestedNumberOfEvents == 0)
             {
@@ -96,6 +107,7 @@ namespace libDataAccess.Utils
                 // Reset the number of files we are looking at.
                 Files.NFiles = oldNFiles;
             }
+#endif
         }
     }
 }
