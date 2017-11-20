@@ -326,6 +326,18 @@ def training_job (jobdir, outputdir, jobindex):
     bib_samples = load_mva_data_from_list(jobdir, bib_sample_names)
     mj_samples = load_mva_data_from_list(jobdir, mj_sample_names)
 
+    # If we have more than one BIB sample, combine them.
+    if len(bib_samples) == 0:
+        raise "No BIB samples were found. Needed to complete plots!"
+    bib_samples_list = list(bib_samples)
+    bib_key = bib_samples_list[0]
+    if len(bib_samples) > 1:
+        r = bib_samples[bib_key]
+        for k in [nk for nk in bib_samples_list if nk != bib_key]:
+            r = r.append(bib_samples[k])
+        bib_samples["BIBAll"] = r
+        bib_key = "BIBAll"
+
     # Plot the raw MVA values for the samples
     all_samples = {**signal_samples, **bib_samples, **mj_samples}
     for k in all_samples:
@@ -346,7 +358,7 @@ def training_job (jobdir, outputdir, jobindex):
             plt.close()
 
     # Get ROC info for all samples, and plot them
-    p_samples = {sname:calc_roc_family(signal_samples[sname], mj_samples["jz"], bib_samples['data15']) for sname in signal_samples.keys()}
+    p_samples = {sname:calc_roc_family(signal_samples[sname], mj_samples["jz"], bib_samples[bib_key]) for sname in signal_samples.keys()}
     for sname in p_samples.keys():
         plot_roc_family_sample(p_samples[sname], sname)
         plt.savefig("{0}/{1}-roc-{2}.png".format(outputdir, jobindex, sname))
