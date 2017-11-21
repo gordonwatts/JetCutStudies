@@ -62,7 +62,7 @@ namespace libDataAccess
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
-        private static Uri[] GetFileList(string dsname, string[] avoidPlaces = null)
+        public static Uri[] GetFileList(string dsname, string[] avoidPlaces = null)
         {
             TraceListener listener = null;
 

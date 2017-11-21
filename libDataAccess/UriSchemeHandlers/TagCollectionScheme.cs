@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 
 namespace libDataAccess.UriSchemeHandlers
 {
@@ -57,7 +58,45 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public IEnumerable<Uri> ResolveUri(Uri u)
         {
-            throw new NotImplementedException();
+            var raw_sample_names = SampleList(u);
+
+            // Now, turn them into grid datasets.
+            return raw_sample_names
+                .Select(s => RecoverUri(s));
+        }
+
+        /// <summary>
+        /// Given somethign from our csv file, convert it to a proper uri
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private Uri RecoverUri(string s)
+        {
+            // Normalize the scope.
+            var scope =
+                s.Contains(":")
+                ? s.Substring(0, s.IndexOf(":"))
+                : s.Substring(0, s.IndexOf("."));
+            if (s.Contains(":"))
+            {
+                s = s.Substring(s.IndexOf(":") + 1);
+            }
+
+            return new Uri($"gridds://{scope}/{s}");
+        }
+
+        /// <summary>
+        /// Return a list of sample names.
+        /// </summary>
+        /// <param name="u">The tag list</param>
+        /// <returns></returns>
+        private string[] SampleList(Uri u)
+        {
+            // extract the tag list.
+            var tags = new[] { u.DnsSafeHost }.Concat(u.Segments.Where(s => !string.IsNullOrWhiteSpace(s) && s != "/")).ToArray();
+            return SampleMetaData.AllSamplesWithTag(tags)
+                .Select(sd => sd.Name)
+                .ToArray();
         }
     }
 }
