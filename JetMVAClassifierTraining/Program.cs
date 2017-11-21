@@ -76,6 +76,8 @@ namespace JetMVAClassifierTraining
 
         static void Main(string[] args)
         {
+            ConsoleMessageDumper.SetupConsoleMessageDumper();
+
             // Parse command line arguments
             var options = CommandLineUtils.ParseOptions<Options>(args);
 
