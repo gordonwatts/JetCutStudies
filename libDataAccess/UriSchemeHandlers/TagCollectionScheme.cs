@@ -36,7 +36,7 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public bool GoodUri(Uri u)
         {
-            return false;
+            return !string.IsNullOrWhiteSpace(u.DnsSafeHost);
         }
 
         /// <summary>
