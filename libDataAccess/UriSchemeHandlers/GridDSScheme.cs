@@ -61,7 +61,7 @@ namespace libDataAccess.UriSchemeHandlers
         {
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return Files.GetFileList(ds_name);
+            return Files.GetFileList(ds_name, nRequestedFiles: 0);
         }
     }
 }

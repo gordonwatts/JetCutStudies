@@ -62,7 +62,7 @@ namespace libDataAccess
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
-        public static Uri[] GetFileList(string dsname, string[] avoidPlaces = null)
+        public static Uri[] GetFileList(string dsname, string[] avoidPlaces = null, int? nRequestedFiles = null)
         {
             TraceListener listener = null;
 
@@ -73,16 +73,13 @@ namespace libDataAccess
             }
 
             try {
-                //return GRIDJobs.FindJobFiles(JobName,
-                //    JobVersionNumber,
-                //    dsname,
-                //    nFiles: NFiles,
-                //    statusUpdate: l => Console.WriteLine(l),
-                //    intelligentLocal: true);
+                var filesToGet = nRequestedFiles.HasValue
+                    ? nRequestedFiles.Value
+                    : NFiles;
                 return GRIDJobs.FindJobUris(JobName,
                     JobVersionNumber,
                     dsname,
-                    NFiles,
+                    filesToGet,
                     avoidPlaces: avoidPlaces);
             } finally
             {

@@ -8,7 +8,9 @@ namespace libDataAccess.UriSchemeHandlers
 {
     /// <summary>
     /// Handle the tag collection scheme. Resolve from our csv file every dataset that matches a particular collections of tags
-    /// (it performs an and).
+    /// (it performs an and). Possible arguments:
+    /// 
+    ///     nFilesPerDataset = n // Max number of files per dataset that we point to. 0 means all files in the dataset, and is the default.
     /// </summary>
     [Export(typeof(IDataFileSchemeHandler))]
     public class TagCollectionScheme : IDataFileSchemeHandler
