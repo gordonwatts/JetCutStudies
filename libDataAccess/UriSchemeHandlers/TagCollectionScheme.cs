@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using libDataAccess.Utils;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace libDataAccess.UriSchemeHandlers
 {
@@ -28,6 +30,7 @@ namespace libDataAccess.UriSchemeHandlers
         {
 #pragma warning disable CS0414
             public int nFilesPerSample = 0;
+            public string hash = "";
 #pragma warning restore CS0414
         }
 
@@ -52,7 +55,7 @@ namespace libDataAccess.UriSchemeHandlers
         {
             // Make sure we can parse it and that we have at least one good tag.
             if (string.IsNullOrWhiteSpace(u.DnsSafeHost) 
-                || u.CheckOptionsParse<Options>())
+                || !u.CheckOptionsParse<Options>())
             {
                 return false;
             }
@@ -70,7 +73,25 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public Uri Normalize(Uri u)
         {
+            // To make sure we don't get into trouble if the csv files changes with the data samples that
+            // are actually part of this, we need to calculate a hash.
+            var samples = SampleList(u).OrderBy(s => s).ToArray();
+            var allSamples = samples
+                .Aggregate(new StringBuilder(), (acc, s) => { acc.Append(s); return acc; })
+                .ToString();
+
+            string hashText;
+            using (MD5 md5 = MD5.Create())
+            {
+                var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(allSamples));
+                hashText = hash.Aggregate("", (acc, b) => acc + b.ToString());
+            }
+
+            // Get out the parameters, add the hash in.
             var o = u.ParseOptions<Options>();
+            o.hash = hashText;
+
+            // Return a new Uri with the various hashes built in.
             return new UriBuilder(u) { Query = UriExtensions.BuildNonDefaultQuery(o) }.Uri;
         }
 
@@ -81,11 +102,20 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public IEnumerable<Uri> ResolveUri(Uri u)
         {
+            // Optiosn we hand off to everything.
+            var opt = u.ParseOptions<Options>();
+            var dopt = new Dictionary<string, string>();
+            if (opt.nFilesPerSample != 0)
+            {
+                dopt["nFiles"] = opt.nFilesPerSample.ToString();
+            }
+
+            // THe list of samples.
             var raw_sample_names = SampleList(u);
 
             // Now, turn them into grid datasets.
             return raw_sample_names
-                .Select(s => RecoverUri(s));
+                .Select(s => RecoverUri(s, dopt));
         }
 
         /// <summary>
@@ -93,7 +123,7 @@ namespace libDataAccess.UriSchemeHandlers
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        private Uri RecoverUri(string s)
+        private Uri RecoverUri(string s, IDictionary<string, string> optiongs)
         {
             // Normalize the scope.
             var scope =
@@ -105,7 +135,7 @@ namespace libDataAccess.UriSchemeHandlers
                 s = s.Substring(s.IndexOf(":") + 1);
             }
 
-            return new Uri($"gridds://{scope}/{s}");
+            return new UriBuilder($"gridds://{scope}/{s}") { Query = optiongs.ToOrderedQueryString ()}.Uri;
         }
 
         /// <summary>

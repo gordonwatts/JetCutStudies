@@ -97,18 +97,19 @@ namespace libDataAccess.Utils
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        internal static string BuildNonDefaultQuery<T>(T values)
+        public static string BuildNonDefaultQuery<T>(T values)
+            where T : new()
         {
             Dictionary<string, string> nameValueParis = new Dictionary<string, string>();
-            var defaultOptions = default(T);
-            foreach (var p in typeof(T).GetProperties())
+            var defaultOptions = new T ();
+            foreach (var f in typeof(T).GetFields())
             {
-                var dValue = p.GetValue(defaultOptions);
-                var nValue = p.GetValue(values);
+                var dValue = f.GetValue(defaultOptions);
+                var nValue = f.GetValue(values);
 
                 if (!dValue.Equals(nValue))
                 {
-                    nameValueParis[p.Name] = nValue.ToString();
+                    nameValueParis[f.Name] = nValue.ToString();
                 }
             }
 

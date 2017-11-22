@@ -1,4 +1,5 @@
-﻿using LinqToTTreeInterfacesLib;
+﻿using libDataAccess.Utils;
+using LinqToTTreeInterfacesLib;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -31,6 +32,17 @@ namespace libDataAccess.UriSchemeHandlers
         }
 
         /// <summary>
+        /// Options allowed on our URL's.
+        /// </summary>
+        private class Options
+        {
+            /// <summary>
+            ///  Number of files from each grid dataset we should take.
+            /// </summary>
+            public int nFiles = 0;
+        }
+
+        /// <summary>
         /// This is a good Uri if it has a DNS machinen, which is a scope, and a stemp, which is the name.
         /// </summary>
         /// <param name="u"></param>
@@ -38,7 +50,8 @@ namespace libDataAccess.UriSchemeHandlers
         public bool GoodUri(Uri u)
         {
             return !string.IsNullOrWhiteSpace(u.DnsSafeHost)
-                && u.Segments.Length == 1;
+                && u.Segments.Length == 1
+                && u.CheckOptionsParse<Options>();
         }
 
         /// <summary>
@@ -48,7 +61,9 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public Uri Normalize(Uri u)
         {
-            return u;
+            // Order the options properly.
+            var o = u.ParseOptions<Options>();
+            return new UriBuilder(u) { Query = UriExtensions.BuildNonDefaultQuery(o) }.Uri;
         }
 
         /// <summary>
@@ -59,10 +74,12 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public IEnumerable<Uri> ResolveUri(Uri u)
         {
-            throw new NotImplementedException();
+            // Get out options
+            var opt = u.ParseOptions<Options>();
+
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return Files.GetFileList(ds_name, nRequestedFiles: 0);
+            return Files.GetFileList(ds_name, nRequestedFiles: opt.nFiles);
         }
     }
 }
