@@ -25,7 +25,7 @@ namespace libDataAccess.Utils
                 throw new NotImplementedException();
 
             var tag = epoc == DataEpoc.data15 ? "data15_p2950" : "data16_p2950";
-            var tagUri = new Uri($"tagcollection://{tag}");
+            var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={Files.NFiles}");
 
             var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
             return Files.GenerateStream(queriable, 1.0)

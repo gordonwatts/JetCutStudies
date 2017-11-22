@@ -59,6 +59,7 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public IEnumerable<Uri> ResolveUri(Uri u)
         {
+            throw new NotImplementedException();
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
             return Files.GetFileList(ds_name, nRequestedFiles: 0);

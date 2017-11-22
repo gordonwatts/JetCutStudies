@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using libDataAccess.Utils;
 
 namespace libDataAccess.UriSchemeHandlers
 {
@@ -19,6 +20,16 @@ namespace libDataAccess.UriSchemeHandlers
         /// Uri's that have the scheme tagcollection.
         /// </summary>
         public string Scheme => "tagcollection";
+
+        /// <summary>
+        /// Various options that can be attached to the URL.
+        /// </summary>
+        private class Options
+        {
+#pragma warning disable CS0414
+            public int nFilesPerSample = 0;
+#pragma warning restore CS0414
+        }
 
         /// <summary>
         /// We assume the date is constant - these aren't local files that are changing.
@@ -39,7 +50,16 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public bool GoodUri(Uri u)
         {
-            return !string.IsNullOrWhiteSpace(u.DnsSafeHost);
+            // Make sure we can parse it and that we have at least one good tag.
+            if (string.IsNullOrWhiteSpace(u.DnsSafeHost) 
+                || u.CheckOptionsParse<Options>())
+            {
+                return false;
+            }
+
+            // Make sure that we have at least one (or more) dataset names that come back from this
+            // list of tags.
+            return SampleList(u).Length > 0;
         }
 
         /// <summary>
@@ -50,7 +70,8 @@ namespace libDataAccess.UriSchemeHandlers
         /// <returns></returns>
         public Uri Normalize(Uri u)
         {
-            return u;
+            var o = u.ParseOptions<Options>();
+            return new UriBuilder(u) { Query = UriExtensions.BuildNonDefaultQuery(o) }.Uri;
         }
 
         /// <summary>
