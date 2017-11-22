@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using static libDataAccess.Utils.Constants;
 
 namespace libDataAccess
@@ -45,6 +46,14 @@ namespace libDataAccess
         /// </summary>
         public static string JobName = "DiVertAnalysis";
 
+        /// <summary>
+        /// Include us in the MEF resolution so the various objects we are using are found during
+        /// composition (e.g. the data scheme handlers).
+        /// </summary>
+        static Files()
+        {
+            TTreeQueryExecutor.AddAssemblyForPlugins(Assembly.GetCallingAssembly());
+        }
 
         [Serializable]
         public class DataSetHasNoFilesException : Exception
