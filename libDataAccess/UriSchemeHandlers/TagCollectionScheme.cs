@@ -29,7 +29,13 @@ namespace libDataAccess.UriSchemeHandlers
         private class Options
         {
 #pragma warning disable CS0414
+            // The number of files from each sample in the list we point to.
             public int nFilesPerSample = 0;
+
+            [IgnoreAttributeForNormalization]
+            public string avoidPlaces = "";
+
+            // Hash kept in order to make sure the list of files we match are consistent.
             public string hash = "";
 #pragma warning restore CS0414
         }
@@ -108,6 +114,10 @@ namespace libDataAccess.UriSchemeHandlers
             if (opt.nFilesPerSample != 0)
             {
                 dopt["nFiles"] = opt.nFilesPerSample.ToString();
+            }
+            if (!string.IsNullOrWhiteSpace(opt.avoidPlaces))
+            {
+                dopt["avoidPlaces"] = opt.avoidPlaces;
             }
 
             // THe list of samples.

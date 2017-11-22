@@ -21,11 +21,10 @@ namespace libDataAccess.Utils
         /// <returns></returns>
         public static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null)
         {
-            if (avoidPlaces != null)
-                throw new NotImplementedException();
-
             var tag = epoc == DataEpoc.data15 ? "data15_p2950" : "data16_p2950";
-            var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={Files.NFiles}");
+            var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
+            var placesToAvoidTag = placesToAvoid == null ? "" : $"&avoidPlaces={placesToAvoid}";
+            var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={Files.NFiles}{placesToAvoidTag}");
 
             var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
             return Files.GenerateStream(queriable, 1.0)

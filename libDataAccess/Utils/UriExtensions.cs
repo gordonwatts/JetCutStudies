@@ -107,7 +107,7 @@ namespace libDataAccess.Utils
                 var dValue = f.GetValue(defaultOptions);
                 var nValue = f.GetValue(values);
 
-                if (!dValue.Equals(nValue))
+                if (!dValue.Equals(nValue) && f.GetCustomAttribute<IgnoreAttributeForNormalizationAttribute>() == null)
                 {
                     nameValueParis[f.Name] = nValue.ToString();
                 }
@@ -136,4 +136,16 @@ namespace libDataAccess.Utils
             return qb.ToString();
         }
     }
+    /// <summary>
+    /// Place on a field you don't want to show up in the URL when it is dumpped out.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public sealed class IgnoreAttributeForNormalizationAttribute : Attribute
+    {
+        public IgnoreAttributeForNormalizationAttribute()
+        {
+        }
+    }
+
+
 }

@@ -40,6 +40,12 @@ namespace libDataAccess.UriSchemeHandlers
             ///  Number of files from each grid dataset we should take.
             /// </summary>
             public int nFiles = 0;
+
+            /// <summary>
+            /// The list of places to avoid using when we process this.
+            /// </summary>
+            [IgnoreAttributeForNormalization]
+            public string avoidPlaces = "";
         }
 
         /// <summary>
@@ -79,7 +85,7 @@ namespace libDataAccess.UriSchemeHandlers
 
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return Files.GetFileList(ds_name, nRequestedFiles: opt.nFiles);
+            return Files.GetFileList(ds_name, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
         }
     }
 }
