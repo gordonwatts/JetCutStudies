@@ -118,6 +118,12 @@ namespace libDataAccess
             return GenerateStream(backgroundEvents, xSectionWeight);
         }
 
+        /// <summary>
+        /// Build a URI for gridds with options.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         private static Uri RecoverUri(string s, IDictionary<string, string> options)
         {
             // Normalize the scope.
