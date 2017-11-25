@@ -3,6 +3,7 @@ using LinqToTTreeInterfacesLib;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace libDataAccess.UriSchemeHandlers
         public bool GoodUri(Uri u)
         {
             return !string.IsNullOrWhiteSpace(u.DnsSafeHost)
-                && u.Segments.Length == 1
+                && u.Segments.Length == 2
                 && u.CheckOptionsParse<Options>();
         }
 
@@ -85,7 +86,50 @@ namespace libDataAccess.UriSchemeHandlers
 
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return Files.GetFileList(ds_name, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
+            return GetFileList(ds_name, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
         }
+
+        /// <summary>
+        /// Get/Set the job version number
+        /// </summary>
+        public static int JobVersionNumber = 201;
+
+        /// <summary>
+        /// Get/Set the job name we are fetching
+        /// </summary>
+        public static string JobName = "DiVertAnalysis";
+
+        /// <summary>
+        /// Return a dataset list given the name of the dataset.
+        /// </summary>
+        /// <param name="dsname"></param>
+        /// <returns></returns>
+        public static Uri[] GetFileList(string dsname, string[] avoidPlaces = null, int nRequestedFiles = 0, bool verbose = false)
+        {
+            TraceListener listener = null;
+
+            if (verbose)
+            {
+                listener = new TextWriterTraceListener(Console.Out);
+                Trace.Listeners.Add(listener);
+            }
+
+            try
+            {
+                return GRIDJobs.FindJobUris(JobName,
+                    JobVersionNumber,
+                    dsname,
+                    nRequestedFiles,
+                    avoidPlaces: avoidPlaces);
+            }
+            finally
+            {
+                if (listener != null)
+                {
+                    Trace.Listeners.Remove(listener);
+                }
+            }
+        }
+
     }
 }

@@ -23,6 +23,7 @@ namespace SimpleJetCutTraining
     {
         static void Main(string[] args)
         {
+#if false
             WriteLine("Finding the files");
             var backgroundEvents = Files.GetJZ(2).Select(e => e.Data);
             //var signalHV125pi15Events = Files.Get125pi15();
@@ -79,6 +80,7 @@ namespace SimpleJetCutTraining
             effResults.Close();
 
             //Emit();
+#endif
         }
 
         /// <summary>

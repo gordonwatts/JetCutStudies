@@ -1,4 +1,5 @@
 ﻿using DiVertAnalysis;
+using libDataAccess.Utils;
 using LINQToTTreeLib;
 using System;
 using System.Collections.Generic;
@@ -37,16 +38,6 @@ namespace libDataAccess
         public static bool UseCodeOptimizer = true;
 
         /// <summary>
-        /// Get/Set the job version number
-        /// </summary>
-        public static int JobVersionNumber = 201;
-
-        /// <summary>
-        /// Get/Set the job name we are fetching
-        /// </summary>
-        public static string JobName = "DiVertAnalysis";
-
-        /// <summary>
         /// Include us in the MEF resolution so the various objects we are using are found during
         /// composition (e.g. the data scheme handlers).
         /// </summary>
@@ -67,39 +58,6 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Return a dataset list given the name of the dataset.
-        /// </summary>
-        /// <param name="dsname"></param>
-        /// <returns></returns>
-        public static Uri[] GetFileList(string dsname, string[] avoidPlaces = null, int? nRequestedFiles = null)
-        {
-            TraceListener listener = null;
-
-            if (VerboseFileFetch)
-            {
-                listener = new TextWriterTraceListener(Console.Out);
-                Trace.Listeners.Add(listener);
-            }
-
-            try {
-                var filesToGet = nRequestedFiles.HasValue
-                    ? nRequestedFiles.Value
-                    : NFiles;
-                return GRIDJobs.FindJobUris(JobName,
-                    JobVersionNumber,
-                    dsname,
-                    filesToGet,
-                    avoidPlaces: avoidPlaces);
-            } finally
-            {
-                if (listener != null)
-                {
-                    Trace.Listeners.Remove(listener);
-                }
-            }
-        }
-
-        /// <summary>
         /// Return the JZ sample as requested.
         /// </summary>
         /// <param name="jzIndex"></param>
@@ -116,19 +74,30 @@ namespace libDataAccess
         /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
         /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
         /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true, string[] avoidPlaces = null)
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true, string[] avoidPlaces = null, int? nfiles = null)
         {
-            // Build the query tree
-            var backgroundFiles = GetFileList(sample, avoidPlaces);
-            if (backgroundFiles.Length == 0)
+            // Options for the Uri for the grid dataset.
+            var uriOptions = new Dictionary<string, string>();
+            if (avoidPlaces != null && avoidPlaces.Length > 0)
             {
-                throw new DataSetHasNoFilesException($"Dataset {sample} has no files - remove it from the input list!");
+                var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
+                uriOptions["avoidPlaces"] = placesToAvoid;
             }
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(backgroundFiles);
+            var nf = nfiles.HasValue
+                ? nfiles.Value
+                : Files.NFiles;
+            if (nf > 0)
+            {
+                uriOptions["nFiles"] = nf.ToString();
+            }
+
+            // Build the query tree.
+            var backgroundFile = RecoverUri(sample, uriOptions);
+            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { backgroundFile });
             backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
             backgroundEvents.IgnoreQueryCache = IgnoreQueires;
 
-            // fetch the cross section weight
+            // fetch the cross section weight so that we can re-weight this sample if need be.
             double xSectionWeight = 1.0;
             if (weightByCrossSection)
             {
@@ -149,6 +118,21 @@ namespace libDataAccess
             return GenerateStream(backgroundEvents, xSectionWeight);
         }
 
+        private static Uri RecoverUri(string s, IDictionary<string, string> options)
+        {
+            // Normalize the scope.
+            var scope =
+                s.Contains(":")
+                ? s.Substring(0, s.IndexOf(":"))
+                : s.Substring(0, s.IndexOf("."));
+            if (s.Contains(":"))
+            {
+                s = s.Substring(s.IndexOf(":") + 1);
+            }
+
+            return new UriBuilder($"gridds://{scope}/{s}") { Query = options.ToOrderedQueryString() }.Uri;
+        }
+
         /// <summary>
         /// Return the meta-data for a sample
         /// </summary>
@@ -161,31 +145,17 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Given all the samples, return a single queriable.
-        /// The formats are going to be the same, but we do have to split by location, unfortunately.
+        /// Return a sample for processing.
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="samples"></param>
+        /// <param name="weightByCrossSection"></param>
+        /// <param name="avoidPlaces"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> source, string[] avoidPlaces = null)
+        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> samples, bool weightByCrossSection = true, string[] avoidPlaces = null)
         {
-            // Get all the files into a single large sequence.
-                var files = source
-                .SelectMany(s => GetFileList(s.Name, avoidPlaces))
-                .ToArray();
-
-            var groupings = files
-                .GroupBy(u => u.Scheme + u.Host);
-
-            var events = groupings
-                .Select(g =>
-                {
-                    var queriable = QueryablerecoTree.CreateQueriable(g.ToArray());
-                    queriable.IgnoreQueryCache = IgnoreQueires;
-                    return queriable;
-                })
-                .Aggregate<QueriableTTree<recoTree>, IQueryable<recoTree>>(null, (accum, gsource) => accum == null ? gsource : accum.Concat(gsource));
-
-            return GenerateStream(events, 1.0);
+            return samples
+                .Select(s => GetSampleAsMetaData(s, weightByCrossSection, avoidPlaces))
+                .Aggregate((acc, newSample) => acc.Concat(newSample));
         }
 
         /// <summary>
@@ -217,33 +187,6 @@ namespace libDataAccess
         public static IQueryable<MetaData> GenerateStream(this IQueryable<recoTree> source, double xSecWeight)
         {
             return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight * e.eventWeight });
-        }
-
-        public static IQueryable<recoTree> Get200pi25lt5m()
-        {
-            var sig = GetFileList("mc15_13TeV.304805.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH200_mS25_lt5m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            sigEvents.IgnoreQueryCache = IgnoreQueires;
-            sigEvents.UseStatementOptimizer = UseCodeOptimizer;
-            return sigEvents;
-        }
-
-        public static IQueryable<recoTree> Get400pi100lt9m()
-        {
-            var sig = GetFileList("mc15_13TeV.304813.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH400_mS100_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            sigEvents.UseStatementOptimizer = UseCodeOptimizer;
-            sigEvents.IgnoreQueryCache = IgnoreQueires;
-            return sigEvents;
-        }
-
-        public static IQueryable<recoTree> Get600pi150lt9m()
-        {
-            var sig = GetFileList("mc15_13TeV.304817.MadGraphPythia8EvtGen_A14NNPDF23LO_HSS_LLP_mH600_mS150_lt9m.merge.AOD.e4754_s2698_r7146_r6282");
-            var sigEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(sig);
-            sigEvents.UseStatementOptimizer = UseCodeOptimizer;
-            sigEvents.IgnoreQueryCache = IgnoreQueires;
-            return sigEvents;
         }
     }
 

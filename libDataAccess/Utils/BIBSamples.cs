@@ -21,92 +21,98 @@ namespace libDataAccess.Utils
         /// <returns></returns>
         public static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null)
         {
-            var tag = epoc == DataEpoc.data15 ? "data15_p2950" : "data16_p2950";
-            var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
-            var placesToAvoidTag = placesToAvoid == null ? "" : $"&avoidPlaces={placesToAvoid}";
-            var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={Files.NFiles}{placesToAvoidTag}");
-
-            var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
-            return Files.GenerateStream(queriable, 1.0)
-                .AsBeamHaloStream(epoc)
-                .AsGoodJetStream(pTCut);
-#if false
             // If no events, then we need to just return everything
             if (requestedNumberOfEvents == 0)
             {
                 return null;
             }
 
-            // Fetch all the data samples
-            var dataSamples = SampleMetaData.AllSamplesWithTag(epoc == DataEpoc.data15 ? "data15_p2950" : "data16_p2950");
+            // Parse the arguments into something more useful for pulling up the various datasets.
+            var tag = epoc == DataEpoc.data15 ? "data15_p2950" : "data16_p2950";
 
-            // BiB files are funny - the data is far and few between. So we need to boost the number of files
-            // we look at.
-            var oldNFiles = Files.NFiles;
-            if (oldNFiles <= 1)
+            // If we are doing nFiles something other than zero, then we should
+            // boost it. This is becaes a single file just isn't enough events that pass our
+            // basic criteria in this dataset.
+            var filesToAskFor = Files.NFiles == 0
+                ? 0
+                : Files.NFiles * 2;
+
+            // If we have no restirction on number of events - then we can take everything.
+            if (requestedNumberOfEvents < 0)
             {
-                Files.NFiles = 2;
-            }
-            try
-            {
+                // Put the avoid places into a argument in the Uri
+                var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
+                var placesToAvoidTag = placesToAvoid == null ? "" : $"&avoidPlaces={placesToAvoid}";
 
-                // If we have a limitation on the number of events, then we need to measure our the # of events.
-                int countOfEvents = 0;
-                int countOfEventsOneBack = 0;
-                dataSamples = dataSamples
-                    .TakeWhile(s =>
-                    {
-                        if (requestedNumberOfEvents < 0)
-                        {
-                            return true;
-                        }
-                        var q = Files.GetSampleAsMetaData(s, avoidPlaces: avoidPlaces);
-                        countOfEventsOneBack = countOfEvents;
-                        countOfEvents += q.AsBeamHaloStream(epoc)
-                                            .AsGoodJetStream(pTCut)
-                                            .Count();
-                        return countOfEvents < requestedNumberOfEvents;
-                    })
-                    .ToArray();
-
-                // The following is the tricky part. Now that we have a list of events, it is not likely that we have found a file boundary
-                // that matches the number of events. So we will have to do this a little carefully.
-
-                SampleMetaData theLastSample = null;
-                IEnumerable<SampleMetaData> allBut = dataSamples;
-                if (countOfEvents > 0 && countOfEvents > requestedNumberOfEvents)
-                {
-                    // Take up to the last one.
-                    allBut = dataSamples.Take(dataSamples.Count() - 1);
-                    theLastSample = dataSamples.Last();
-                }
-
-                var data1 = allBut
-                    .SamplesAsSingleQueriable(avoidPlaces)
+                // Since everything is evenly weighted, just grab everything.
+                var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={filesToAskFor}{placesToAvoidTag}");
+                var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
+                return Files.GenerateStream(queriable, 1.0)
                     .AsBeamHaloStream(epoc)
                     .AsGoodJetStream(pTCut);
-
-                var data = theLastSample == null ? data1
-                    : data1.Concat(Files.GetSampleAsMetaData(theLastSample, avoidPlaces: avoidPlaces).AsBeamHaloStream(epoc).AsGoodJetStream(pTCut).Take(requestedNumberOfEvents - countOfEventsOneBack));
-
-                // Check that we did ok. This will prevent errors down the line that are rather confusing.
-                if (countOfEvents < requestedNumberOfEvents)
-                {
-                    Console.WriteLine($"Warning - unable to get all the events requested for {epoc.ToString()}. {countOfEvents} were found, and {requestedNumberOfEvents} events were requested.");
-                }
-                if (countOfEvents == 0 && requestedNumberOfEvents > 0)
-                {
-                    throw new InvalidOperationException($"Unable to get any events for {epoc.ToString()}!");
-                }
-
-                return data;
             }
-            finally
+
+            // We have a limit on the number of events. Distribute our ask over the various samples so that we can have
+            // events from early and late in the run where lumi profiles are different.
+            var dataSamples = SampleMetaData.AllSamplesWithTag(tag);
+            return TakeEventsFromSamlesEvenly(requestedNumberOfEvents,
+                filesToAskFor,
+                dataSamples,
+                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut)
+                );
+        }
+
+        /// <summary>
+        /// Given a series of samples, and a limited number of events, take from each sample evenly.
+        /// </summary>
+        /// <param name="dataSamples"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private static IQueryable<T> TakeEventsFromSamlesEvenly<T>(int numberOfEvents, int numberOfFiles,
+            IEnumerable<SampleMetaData> dataSamples, 
+            Func<IQueryable<Files.MetaData>, IQueryable<T>> sampleConverter)
+        {
+            // Helper function to turn a sample into a data stream
+            IQueryable<T> get_sample(SampleMetaData sample)
             {
-                // Reset the number of files we are looking at.
-                Files.NFiles = oldNFiles;
+                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, nfiles: numberOfFiles));
             }
-#endif
+
+            // Get the number of events in each sample.
+            var allSamples = dataSamples.ToArray();
+            var eventCounts = allSamples
+                .Select(s => (sample: s, count: get_sample(s).Count()))
+                .ToArray();
+
+            // Do we have enough events to do this?
+            var totalEvents = eventCounts.Sum(c => c.count);
+            if (totalEvents <= numberOfEvents)
+            {
+                return eventCounts
+                    .Skip(1)
+                    .Aggregate(get_sample(eventCounts[0].sample),
+                        (acc, sampleToAppend) => acc.Concat(get_sample(sampleToAppend.sample)));
+            }
+
+            // Next, calculate a fraction we need. We will apply that to each to get the number of events.
+            // There will be some rounding errors, but we should be very close.
+            var fractionOfEachSample = numberOfEvents / (double) totalEvents;
+            var toTakeFromSampleDraft = eventCounts
+                .Select(sinfo => (sample: sinfo.sample, count: (int)(sinfo.count * fractionOfEachSample + 0.5)))
+                .ToArray();
+
+            var newSum = toTakeFromSampleDraft.Sum(c => c.count);
+            var delta = numberOfEvents - newSum;
+            var toTakeFromSample =
+                toTakeFromSampleDraft
+                    .Select((s, index) => (sample: s.sample, count: totalEvents = index == 0 ? s.count + delta : s.count))
+                    .ToArray();
+
+            // Now build and return the dude!
+            return toTakeFromSample
+                .Skip(1)
+                .Aggregate(get_sample(toTakeFromSample[0].sample).Take(toTakeFromSample[0].count),
+                    (acc, sampleToAppend) => acc.Concat(get_sample(sampleToAppend.sample).Take(sampleToAppend.count)));
         }
     }
 }
