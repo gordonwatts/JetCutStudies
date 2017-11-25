@@ -47,6 +47,16 @@ namespace libDataAccess.UriSchemeHandlers
             /// </summary>
             [IgnoreAttributeForNormalization]
             public string avoidPlaces = "";
+
+            /// <summary>
+            /// The job version
+            /// </summary>
+            public string jobName = "";
+
+            /// <summary>
+            /// The job name
+            /// </summary>
+            public int jobVersion = -1;
         }
 
         /// <summary>
@@ -86,27 +96,22 @@ namespace libDataAccess.UriSchemeHandlers
 
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return GetFileList(ds_name, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
+            return GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
         }
-
-        /// <summary>
-        /// Get/Set the job version number
-        /// </summary>
-        public static int JobVersionNumber = 201;
-
-        /// <summary>
-        /// Get/Set the job name we are fetching
-        /// </summary>
-        public static string JobName = "DiVertAnalysis";
 
         /// <summary>
         /// Return a dataset list given the name of the dataset.
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
-        public static Uri[] GetFileList(string dsname, string[] avoidPlaces = null, int nRequestedFiles = 0, bool verbose = false)
+        public static Uri[] GetFileList(string dsname, string jobName, int jobNumber, string[] avoidPlaces = null, int nRequestedFiles = 0, bool verbose = false)
         {
             TraceListener listener = null;
+
+            if (string.IsNullOrWhiteSpace(jobName))
+            {
+                throw new ArgumentException("jobName can't be empty");
+            }
 
             if (verbose)
             {
@@ -116,8 +121,8 @@ namespace libDataAccess.UriSchemeHandlers
 
             try
             {
-                return GRIDJobs.FindJobUris(JobName,
-                    JobVersionNumber,
+                return GRIDJobs.FindJobUris(jobName,
+                    jobNumber,
                     dsname,
                     nRequestedFiles,
                     avoidPlaces: avoidPlaces);

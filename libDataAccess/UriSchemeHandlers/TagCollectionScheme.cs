@@ -37,6 +37,16 @@ namespace libDataAccess.UriSchemeHandlers
 
             // Hash kept in order to make sure the list of files we match are consistent.
             public string hash = "";
+
+            /// <summary>
+            /// Name of the job that produced these files
+            /// </summary>
+            public string jobName = "";
+
+            /// <summary>
+            /// Version of the job that produced these files.
+            /// </summary>
+            public int jobVersion = 0;
 #pragma warning restore CS0414
         }
 

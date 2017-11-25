@@ -18,6 +18,16 @@ namespace libDataAccess
     public static class Files
     {
         /// <summary>
+        /// Get/Set the job version number
+        /// </summary>
+        public static int JobVersionNumber = 201;
+
+        /// <summary>
+        /// Get/Set the job name we are fetching
+        /// </summary>
+        public static string JobName = "DiVertAnalysis";
+
+        /// <summary>
         /// Default setting for # of files to fetch when we run. 0 means we are running on the full data sample.
         /// </summary>
         public static int NFiles = 1;
@@ -91,6 +101,8 @@ namespace libDataAccess
             {
                 uriOptions["nFiles"] = nf.ToString();
             }
+            uriOptions["jobName"] = JobName;
+            uriOptions["jobVersion"] = JobVersionNumber.ToString();
 
             // Build the query tree.
             var backgroundFile = RecoverUri(sample, uriOptions);

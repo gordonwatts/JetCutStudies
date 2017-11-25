@@ -45,7 +45,7 @@ namespace libDataAccess.Utils
                 var placesToAvoidTag = placesToAvoid == null ? "" : $"&avoidPlaces={placesToAvoid}";
 
                 // Since everything is evenly weighted, just grab everything.
-                var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={filesToAskFor}{placesToAvoidTag}");
+                var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={filesToAskFor}{placesToAvoidTag}&jobName={Files.JobName}&jobVersion={Files.JobVersionNumber.ToString()}");
                 var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
                 return Files.GenerateStream(queriable, 1.0)
                     .AsBeamHaloStream(epoc)
