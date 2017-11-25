@@ -37,8 +37,8 @@ namespace JetMVAClassifierTraining
             [Option("BDTLeafMinFraction", Default = 5)]
             public double BDTLeafMinFraction { get; set; }
 
-            [Option("TrainingEvents", Default = 500000)]
-            public int EventsToUseForTrainingAndTesting { get; set; }
+            [Option("nTrees", HelpText = "How many trees should be trained in the boosting?", Default = 800)]
+            public int MaxTreesForTraining { get; set; }
 
             [Option("VariableTransform", Default = "")]
             public string VariableTransform { get; set; }
@@ -58,14 +58,17 @@ namespace JetMVAClassifierTraining
             [Option("SmallTestingMenu", HelpText = "If present, then run on a small number of samples", Default = false)]
             public bool SmallTestingMenu { get; set; }
 
+            [Option("TrainingEventsJz", Default = -1, HelpText ="Number of events to use in training for JZ sample. -1 means everything. Defaults to 20,000 if UseFullDataset not presen.")]
+            public int EventsToUseForJzTraining { get; set; }
+
+            [Option("TrainingEventsSignal", Default = -1, HelpText = "Number of events to use in training for singal sample. -1 means everything. Defaults to 20,000 if UseFullDataset not presen.")]
+            public int EventsToUseForSignalTraining { get; set; }
+
             [Option("TrainEventsBIB16", HelpText = "How many events from data16 should be used in the training for bib16 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB16 { get; set; }
 
             [Option("TrainEventsBIB15", HelpText = "How many events from data15 should be used in the training for bib15 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB15 { get; set; }
-
-            [Option("nTrees", HelpText = "How many trees should be trained in the boosting?", Default = 800)]
-            public int MaxTreesForTraining { get; set; }
 
             [Option("PrecisionValue", HelpText ="The fraction of events in each sample to use when calculating the training precision", Default = 0.90)]
             public double PrecisionValue { get; set; }
@@ -81,28 +84,41 @@ namespace JetMVAClassifierTraining
             // Parse command line arguments
             var options = CommandLineUtils.ParseOptions<Options>(args);
 
+            // Fix up defaults depending on full dataset or not.
+            if (!options.UseFullDataset)
+            {
+                options.EventsToUseForJzTraining = options.EventsToUseForJzTraining == -1
+                    ? 20000
+                    : options.EventsToUseForJzTraining;
+
+                options.EventsToUseForSignalTraining = options.EventsToUseForSignalTraining == -1
+                    ? 20000
+                    : options.EventsToUseForSignalTraining;
+
+                options.EventsToUseForTrainingAndTestingBIB15 = options.EventsToUseForTrainingAndTestingBIB15 == -1
+                    ? 20000
+                    : options.EventsToUseForTrainingAndTestingBIB15;
+
+                options.EventsToUseForTrainingAndTestingBIB16 = options.EventsToUseForTrainingAndTestingBIB16 == -1
+                    ? 20000
+                    : options.EventsToUseForTrainingAndTestingBIB16;
+            }
+
             // Class: LLP
             var signalUnfiltered = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
-                .TakeEventsFromSamlesEvenly(options.UseFullDataset ? -1 : 20000, Files.NFiles,
+                .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles,
                     mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut));
 
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
             // Class: Multijet
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, 
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, 
                 options.pTCut, Files.NFiles);
 
             // Class: BIB
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0
-                ? (options.UseFullDataset ? -1 : 25000) 
-                : options.EventsToUseForTrainingAndTestingBIB15
-                , DataEpoc.data15, options.pTCut);
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0
-                ? (options.UseFullDataset ? -1 : 25000)
-                : options.EventsToUseForTrainingAndTestingBIB16,
-                DataEpoc.data16, options.pTCut);
-
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, useLessSamples: !options.UseFullDataset);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, useLessSamples: !options.UseFullDataset);
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVAClassifierTraining.root"))
@@ -204,19 +220,13 @@ namespace JetMVAClassifierTraining
 
                 // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
                 // version of root than we have locally on windows.
-                var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 <= 0
-                    ? (options.UseFullDataset ? -1 : 25000)
-                    : options.EventsToUseForTrainingAndTestingBIB15
-                    , DataEpoc.data15, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" });
-                var bib16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 <= 0
-                    ? (options.UseFullDataset ? -1 : 25000)
-                    : options.EventsToUseForTrainingAndTestingBIB16,
-                    DataEpoc.data16, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" });
+                var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" }, useLessSamples: !options.UseFullDataset);
+                var bib16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" }, useLessSamples: !options.UseFullDataset);
 
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), bib15.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bib16.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
 
-                var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut,
+                var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, options.pTCut,
                     Files.NFiles, avoidPlaces: new[] { "Local", "UWTeV" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), multijet, cBDT, new string[] { "hss", "multijet", "bib" });
 

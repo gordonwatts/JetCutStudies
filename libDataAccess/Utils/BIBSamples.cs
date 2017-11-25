@@ -19,7 +19,11 @@ namespace libDataAccess.Utils
         /// <param name="requestedNumberOfEvents">-1 for everything, or a number of requested</param>
         /// <param name="bib_tag">The tag name we should use to do the lookup</param>
         /// <returns></returns>
-        public static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null)
+        /// <remarks>
+        /// If the flag for "useLessSamples" is set, then we will try to use only the first 10 samples.
+        /// </remarks>
+        public static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null,
+            bool useLessSamples = false)
         {
             // If no events, then we need to just return everything
             if (requestedNumberOfEvents == 0)
@@ -33,9 +37,10 @@ namespace libDataAccess.Utils
             // If we are doing nFiles something other than zero, then we should
             // boost it. This is becaes a single file just isn't enough events that pass our
             // basic criteria in this dataset.
-            var filesToAskFor = Files.NFiles == 0
-                ? 0
-                : Files.NFiles * 2;
+            var filesToAskFor = Files.NFiles;
+            //var filesToAskFor = Files.NFiles == 0
+            //    ? 0
+            //    : Files.NFiles * 2;
 
             // If we have no restirction on number of events - then we can take everything.
             if (requestedNumberOfEvents < 0)
@@ -55,6 +60,10 @@ namespace libDataAccess.Utils
             // We have a limit on the number of events. Distribute our ask over the various samples so that we can have
             // events from early and late in the run where lumi profiles are different.
             var dataSamples = SampleMetaData.AllSamplesWithTag(tag);
+            if (useLessSamples)
+            {
+                dataSamples = dataSamples.Take(20);
+            }
             return dataSamples.TakeEventsFromSamlesEvenly(requestedNumberOfEvents, filesToAskFor,
                 qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut));
         }

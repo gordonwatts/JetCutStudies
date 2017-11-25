@@ -251,6 +251,7 @@ namespace libDataAccess
             var totalEvents = eventCounts.Sum(c => c.count);
             if (totalEvents <= numberOfEvents)
             {
+                Console.WriteLine($"Asked to fetch {numberOfEvents}, but sample has only has {totalEvents} events.");
                 return eventCounts
                     .Select(ec => get_sample(ec.sample))
                     .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
