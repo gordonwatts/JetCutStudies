@@ -245,6 +245,7 @@ namespace libDataAccess
             var allSamples = dataSamples.ToArray();
             var eventCounts = allSamples
                 .Select(s => (sample: s, count: get_sample(s).Count()))
+                .Where(ec => ec.count > 0)
                 .ToArray();
 
             // Do we have enough events to do this?
@@ -273,6 +274,7 @@ namespace libDataAccess
 
             // Now build and return the dude!
             return toTakeFromSample
+                .Where(ec => ec.count > 0)
                 .Select(tf => get_sample(tf.sample).Take(tf.count))
                 .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
         }
