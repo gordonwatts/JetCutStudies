@@ -79,6 +79,18 @@ namespace libDataAccess
         /// </summary>
         private static SampleMetaData[] _samples;
 
+
+        [Serializable]
+        public class SampleNotFoundInListException : Exception
+        {
+            public SampleNotFoundInListException() { }
+            public SampleNotFoundInListException(string message) : base(message) { }
+            public SampleNotFoundInListException(string message, Exception inner) : base(message, inner) { }
+            protected SampleNotFoundInListException(
+              System.Runtime.Serialization.SerializationInfo info,
+              System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+        }
+
         /// <summary>
         /// Load up the metadata for a sample, pulling from our generic csv file.
         /// </summary>
@@ -96,7 +108,7 @@ namespace libDataAccess
                 .Where(sam => sam.Name == sampleName || sam.NickName == sampleName)
                 .Where(sample => tagnames.All(tn => sample.HasTag(tn)))
                 .FirstOrDefault()
-                .IfNull(_ => { throw new ArgumentException($"Unable to find sample meta data for sample '{sampleName}' in sample metadata file."); });
+                .IfNull(_ => { throw new SampleNotFoundInListException($"Unable to find sample meta data for sample '{sampleName}' in sample metadata file."); });
         }
 
         /// <summary>

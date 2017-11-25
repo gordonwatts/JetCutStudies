@@ -79,27 +79,12 @@ namespace libDataAccess.Utils
         /// Get the list of background samples depending on the option that was given to us.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<Tuple<string, IQueryable<MetaData>>> GetRequestedBackgroundSourceList(string[] avoidPlaces = null)
+        public static IEnumerable<SampleMetaData> GetRequestedBackgroundSourceList(string[] avoidPlaces = null)
         {
             switch (RequstedBackgroundSample)
             {
                 case BackgroundSampleEnum.All:
-                    return SamplesAsNamedSequence(SampleMetaData.AllSamplesWithTag("mc15c", "background"), avoidPlaces);
-
-                case BackgroundSampleEnum.JZ2:
-                    return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J2Z", GetJZ(2)),
-                    };
-
-                case BackgroundSampleEnum.JZ3:
-                    return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J3Z", GetJZ(3)),
-                    };
-
-                case BackgroundSampleEnum.JZ4:
-                    return new Tuple<string, IQueryable<MetaData>>[] {
-                        Tuple.Create("J4Z", GetJZ(4)),
-                    };
+                    return SampleMetaData.AllSamplesWithTag("mc15c", "background");
 
                 default:
                     throw new InvalidOperationException("Unknown background samples");

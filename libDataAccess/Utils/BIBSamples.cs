@@ -55,64 +55,9 @@ namespace libDataAccess.Utils
             // We have a limit on the number of events. Distribute our ask over the various samples so that we can have
             // events from early and late in the run where lumi profiles are different.
             var dataSamples = SampleMetaData.AllSamplesWithTag(tag);
-            return TakeEventsFromSamlesEvenly(requestedNumberOfEvents,
-                filesToAskFor,
-                dataSamples,
-                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut)
-                );
+            return dataSamples.TakeEventsFromSamlesEvenly(requestedNumberOfEvents, filesToAskFor,
+                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut));
         }
 
-        /// <summary>
-        /// Given a series of samples, and a limited number of events, take from each sample evenly.
-        /// </summary>
-        /// <param name="dataSamples"></param>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        private static IQueryable<T> TakeEventsFromSamlesEvenly<T>(int numberOfEvents, int numberOfFiles,
-            IEnumerable<SampleMetaData> dataSamples, 
-            Func<IQueryable<Files.MetaData>, IQueryable<T>> sampleConverter)
-        {
-            // Helper function to turn a sample into a data stream
-            IQueryable<T> get_sample(SampleMetaData sample)
-            {
-                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, nfiles: numberOfFiles));
-            }
-
-            // Get the number of events in each sample.
-            var allSamples = dataSamples.ToArray();
-            var eventCounts = allSamples
-                .Select(s => (sample: s, count: get_sample(s).Count()))
-                .ToArray();
-
-            // Do we have enough events to do this?
-            var totalEvents = eventCounts.Sum(c => c.count);
-            if (totalEvents <= numberOfEvents)
-            {
-                return eventCounts
-                    .Skip(1)
-                    .Aggregate(get_sample(eventCounts[0].sample),
-                        (acc, sampleToAppend) => acc.Concat(get_sample(sampleToAppend.sample)));
-            }
-
-            // Next, calculate a fraction we need. We will apply that to each to get the number of events.
-            // There will be some rounding errors, but we should be very close.
-            var fractionOfEachSample = numberOfEvents / (double) totalEvents;
-            var toTakeFromSampleDraft = eventCounts
-                .Select(sinfo => (sample: sinfo.sample, count: (int)(sinfo.count * fractionOfEachSample + 0.5)))
-                .ToArray();
-
-            var newSum = toTakeFromSampleDraft.Sum(c => c.count);
-            var delta = numberOfEvents - newSum;
-            var toTakeFromSample =
-                toTakeFromSampleDraft
-                    .Select((s, index) => (sample: s.sample, count: totalEvents = index == 0 ? s.count + delta : s.count))
-                    .ToArray();
-
-            // Now build and return the dude!
-            return toTakeFromSample
-                .Skip(1)
-                .Aggregate(get_sample(toTakeFromSample[0].sample).Take(toTakeFromSample[0].count),
-                    (acc, sampleToAppend) => acc.Concat(get_sample(sampleToAppend.sample).Take(sampleToAppend.count)));
-        }
     }
 }

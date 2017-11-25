@@ -82,25 +82,16 @@ namespace JetMVAClassifierTraining
             var options = CommandLineUtils.ParseOptions<Options>(args);
 
             // Class: LLP
-            var signalSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
-                .Take(options.UseFullDataset ? 10000 : 2)
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
-                .ToArray();
-
-            if (signalSources.Length == 0)
-            {
-                throw new ArgumentException("No signal sources for training on!");
-            }
-
-            var signalUnfiltered = signalSources
-                .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
-                .AsGoodJetStream(options.pTCut);
+            var signalUnfiltered = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
+                .TakeEventsFromSamlesEvenly(options.UseFullDataset ? -1 : 20000, Files.NFiles,
+                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut));
 
             var signalInCalOnly = signalUnfiltered
                 .FilterSignal();
 
             // Class: Multijet
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset);
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, 
+                options.pTCut, Files.NFiles);
 
             // Class: BIB
             var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0
@@ -225,13 +216,11 @@ namespace JetMVAClassifierTraining
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), bib15.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bib16.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
 
-                var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset,
-                    new[] { "Local", "UWTeV" });
+                var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut,
+                    Files.NFiles, avoidPlaces: new[] { "Local", "UWTeV" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), multijet, cBDT, new string[] { "hss", "multijet", "bib" });
 
 #if false
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), backgroundTrainingTree, cBDT, new string[] { "hss", "multijet", "bib" });
-
                 // Calculate the cut value for each output in order to determine the precision.
                 // Calculate where we have to place the cut in order to get the same over-all background efficiency.
                 var effhistDirectories = outputHistograms.mkdir("prec_calc");

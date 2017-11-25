@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using static libDataAccess.SampleMetaData;
 using static libDataAccess.Utils.Constants;
 
 namespace libDataAccess
@@ -107,7 +108,7 @@ namespace libDataAccess
                     var bkgEvents = backgroundEvents.Count();
                     xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count());
                 }
-                catch (Exception e)
+                catch (SampleNotFoundInListException e)
                 {
                     Console.WriteLine($"WARNING: Sample '{sample}' not found in x-section list. Assuming a cross section weight of 1.");
                     Console.WriteLine($"  Error: {e.Message}");
@@ -193,6 +194,74 @@ namespace libDataAccess
         public static IQueryable<MetaData> GenerateStream(this IQueryable<recoTree> source, double xSecWeight)
         {
             return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight * e.eventWeight });
+        }
+
+        /// <summary>
+        /// Given a series of samples, and a limited number of events, take from each sample evenly.
+        /// </summary>
+        /// <typeparam name="T">Type of the return queriable</typeparam>
+        /// <param name="numberOfEvents">Number of events total</param>
+        /// <param name="numberOfFiles">How many files from each sample to grab?</param>
+        /// <param name="dataSamples">List of the samples we want to pull events from</param>
+        /// <param name="sampleConverter">Convert a MetaData queryable to the thign we want to count for distribution (and return)</param>
+        /// <returns></returns>
+        public static IQueryable<T> TakeEventsFromSamlesEvenly<T>(this IEnumerable<SampleMetaData> dataSamples,
+            int numberOfEvents, int numberOfFiles,
+            Func<IQueryable<Files.MetaData>, IQueryable<T>> sampleConverter)
+        {
+            // If there are no samples expected
+            if (numberOfEvents == 0)
+            {
+                return null;
+            }
+
+            // Helper function to turn a sample into a data stream
+            IQueryable<T> get_sample(SampleMetaData sample)
+            {
+                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, nfiles: numberOfFiles));
+            }
+
+            // If we are to take all samples... then this is easy.
+            if (numberOfEvents < 0)
+            {
+                return dataSamples
+                    .Select(s => get_sample(s))
+                    .Aggregate((acc, news) => acc.Concat(news));
+            }
+
+            // Get the number of events in each sample.
+            var allSamples = dataSamples.ToArray();
+            var eventCounts = allSamples
+                .Select(s => (sample: s, count: get_sample(s).Count()))
+                .ToArray();
+
+            // Do we have enough events to do this?
+            var totalEvents = eventCounts.Sum(c => c.count);
+            if (totalEvents <= numberOfEvents)
+            {
+                return eventCounts
+                    .Select(ec => get_sample(ec.sample))
+                    .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
+            }
+
+            // Next, calculate a fraction we need. We will apply that to each to get the number of events.
+            // There will be some rounding errors, but we should be very close.
+            var fractionOfEachSample = numberOfEvents / (double)totalEvents;
+            var toTakeFromSampleDraft = eventCounts
+                .Select(sinfo => (sample: sinfo.sample, count: (int)(sinfo.count * fractionOfEachSample + 0.5)))
+                .ToArray();
+
+            var newSum = toTakeFromSampleDraft.Sum(c => c.count);
+            var delta = numberOfEvents - newSum;
+            var toTakeFromSample =
+                toTakeFromSampleDraft
+                    .Select((s, index) => (sample: s.sample, count: totalEvents = index == 0 ? s.count + delta : s.count))
+                    .ToArray();
+
+            // Now build and return the dude!
+            return toTakeFromSample
+                .Select(tf => get_sample(tf.sample).Take(tf.count))
+                .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
         }
     }
 
