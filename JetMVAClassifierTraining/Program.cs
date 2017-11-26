@@ -105,12 +105,9 @@ namespace JetMVAClassifierTraining
             }
 
             // Class: LLP
-            var signalUnfiltered = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
+            var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles,
-                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut));
-
-            var signalInCalOnly = signalUnfiltered
-                .FilterSignal();
+                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut).FilterSignal(), weightByCrossSection: false);
 
             // Class: Multijet
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, 
@@ -140,6 +137,7 @@ namespace JetMVAClassifierTraining
                 flatData16
                     .PlotTrainingVariables(outputHistograms.mkdir("data16"), "training_bib16");
 
+#if true
                 // Get the list of variables we want to use
                 var varList = GetTrainingVariables(options.TrainingVariableSet, options.AddVariable.ToArray(), options.DropVariable.ToArray());
 
@@ -205,7 +203,7 @@ namespace JetMVAClassifierTraining
                 var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
                 var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
-                    .Select(info => (name: info.NickName, file: Files.GetSampleAsMetaData(info, avoidPlaces: new[] { "Local", "UWTeV" })));
+                    .Select(info => (name: info.NickName, file: Files.GetSampleAsMetaData(info, avoidPlaces: new[] { "Local", "UWTeV" }, weightByCrossSection: false)));
                 var cBDT = m1.GetMVAMulticlassValue();
                 foreach (var s in signalTestSources)
                 {
@@ -229,7 +227,7 @@ namespace JetMVAClassifierTraining
                 var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, options.pTCut,
                     Files.NFiles, avoidPlaces: new[] { "Local", "UWTeV" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), multijet, cBDT, new string[] { "hss", "multijet", "bib" });
-
+#endif
 #if false
                 // Calculate the cut value for each output in order to determine the precision.
                 // Calculate where we have to place the cut in order to get the same over-all background efficiency.
