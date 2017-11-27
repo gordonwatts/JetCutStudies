@@ -23,7 +23,7 @@ namespace libDataAccess.Utils
         /// If the flag for "useLessSamples" is set, then we will try to use only the first 10 samples.
         /// </remarks>
         public static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null,
-            bool useLessSamples = false)
+            bool useLessSamples = false, double? maxPtCut = null)
         {
             // If no events, then we need to just return everything
             if (requestedNumberOfEvents == 0)
@@ -54,7 +54,7 @@ namespace libDataAccess.Utils
                 var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
                 return Files.GenerateStream(queriable, 1.0)
                     .AsBeamHaloStream(epoc)
-                    .AsGoodJetStream(pTCut);
+                    .AsGoodJetStream(pTCut, maxPtCut);
             }
 
             // We have a limit on the number of events. Distribute our ask over the various samples so that we can have

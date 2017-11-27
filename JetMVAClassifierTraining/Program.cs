@@ -107,15 +107,15 @@ namespace JetMVAClassifierTraining
             // Class: LLP
             var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles,
-                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut).FilterSignal(), weightByCrossSection: false);
+                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(), weightByCrossSection: false);
 
             // Class: Multijet
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, 
-                options.pTCut, Files.NFiles);
+                options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining);
 
             // Class: BIB
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, useLessSamples: !options.UseFullDataset);
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, useLessSamples: !options.UseFullDataset);
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVAClassifierTraining.root"))

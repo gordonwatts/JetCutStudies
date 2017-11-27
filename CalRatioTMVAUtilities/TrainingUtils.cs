@@ -105,6 +105,11 @@ namespace CalRatioTMVAUtilities
         }
 
         /// <summary>
+        /// Max JetPt cut we will train on.
+        /// </summary>
+        public const double MaxJetPtForTraining = 550.0;
+
+        /// <summary>
         /// Create a training tree from a jet stream.
         /// Apply training cleanup cuts.
         /// </summary>
@@ -115,7 +120,7 @@ namespace CalRatioTMVAUtilities
             return source == null
                 ? null
                 : source
-                .Where(j => j.JetInfo.Jet.pT < 550.0)
+                .Where(j => j.JetInfo.Jet.pT < MaxJetPtForTraining)
                 .Select(i => TrainingTreeConverter.Invoke(i));
         }
 

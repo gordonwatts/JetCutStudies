@@ -17,12 +17,12 @@ namespace CalRatioTMVAUtilities
         /// <remarks>
         /// Take the same fraction of events from each source.
         /// </remarks>
-        public static IQueryable<TrainingTree> BuildBackgroundTrainingTreeDataSource(int eventsToUseForTrainingAndTesting, double pTCut = 40.0, int numberOfFiles = 0, bool useOnlyOneSample = false, string[] avoidPlaces = null, bool weightByCrossSection = true)
+        public static IQueryable<TrainingTree> BuildBackgroundTrainingTreeDataSource(int eventsToUseForTrainingAndTesting, double pTCut = 40.0, int numberOfFiles = 0, bool useOnlyOneSample = false, string[] avoidPlaces = null, bool weightByCrossSection = true, double? maxPtCut = null)
         {
             // Get the number of events in each source.
             return CommandLineUtils.GetRequestedBackgroundSourceList(avoidPlaces)
                 .TakeEventsFromSamlesEvenly(eventsToUseForTrainingAndTesting, numberOfFiles,
-                    qm => qm.AsGoodJetStream(pTCut).AsTrainingTree(), weightByCrossSection: weightByCrossSection);
+                    qm => qm.AsGoodJetStream(pTCut, maxPtCut).AsTrainingTree(), weightByCrossSection: weightByCrossSection);
         }
     }
 }

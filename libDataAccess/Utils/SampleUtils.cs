@@ -32,19 +32,28 @@ namespace libDataAccess.Utils
         /// Turn an event sample into a jet sample.
         /// Apply default cuts as well.
         /// </summary>
-        public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source, double pTCut = 40.0)
+        /// <param name="maxPtCut">Max pt for a jet - leave null and no cut is applied.</param>
+        public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source, double pTCut = 40.0, double? maxPtCut = null)
         {
-            return source
+            var rawJets = source
                 .SelectMany(e => e.Data.Jets
                     .Where(j => IsGoodJet.Invoke(j, pTCut))
-                    .Select(j => new JetStream() {
+                    .Select(j => new JetStream()
+                    {
                         JetInfo = CreateJetInfoExtra.Invoke(e.Data, j),
                         Weight = e.xSectionWeight,
                         EventNumber = e.Data.eventNumber,
                         RunNumber = e.Data.runNumber,
                         InteractionsPerCrossing = e.Data.actualIntPerCrossing
-                    }))
-                ;
+                    }));
+
+            if (maxPtCut.HasValue)
+            {
+                rawJets = rawJets
+                    .Where(j => j.JetInfo.Jet.pT <= maxPtCut.Value);
+            }
+
+            return rawJets;
         }
 
         /// <summary>
