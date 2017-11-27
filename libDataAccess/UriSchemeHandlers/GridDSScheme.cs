@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -80,6 +81,10 @@ namespace libDataAccess.UriSchemeHandlers
         {
             // Order the options properly.
             var o = u.ParseOptions<Options>();
+
+            // Write it out to a local file.
+            WriteToLocalFile($"{u.DnsSafeHost}:{u.Segments[1]}", o);
+
             return new UriBuilder(u) { Query = UriExtensions.BuildNonDefaultQuery(o) }.Uri;
         }
 
@@ -97,6 +102,33 @@ namespace libDataAccess.UriSchemeHandlers
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
             return GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
+        }
+
+        /// <summary>
+        /// Where we are going ot cache the datasets we are looking at.
+        /// </summary>
+        const string datasets_needed = "datasets_needed.txt";
+
+        /// <summary>
+        /// Setup the class for first time running.
+        /// </summary>
+        static GridDSScheme()
+        {
+            // Remove the dataset log file if it is here.
+            if (File.Exists(datasets_needed))
+            {
+                File.Delete(datasets_needed);
+            }
+        }
+        
+        /// <summary>
+        /// Write out info about the files/datasets we are going after. We can uses these to make the files local.
+        /// </summary>
+        /// <param name="dataset_name"></param>
+        /// <param name="opt"></param>
+        private void WriteToLocalFile(string dataset_name, Options opt)
+        {
+            File.AppendAllText(datasets_needed, $"{opt.jobName} {opt.jobVersion} {opt.nFiles} {dataset_name}\r\n");
         }
 
         /// <summary>
