@@ -65,7 +65,7 @@ namespace libDataAccess.Utils
                 dataSamples = dataSamples.Take(20);
             }
             return dataSamples.TakeEventsFromSamlesEvenly(requestedNumberOfEvents, filesToAskFor,
-                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut));
+                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut, maxPtCut));
         }
 
     }
