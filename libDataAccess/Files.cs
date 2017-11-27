@@ -220,7 +220,8 @@ namespace libDataAccess
         public static IQueryable<T> TakeEventsFromSamlesEvenly<T>(this IEnumerable<SampleMetaData> dataSamples,
             int numberOfEvents, int numberOfFiles,
             Func<IQueryable<Files.MetaData>, IQueryable<T>> sampleConverter,
-            bool weightByCrossSection = true)
+            bool weightByCrossSection = true,
+            string[] avoidPlaces = null)
         {
             // If there are no samples expected
             if (numberOfEvents == 0)
@@ -231,7 +232,7 @@ namespace libDataAccess
             // Helper function to turn a sample into a data stream
             IQueryable<T> get_sample(SampleMetaData sample)
             {
-                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection));
+                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, avoidPlaces: avoidPlaces, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection));
             }
 
             // If we are to take all samples... then this is easy.
