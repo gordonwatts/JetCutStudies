@@ -157,7 +157,6 @@ namespace CalRatioTMVAUtilities
             new PlotInfo() { Plotter = JetCalPredictedLzPlotRaw, ValueGetter = tu => tu.PredictedLz / 1000.0},
             new PlotInfo() { Plotter = JetCalPredictedLxyPlotRaw, ValueGetter = tu => tu.PredictedLxy / 1000.0},
             new PlotInfo() { Plotter = EventInteractionsPerCossing, ValueGetter = tu => tu.InteractionsPerCrossing},
-            new PlotInfo() { Plotter = TrainingEventWeight, ValueGetter = tu => tu.Weight },
         };
 
         /// <summary>

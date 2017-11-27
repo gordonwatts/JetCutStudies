@@ -103,7 +103,7 @@ namespace libDataAccess
         /// Plot the event weights
         /// </summary>
         public static IPlotSpec<double> TrainingEventWeight =
-            MakePlotterSpec<double>(100, -1.0, 1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
+            MakePlotterSpec<double>(200, -10.0, 10.0, j => j, "weight{0}", "Event weight of {0}; Weight");
 
         public static IPlotSpec<double> TrainingEventWeightFine =
             MakePlotterSpec<double>(100000, -1.0, 1.0, j => j, "weight{0}", "Event weight of {0}; Weight");
