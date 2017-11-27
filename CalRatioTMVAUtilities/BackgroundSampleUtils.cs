@@ -22,7 +22,8 @@ namespace CalRatioTMVAUtilities
             // Get the number of events in each source.
             return CommandLineUtils.GetRequestedBackgroundSourceList(avoidPlaces)
                 .TakeEventsFromSamlesEvenly(eventsToUseForTrainingAndTesting, numberOfFiles,
-                    qm => qm.AsGoodJetStream(pTCut, maxPtCut).AsTrainingTree(), weightByCrossSection: weightByCrossSection);
+                    qm => qm.AsGoodJetStream(pTCut, maxPtCut).AsTrainingTree(), weightByCrossSection: weightByCrossSection,
+                    avoidPlaces: avoidPlaces);
         }
     }
 }
