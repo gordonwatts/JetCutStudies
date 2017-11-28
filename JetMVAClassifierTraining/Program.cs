@@ -120,7 +120,8 @@ namespace JetMVAClassifierTraining
             // Class: Multijet
             Console.WriteLine("Fetching JZ Sample");
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, 
-                options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining);
+                options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
+                weightByCrossSection: false);
 
             // Class: BIB
             Console.WriteLine("Fetching BIB15 Sample");
