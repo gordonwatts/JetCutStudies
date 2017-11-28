@@ -87,20 +87,21 @@ namespace JetMVAClassifierTraining
             // Fix up defaults depending on full dataset or not.
             if (!options.UseFullDataset)
             {
+                const int SmallNumberOfEvents = 50000;
                 options.EventsToUseForJzTraining = options.EventsToUseForJzTraining == -1
-                    ? 20000
+                    ? SmallNumberOfEvents
                     : options.EventsToUseForJzTraining;
 
                 options.EventsToUseForSignalTraining = options.EventsToUseForSignalTraining == -1
-                    ? 20000
+                    ? SmallNumberOfEvents
                     : options.EventsToUseForSignalTraining;
 
                 options.EventsToUseForTrainingAndTestingBIB15 = options.EventsToUseForTrainingAndTestingBIB15 == -1
-                    ? 20000
+                    ? SmallNumberOfEvents
                     : options.EventsToUseForTrainingAndTestingBIB15;
 
                 options.EventsToUseForTrainingAndTestingBIB16 = options.EventsToUseForTrainingAndTestingBIB16 == -1
-                    ? 20000
+                    ? SmallNumberOfEvents
                     : options.EventsToUseForTrainingAndTestingBIB16;
             }
 
