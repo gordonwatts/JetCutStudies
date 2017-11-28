@@ -32,10 +32,10 @@ namespace MVADumpTrainingTuples
             [Option("TrainingEventsSignal", Default = -1, HelpText = "Number of events to use in training for singal sample. -1 means everything. Defaults to 20,000 if UseFullDataset not presen.")]
             public int EventsToUseForSignalTraining { get; set; }
 
-            [Option("TrainEventsBIB16", HelpText = "How many events from data16 should be used in the training for bib16 (-1 is all, 0 is none)?", Default = -1)]
+            [Option("TrainingEventsBIB16", HelpText = "How many events from data16 should be used in the training for bib16 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB16 { get; set; }
 
-            [Option("TrainEventsBIB15", HelpText = "How many events from data15 should be used in the training for bib15 (-1 is all, 0 is none)?", Default = -1)]
+            [Option("TrainingEventsBIB15", HelpText = "How many events from data15 should be used in the training for bib15 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB15 { get; set; }
 
             [Option("PrecisionValue", HelpText = "The fraction of events in each sample to use when calculating the training precision", Default = 0.90)]
