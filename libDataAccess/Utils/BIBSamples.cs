@@ -37,7 +37,7 @@ namespace libDataAccess.Utils
             // If we are doing nFiles something other than zero, then we should
             // boost it. This is becaes a single file just isn't enough events that pass our
             // basic criteria in this dataset.
-            var filesToAskFor = Files.NFiles*7;
+            var filesToAskFor = Files.NFiles*14;
             //var filesToAskFor = Files.NFiles == 0
             //    ? 0
             //    : Files.NFiles * 2;
