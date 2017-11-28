@@ -106,16 +106,20 @@ namespace JetMVAClassifierTraining
             }
 
             // Class: LLP
+            Console.WriteLine("Fetching HSS Sample");
             var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles,
                     mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(), weightByCrossSection: false);
 
             // Class: Multijet
+            Console.WriteLine("Fetching JZ Sample");
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, 
                 options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining);
 
             // Class: BIB
+            Console.WriteLine("Fetching BIB15 Sample");
             var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
+            Console.WriteLine("Fetching BIB16 Sample");
             var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
 
             // The file we will use to dump everything about this training.
