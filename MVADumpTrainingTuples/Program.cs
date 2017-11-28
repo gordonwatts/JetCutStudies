@@ -23,11 +23,14 @@ namespace MVADumpTrainingTuples
         /// </summary>
         public class Options : CommonOptions
         {
-            [Option("TrainingEvents", Default = 500000)]
-            public int EventsToUseForTrainingAndTesting { get; set; }
-
             [Option("FlattenBy", Default = TrainingSpectraFlatteningPossibilities.JetPt)]
             public TrainingSpectraFlatteningPossibilities FlattenBy { get; set; }
+
+            [Option("TrainingEventsJz", Default = -1, HelpText = "Number of events to use in training for JZ sample. -1 means everything. Defaults to 20,000 if UseFullDataset not presen.")]
+            public int EventsToUseForJzTraining { get; set; }
+
+            [Option("TrainingEventsSignal", Default = -1, HelpText = "Number of events to use in training for singal sample. -1 means everything. Defaults to 20,000 if UseFullDataset not presen.")]
+            public int EventsToUseForSignalTraining { get; set; }
 
             [Option("TrainEventsBIB16", HelpText = "How many events from data16 should be used in the training for bib16 (-1 is all, 0 is none)?", Default = -1)]
             public int EventsToUseForTrainingAndTestingBIB16 { get; set; }
@@ -38,46 +41,60 @@ namespace MVADumpTrainingTuples
             [Option("PrecisionValue", HelpText = "The fraction of events in each sample to use when calculating the training precision", Default = 0.90)]
             public double PrecisionValue { get; set; }
 
-            [Option("pTCut", HelpText = "The pT cut for jets in GeV. Defaults to 40.", Default = 40.0)]
+            [Option("pTCut", HelpText = "The pT cut for jets in GeV.", Default = 40.0)]
             public double pTCut { get; set; }
+
+            [Option("LxyCut", HelpText = "Restrict barrel signal to have a Lxy of at least this value (meters).", Default = 0.0)]
+            public double LxyCut { get; set; }
+
+            [Option("LzCut", HelpText = "Restrict endcap signal to have a Lxy of at least this value (meters)", Default = 0.0)]
+            public double LzCut { get; set; }
         }
 
         static void Main(string[] args)
         {
+            ConsoleMessageDumper.SetupConsoleMessageDumper();
+
             // Parse command line arguments
             var options = CommandLineUtils.ParseOptions<Options>(args);
 
-            // Class: LLP
-            var signalSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
-                .Take(options.UseFullDataset ? 10000 : 2)
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
-                .ToArray();
-
-            if (signalSources.Length == 0)
+            // Fix up defaults depending on full dataset or not.
+            if (!options.UseFullDataset)
             {
-                throw new ArgumentException("No signal sources for training on!");
+                const int SmallNumberOfEvents = 50000;
+                options.EventsToUseForJzTraining = options.EventsToUseForJzTraining == -1
+                    ? SmallNumberOfEvents
+                    : options.EventsToUseForJzTraining;
+
+                options.EventsToUseForSignalTraining = options.EventsToUseForSignalTraining == -1
+                    ? SmallNumberOfEvents
+                    : options.EventsToUseForSignalTraining;
+
+                options.EventsToUseForTrainingAndTestingBIB15 = options.EventsToUseForTrainingAndTestingBIB15 == -1
+                    ? SmallNumberOfEvents
+                    : options.EventsToUseForTrainingAndTestingBIB15;
+
+                options.EventsToUseForTrainingAndTestingBIB16 = options.EventsToUseForTrainingAndTestingBIB16 == -1
+                    ? SmallNumberOfEvents
+                    : options.EventsToUseForTrainingAndTestingBIB16;
             }
 
-            var signalUnfiltered = signalSources
-                .Aggregate((IQueryable<Files.MetaData>)null, (s, add) => s == null ? add.Item2 : s.Concat(add.Item2))
-                .AsGoodJetStream(options.pTCut);
-
-            var signalInCalOnly = signalUnfiltered
-                .FilterSignal();
+            // Class: LLP
+            Console.WriteLine("Fetching HSS Sample");
+            var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
+                .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles * 2,
+                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut * 1000.0, options.LzCut * 1000.0), weightByCrossSection: false);
 
             // Class: Multijet
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting, options.pTCut, !options.UseFullDataset);
+            Console.WriteLine("Fetching JZ Sample");
+            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining,
+                options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining);
 
             // Class: BIB
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15 < 0
-                ? (options.UseFullDataset ? -1 : 25000)
-                : options.EventsToUseForTrainingAndTestingBIB15
-                , DataEpoc.data15, options.pTCut);
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16 < 0
-                ? (options.UseFullDataset ? -1 : 25000)
-                : options.EventsToUseForTrainingAndTestingBIB16,
-                DataEpoc.data16, options.pTCut);
-
+            Console.WriteLine("Fetching BIB15 Sample");
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
+            Console.WriteLine("Fetching BIB16 Sample");
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("MVADumpTrainingTuples.root"))
@@ -85,24 +102,28 @@ namespace MVADumpTrainingTuples
                 // Flatten everything as needed.
                 var toMakeFlat = BuildFlatteningExpression(options.FlattenBy);
 
+                Console.WriteLine("Writing out csv files for multijet.");
                 var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat)
                     .AsTTree("DataTree", "Multijet Training Tree", new FileInfo("multijet.root"));
                 CopyFilesOver(backgroundTrees, "multijet");
 
+                Console.WriteLine("Writing out csv files for signal.");
                 var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat)
                     .AsTTree("DataTree", "Signal Training Tree", new FileInfo("signal.root"));
                 CopyFilesOver(flatSignalTrainingData, "signal");
 
 
-                if (options.EventsToUseForTrainingAndTestingBIB15 != 0)
+                if (data15TrainingAndTesting != null)
                 {
+                    Console.WriteLine("Writing out csv files for BIB15.");
                     var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
                         .AsTTree("DataTree", "BIB15 Training Tree", new FileInfo("bib15.root"));
                     CopyFilesOver(flatData15, "bib15");
                 }
 
-                if (options.EventsToUseForTrainingAndTestingBIB16 != 0)
+                if (data16TrainingAndTesting != null)
                 {
+                    Console.WriteLine("Writing out csv files for BIB16.");
                     var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
                         .AsTTree("DataTree", "BIB16 Training Tree", new FileInfo("bib16.root"));
                     CopyFilesOver(flatData16, "bib16");

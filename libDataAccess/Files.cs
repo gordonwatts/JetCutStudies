@@ -257,9 +257,12 @@ namespace libDataAccess
                 Console.WriteLine("***");
                 Console.WriteLine($"*** Asked to fetch {numberOfEvents}, but sample has only has {totalEvents} events.");
                 Console.WriteLine("***");
-                return eventCounts
-                    .Select(ec => get_sample(ec.sample))
-                    .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
+
+                return totalEvents == 0
+                    ? null
+                    : eventCounts
+                      .Select(ec => get_sample(ec.sample))
+                      .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
             }
 
             // Next, calculate a fraction we need. We will apply that to each to get the number of events.
