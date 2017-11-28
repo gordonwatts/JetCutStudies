@@ -73,8 +73,14 @@ namespace JetMVAClassifierTraining
             [Option("PrecisionValue", HelpText ="The fraction of events in each sample to use when calculating the training precision", Default = 0.90)]
             public double PrecisionValue { get; set; }
 
-            [Option("pTCut", HelpText ="The pT cut for jets in GeV. Defaults to 40.", Default = 40.0)]
+            [Option("pTCut", HelpText ="The pT cut for jets in GeV.", Default = 40.0)]
             public double pTCut { get; set; }
+
+            [Option("LxyCut", HelpText = "Restrict barrel signal to have a Lxy of at least this value (meters).", Default = 0.0)]
+            public double LxyCut { get; set; }
+
+            [Option("LzCut", HelpText = "Restrict endcap signal to have a Lxy of at least this value (meters)", Default = 0.0)]
+            public double LzCut { get; set; }
         }
 
         static void Main(string[] args)
@@ -109,7 +115,7 @@ namespace JetMVAClassifierTraining
             Console.WriteLine("Fetching HSS Sample");
             var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles,
-                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(), weightByCrossSection: false);
+                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut*1000.0, options.LzCut*1000.0), weightByCrossSection: false);
 
             // Class: Multijet
             Console.WriteLine("Fetching JZ Sample");
@@ -142,7 +148,6 @@ namespace JetMVAClassifierTraining
                 flatData16
                     .PlotTrainingVariables(outputHistograms.mkdir("data16"), "training_bib16");
 
-#if true
                 // Get the list of variables we want to use
                 var varList = GetTrainingVariables(options.TrainingVariableSet, options.AddVariable.ToArray(), options.DropVariable.ToArray());
 
@@ -232,7 +237,7 @@ namespace JetMVAClassifierTraining
                 var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, options.pTCut,
                     Files.NFiles, avoidPlaces: new[] { "Local", "UWTeV" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), multijet, cBDT, new string[] { "hss", "multijet", "bib" });
-#endif
+
 #if false
                 // Calculate the cut value for each output in order to determine the precision.
                 // Calculate where we have to place the cut in order to get the same over-all background efficiency.

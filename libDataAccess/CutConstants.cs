@@ -15,12 +15,12 @@ namespace libDataAccess
         /// The smallest distance that an LLP can decay and be considered signal for a CalRatio jet.
         /// Units are mm.
         /// </summary>
-        public static double InnerDistanceForSignalLLPBarrelDecay = 2 * 1000;
+        public const double InnerDistanceForSignalLLPBarrelDecay = 2 * 1000;
 
         /// <summary>
         /// The smallest disntace along z that an LLP decay can be considered signal for a CalRatio jet.
         /// </summary>
-        public static double InnerDistanceForSignalLLPEndcapDecay = 4 * 1000;
+        public const double InnerDistanceForSignalLLPEndcapDecay = 4 * 1000;
 
         /// <summary>
         /// Cut for the log ratio when doing straight cuts.

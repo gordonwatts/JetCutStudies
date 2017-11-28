@@ -102,22 +102,23 @@ namespace libDataAccess.Utils
         /// <summary>
         /// Cut to determine if this is a good signal jet.
         /// </summary>
-        public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
-           j.LLP.IsGoodIndex();
-        //public static Expression<Func<recoTreeJets, bool>> IsGoodSignalJet = j =>
-        //   Math.Abs(j.eta) <= 1.7
-        //        ? (j.LLP.IsGoodIndex() && j.LLP.Lxy > InnerDistanceForSignalLLPBarrelDecay)
-        //        : (j.LLP.IsGoodIndex() && j.LLP.Lz > InnerDistanceForSignalLLPEndcapDecay);
+        public static Expression<Func<recoTreeJets, double, double, bool>> IsGoodSignalJet = (j, LxyCut, LzCut) =>
+           j.LLP.IsGoodIndex()
+           && (Math.Abs(j.eta) <= 1.7
+                ? j.LLP.Lxy > LxyCut
+                : j.LLP.Lz > LzCut);
 
         /// <summary>
         /// Make sure we are talking about good signal only.
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static IQueryable<JetStream> FilterSignal(this IQueryable<JetStream> source)
+        public static IQueryable<JetStream> FilterSignal(this IQueryable<JetStream> source,
+            double LxyCut = InnerDistanceForSignalLLPBarrelDecay,
+            double LzCut = InnerDistanceForSignalLLPEndcapDecay)
         {
             return source
-                .Where(j => IsGoodSignalJet.Invoke(j.JetInfo.Jet));
+                .Where(j => IsGoodSignalJet.Invoke(j.JetInfo.Jet, LxyCut, LzCut));
         }
 
         /// <summary>
