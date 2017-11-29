@@ -115,7 +115,9 @@ namespace JetMVAClassifierTraining
             Console.WriteLine("Fetching HSS Sample");
             var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles*2,
-                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut*1000.0, options.LzCut*1000.0),
+                    mdQueriable => mdQueriable
+                                    .AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining)
+                                    .FilterSignal(options.LxyCut*1000.0, options.LzCut*1000.0),
                     weightByCrossSection: false);
 
             // Class: Multijet
