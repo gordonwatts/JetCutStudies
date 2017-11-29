@@ -115,7 +115,8 @@ namespace JetMVAClassifierTraining
             Console.WriteLine("Fetching HSS Sample");
             var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles*2,
-                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut*1000.0, options.LzCut*1000.0), weightByCrossSection: false);
+                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut*1000.0, options.LzCut*1000.0),
+                    weightByCrossSection: false);
 
             // Class: Multijet
             Console.WriteLine("Fetching JZ Sample");
@@ -125,9 +126,13 @@ namespace JetMVAClassifierTraining
 
             // Class: BIB
             Console.WriteLine("Fetching BIB15 Sample");
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15,
+                options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining,
+                useLessSamples: !options.UseFullDataset);
             Console.WriteLine("Fetching BIB16 Sample");
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16,
+                options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining,
+                useLessSamples: !options.UseFullDataset);
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVAClassifierTraining.root"))
@@ -229,8 +234,12 @@ namespace JetMVAClassifierTraining
 
                 // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
                 // version of root than we have locally on windows.
-                var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" }, useLessSamples: !options.UseFullDataset);
-                var bib16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, avoidPlaces: new[] { "Local", "UWTeV" }, useLessSamples: !options.UseFullDataset);
+                var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut,
+                    avoidPlaces: new[] { "Local", "UWTeV" },
+                    useLessSamples: !options.UseFullDataset);
+                var bib16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut,
+                    avoidPlaces: new[] { "Local", "UWTeV" },
+                    useLessSamples: !options.UseFullDataset);
 
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), bib15.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bib16.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
