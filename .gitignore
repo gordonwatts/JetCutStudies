@@ -241,3 +241,4 @@ JetCutStudies.VC.VC.opendb
 /.vs/
 /notebooks/.ipynb_checkpoints
 /plots/TMVAInputPlots/loadAllData.c
+/notebooks/__pycache__
