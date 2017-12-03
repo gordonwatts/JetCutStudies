@@ -74,6 +74,7 @@ def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_tr
     Returns
         events - all the events appended in a dataframe
         event_classes - class index (0 is bib, 1 for mj, and 2 for sig)
+        weights - the weights from the Weight column
     '''
     # Append the three inputs, as they are what we will be fitting against.
     # At the same time (to keep things straight) build the class sigle array.
@@ -90,7 +91,7 @@ def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_tr
     all_events_class = s_bib_class.append(s_mj_class, ignore_index=True)
     all_events_class = all_events_class.append(s_sig_class, ignore_index=True)
 
-    return (all_events.loc[:,training_variable_list], all_events_class)
+    return (all_events.loc[:,training_variable_list], all_events_class, all_events.Weight)
 
 def train_me (bib, mj, sig, nEvents = 10000, training_variable_list = default_training_variable_list):
     '''Return training on nEvents
