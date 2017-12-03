@@ -143,7 +143,7 @@ namespace MVADumpTrainingTuples
         {
             var items = treeFiles
                 .Zip(Enumerable.Range(0, 100), (f, r) => (file: f, index: r))
-                .Select(f => (original: f.file, newfile: new FileInfo($"{f.file.Directory.FullName}\\{finalNameRoot}-{f.index:D2}.root")));
+                .Select(f => (original: f.file, newfile: new FileInfo($"{f.file.Directory.FullName}\\{finalNameRoot}-{f.index:D2}{f.file.Extension}")));
             foreach (var f in items)
             {
                 f.original.CopyTo(f.newfile.FullName, overwrite: true);
