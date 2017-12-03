@@ -205,7 +205,7 @@ namespace libDataAccess
         /// <returns></returns>
         public static IQueryable<MetaData> GenerateStream(this IQueryable<recoTree> source, double xSecWeight)
         {
-            return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight * e.eventWeight });
+            return source.Select(e => new MetaData() { Data = e, xSectionWeight = xSecWeight });
         }
 
         /// <summary>

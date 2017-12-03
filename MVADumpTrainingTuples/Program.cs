@@ -104,12 +104,12 @@ namespace MVADumpTrainingTuples
 
                 Console.WriteLine("Writing out csv files for multijet.");
                 var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat)
-                    .AsTTree("DataTree", "Multijet Training Tree", new FileInfo("multijet.root"));
+                    .AsCSV(new FileInfo("multijet.csv"));
                 CopyFilesOver(backgroundTrees, "multijet");
 
                 Console.WriteLine("Writing out csv files for signal.");
                 var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat)
-                    .AsTTree("DataTree", "Signal Training Tree", new FileInfo("signal.root"));
+                    .AsCSV(new FileInfo("signal.csv"));
                 CopyFilesOver(flatSignalTrainingData, "signal");
 
 
@@ -117,7 +117,7 @@ namespace MVADumpTrainingTuples
                 {
                     Console.WriteLine("Writing out csv files for BIB15.");
                     var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
-                        .AsTTree("DataTree", "BIB15 Training Tree", new FileInfo("bib15.root"));
+                        .AsCSV(new FileInfo("bib15.csv"));
                     CopyFilesOver(flatData15, "bib15");
                 }
 
@@ -125,7 +125,7 @@ namespace MVADumpTrainingTuples
                 {
                     Console.WriteLine("Writing out csv files for BIB16.");
                     var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
-                        .AsTTree("DataTree", "BIB16 Training Tree", new FileInfo("bib16.root"));
+                        .AsCSV(new FileInfo("bib16.csv"));
                     CopyFilesOver(flatData16, "bib16");
                 }
             }

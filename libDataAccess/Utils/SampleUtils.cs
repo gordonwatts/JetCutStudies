@@ -21,6 +21,9 @@ namespace libDataAccess.Utils
     {
         public JetInfoExtra JetInfo;
         public double Weight;
+        public double WeightFlatten;
+        public double WeightXSection;
+        public double WeightMCEvent;
         public int EventNumber;
         public int RunNumber;
         public double InteractionsPerCrossing;
@@ -41,7 +44,10 @@ namespace libDataAccess.Utils
                     .Select(j => new JetStream()
                     {
                         JetInfo = CreateJetInfoExtra.Invoke(e.Data, j),
-                        Weight = e.xSectionWeight,
+                        Weight = e.xSectionWeight * e.Data.eventWeight,
+                        WeightFlatten = 1.0,
+                        WeightMCEvent = e.Data.eventWeight,
+                        WeightXSection = e.xSectionWeight,
                         EventNumber = e.Data.eventNumber,
                         RunNumber = e.Data.runNumber,
                         InteractionsPerCrossing = e.Data.actualIntPerCrossing
@@ -93,7 +99,16 @@ namespace libDataAccess.Utils
         public static IQueryable<JetStream> AsGoodFirstJetStream(this IQueryable<MetaData> source, double pTCut = 40.0)
         {
             return source
-                .Select(e => new JetStream() { JetInfo = CreateJetInfoExtra.Invoke(e.Data, e.Data.Jets.OrderByDescending(j => j.pT).First()), Weight = e.xSectionWeight, EventNumber = e.Data.eventNumber, RunNumber = e.Data.runNumber, InteractionsPerCrossing = e.Data.actualIntPerCrossing })
+                .Select(e => new JetStream() {
+                    JetInfo = CreateJetInfoExtra.Invoke(e.Data, e.Data.Jets.OrderByDescending(j => j.pT).First()),
+                    Weight = e.xSectionWeight * e.Data.eventWeight,
+                    WeightFlatten = 1.0,
+                    WeightXSection = e.xSectionWeight,
+                    WeightMCEvent = e.Data.eventWeight,
+                    EventNumber = e.Data.eventNumber,
+                    RunNumber = e.Data.runNumber,
+                    InteractionsPerCrossing = e.Data.actualIntPerCrossing
+                })
                 .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
 

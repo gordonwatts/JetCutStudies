@@ -90,7 +90,10 @@ namespace CalRatioTMVAUtilities
             var r = source
                 .ReweightToFlat(JetPtPlotRaw, t => toFlattenBy.Invoke(t), t => t.Weight, (t, w) => new TrainingTree()
                 {
-                    Weight = w,
+                    Weight = w*t.Weight,
+                    WeightFlatten = w,
+                    WeightMCEvent = t.WeightMCEvent,
+                    WeightXSection = t.WeightXSection,
                     CalRatio = t.CalRatio,
                     JetEta = t.JetEta,
                     JetPt = t.JetPt,
@@ -135,12 +138,14 @@ namespace CalRatioTMVAUtilities
         /// <param name="source">The sequence to be re-weighted</param>
         /// <param name="plotter">The plot spec that will generate the re-weighting plot</param>
         /// <param name="converter">Convert the incoming sequence to a type the plotter can deal with</param>
-        /// <param name="weight">Convert the incoming sequence to a weight</param>
-        /// <param name="builder">rebuild the incoming sequence, with a new over all weight</param>
+        /// <param name="weight">Convert the incoming sequence to a pre-flatten weight</param>
+        /// <param name="builder">rebuild the incoming sequence, with a new over all weight. It is passed the weight to flatten by</param>
         /// <param name="normalization">The normalization of the final sequence (defaults to one)</param>
         /// <param name="reBinWithMin">If less than zero, do nothing. Otherwise, rebin the histogram to make sure that every bin has at least this fractional error assuming sqrt(N) statistics.</param>
         /// <returns>The reweighted sequence</returns>
-        public static IQueryable<T> ReweightToFlat<T,U>(this IQueryable<T> source, IPlotSpec<U> plotter, Expression<Func<T,U>> converter, Expression<Func<T,double>> weight, Expression<Func<T, double, T>> builder, double normalization = 1.0, double reBinWithMinFracError = -1)
+        public static IQueryable<T> ReweightToFlat<T,U>(this IQueryable<T> source, IPlotSpec<U> plotter, Expression<Func<T,U>> converter,
+            Expression<Func<T,double>> weight, Expression<Func<T, double, T>> builder, double normalization = 1.0,
+            double reBinWithMinFracError = -1)
         {
             // First, get the spectra. We will process that into a re-weighting.
             var ptSpecra = source
@@ -177,7 +182,7 @@ namespace CalRatioTMVAUtilities
 
             // Now, generate an updated sequence that properly does the re-weighting.
             return source
-                .Select(t => builder.Invoke(t, weight.Invoke(t) * reweightSpectr.GetBinContent(plotter.Bin.Invoke(converter.Invoke(t), reweightSpectr))));
+                .Select(t => builder.Invoke(t, reweightSpectr.GetBinContent(plotter.Bin.Invoke(converter.Invoke(t), reweightSpectr))));
         }
     }
 }

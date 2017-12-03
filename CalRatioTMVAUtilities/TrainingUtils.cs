@@ -20,7 +20,30 @@ namespace CalRatioTMVAUtilities
     public class TrainingTree
     {
         public int RunNumber;
+
+        /// <summary>
+        /// The total weight - includes:
+        /// - MC Event Weight
+        /// - x-section weight (if any)
+        /// - flattening weight (if any)
+        /// </summary>
         public double Weight;
+
+        /// <summary>
+        /// The weight from the original MC event (only)
+        /// </summary>
+        public double WeightMCEvent;
+
+        /// <summary>
+        /// The cross section weight (only)
+        /// </summary>
+        public double WeightXSection;
+
+        /// <summary>
+        /// The weight for flattening the pT (or whatever) for this event
+        /// </summary>
+        public double WeightFlatten;
+
         public double JetPt;
         public double JetPhi;
         public double CalRatio;
@@ -57,6 +80,9 @@ namespace CalRatioTMVAUtilities
             => new TrainingTree()
             {
                 Weight = i.Weight,
+                WeightFlatten = i.WeightFlatten,
+                WeightMCEvent = i.WeightMCEvent,
+                WeightXSection = i.WeightXSection,
                 CalRatio = NormalizeCalRatio.Invoke(i.JetInfo.Jet.logRatio),
                 JetPt = i.JetInfo.Jet.pT,
                 JetEta = i.JetInfo.Jet.eta,
