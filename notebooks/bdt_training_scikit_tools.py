@@ -76,7 +76,8 @@ def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_tr
     Returns
         events - all the events appended in a dataframe
         event_classes - class index (0 is bib, 1 for mj, and 2 for sig)
-        weights - the weights from the Weight column
+        training_weight - the weights from the Weight column
+        evaluation_weight - the xsection * mc weight
     '''
     # Append the three inputs, as they are what we will be fitting against.
     # At the same time (to keep things straight) build the class sigle array.
@@ -93,7 +94,7 @@ def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_tr
     all_events_class = s_bib_class.append(s_mj_class, ignore_index=True)
     all_events_class = all_events_class.append(s_sig_class, ignore_index=True)
 
-    return (all_events.loc[:,training_variable_list], all_events_class, all_events.Weight)
+    return (all_events.loc[:,training_variable_list], all_events_class, all_events.Weight, all_events.WeightMCEvent*all_events.WeightXSection)
 
 def default_training (events, events_weight, events_class):
     '''Given samples prepared, run the default "best" training we know how to run.
@@ -131,7 +132,7 @@ def train_me (bib, mj, sig, nEvents = 10000, training_variable_list = default_tr
         nEvents - how many events of each to use
     '''
     
-    all_events, all_events_class = prep_samples(bib, mj, sig, nEvents, training_variable_list)
+    all_events, all_events_class, training_weight, evaluation_weight = prep_samples(bib, mj, sig, nEvents, training_variable_list)
     
     # Ready to train!
     bdt_discrete = AdaBoostClassifier(
@@ -139,7 +140,7 @@ def train_me (bib, mj, sig, nEvents = 10000, training_variable_list = default_tr
         n_estimators=10,
         learning_rate=1)
     
-    bdt_discrete.fit(all_events, all_events_class.Class)
+    bdt_discrete.fit(all_events, all_events_class.Class, sample_weight = training_weight)
     
     # The BDT is sent back for use
     return bdt_discrete
@@ -176,8 +177,8 @@ def plot_training_performance (bdt, training_sample, testing_sample, title_keywo
     '''
 
     # Extract test and training events suitable to feeding to the bdt
-    test_events, test_events_class, test_weights = prep_samples(testing_sample[0], testing_sample[1], testing_sample[2])
-    train_events, train_events_class, training_weights = prep_samples(training_sample[0], training_sample[1], training_sample[2])
+    test_events, test_events_class, test_weights, test_eval_weights = prep_samples(testing_sample[0], testing_sample[1], testing_sample[2])
+    train_events, train_events_class, training_weights, training_eval_weights = prep_samples(training_sample[0], training_sample[1], training_sample[2])
 
     # Training performance looks at generic things - like has the tree settled down quickly or not.
     test_errors = []
@@ -237,7 +238,7 @@ def calc_performance (bdt, testing_samples):
         d - dict containing number of events of each type predicted for each time, and S/sqrt(B) for S as signal and B as mj+bib
     '''
     
-    test_events, test_events_class, test_weights = prep_samples(testing_samples[0], testing_samples[1], testing_samples[2])
+    test_events, test_events_class, test_weights, test_eval_weights = prep_samples(testing_samples[0], testing_samples[1], testing_samples[2])
     test_predictions = bdt.predict(test_events)
     
     # Assemble a single DataFrame with all the information we are going to need
@@ -250,12 +251,12 @@ def calc_performance (bdt, testing_samples):
     pred_events = [df.PredClass == index for index in (0,1,2)]        
     labels = {0:'BIB', 1:'MJ', 2:'HSS'}
     
-    d = {"{0}in{1}".format(labels[aclass], labels[pclass]):np.sum((class_events[aclass]&pred_events[pclass])*test_weights) for pclass in (0,1,2) for aclass in (0,1,2)}
+    d = {"{0}in{1}".format(labels[aclass], labels[pclass]):np.sum((class_events[aclass]&pred_events[pclass])*test_eval_weights) for pclass in (0,1,2) for aclass in (0,1,2)}
     
     # Calculated quantities
     
-    d.update({'{0}Eff'.format(labels[aclass]):np.sum((pred_events[aclass]&class_events[aclass])*test_weights)/np.sum(class_events[aclass]*test_weights) for aclass in (0,1,2)})
-    d.update({'{0}Back'.format(labels[aclass]):np.sum((pred_events[aclass]&(~class_events[aclass]))*test_weights) for aclass in (0,1,2)})
+    d.update({'{0}Eff'.format(labels[aclass]):np.sum((pred_events[aclass]&class_events[aclass])*test_eval_weights)/np.sum(class_events[aclass]*test_weights) for aclass in (0,1,2)})
+    d.update({'{0}Back'.format(labels[aclass]):np.sum((pred_events[aclass]&(~class_events[aclass]))*test_eval_weights) for aclass in (0,1,2)})
     d.update({'{0}SsqrtB'.format(labels[aclass]):(d['{0}in{0}'.format(labels[aclass])]/sqrt(d['{0}Back'.format(labels[aclass])])) for aclass in (0,1,2)})
     
     return d
