@@ -218,10 +218,11 @@ namespace JetMVAClassifierTraining
                 }
 
                 // Now, for each sample, generate the weight plots
+                var avoidPlaces = new[] { "Local", "UWTeV" };
                 var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
                 var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
-                    .Select(info => (name: info.NickName, file: Files.GetSampleAsMetaData(info, avoidPlaces: new[] { "Local", "UWTeV" }, weightByCrossSection: false)));
+                    .Select(info => (name: info.NickName, file: Files.GetSampleAsMetaData(info, avoidPlaces: avoidPlaces, weightByCrossSection: false)));
                 var cBDT = m1.GetMVAMulticlassValue();
                 foreach (var s in signalTestSources)
                 {
@@ -233,6 +234,25 @@ namespace JetMVAClassifierTraining
 
                     GenerateEfficiencyPlots(trainingResultDir.mkdir(s.Item1), sEvents, cBDT, new string[] { "hss", "multijet", "bib" });
                 }
+
+                // LLP Training
+                Console.WriteLine("Fetching HSS Sample");
+                var llp_training = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
+                    .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles * 2,
+                        mdQueriable => mdQueriable
+                                        .AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining)
+                                        .FilterSignal(options.LxyCut * 1000.0, options.LzCut * 1000.0),
+                        weightByCrossSection: false, avoidPlaces: avoidPlaces);
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("training_hss"), llp_training.AsTrainingTree(),
+                    cBDT, new string[] { "hss", "multijet", "bib" });
+
+                // Multijet training
+                Console.WriteLine("Fetching JZ Sample");
+                var mj_training = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining,
+                    options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
+                    weightByCrossSection: false, avoidPlaces: avoidPlaces);
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("training_mj"), mj_training,
+                    cBDT, new string[] { "hss", "multijet", "bib" });
 
                 // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
                 // version of root than we have locally on windows.
@@ -328,6 +348,9 @@ namespace JetMVAClassifierTraining
             public int RunNumber { get; set; }
             public int EventNumber { get; set; }
             public double Weight { get; set; }
+            public double WeightFlatten { get; set; }
+            public double WeightMCEvent { get; set; }
+            public double WeightXSection { get; set; }
             public float HSSWeight { get; set; }
             public float MultijetWeight { get; set; }
             public float BIBWeight { get; set; }
@@ -348,7 +371,7 @@ namespace JetMVAClassifierTraining
             }
 
             var s1 = source
-                .Select(j => Tuple.Create(cBDT.Invoke(j), j.Weight, j.RunNumber, j.EventNumber));
+                .Select(j => Tuple.Create(cBDT.Invoke(j), j.Weight, j.RunNumber, j.EventNumber, j.WeightFlatten, j.WeightMCEvent, j.WeightXSection));
 
             // Generate plots
             foreach (var cinfo in trainingClassNames.Zip(Enumerable.Range(0, trainingClassNames.Length), (name, index) => Tuple.Create(name, index)))
@@ -361,9 +384,17 @@ namespace JetMVAClassifierTraining
 
             // Generate a weight csv file
             var files = s1
-                .Select(e => new WeightInfo() {
-                    RunNumber = e.Item3, EventNumber = e.Item4,
-                    Weight = e.Item2, HSSWeight = e.Item1[0], MultijetWeight = e.Item1[1], BIBWeight = e.Item1[2]
+                .Select(e => new WeightInfo()
+                {
+                    RunNumber = e.Item3,
+                    EventNumber = e.Item4,
+                    Weight = e.Item2,
+                    WeightFlatten = e.Item5,
+                    WeightMCEvent = e.Item6,
+                    WeightXSection = e.Item7,
+                    HSSWeight = e.Item1[0],
+                    MultijetWeight = e.Item1[1],
+                    BIBWeight = e.Item1[2]
                 })
                 .AsCSV(new FileInfo($"{outh.Directory.Name}.csv"));
 
