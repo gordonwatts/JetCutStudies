@@ -96,19 +96,20 @@ def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_tr
 
     return (all_events.loc[:,training_variable_list], all_events_class, all_events.Weight, all_events.WeightMCEvent*all_events.WeightXSection)
 
-def default_training (events, events_weight, events_class):
+def default_training (events, events_weight, events_class, min_leaf_fraction = 0.01):
     '''Given samples prepared, run the default "best" training we know how to run.
     
     Args:
         events - A DF with an entry for every event, with all columns to be trained on
         events_weight - weight assigned to each event (None if no weight is to be used)
         events_class - the training class (0, 1, 2 for bib, mj, and signal)
+        min_leaf_fraction - fraction of sample that can be in each leaf. Defaults to 1%
         
     Returns
         bdt - A trained boosted decision tree
     '''
     bdt = AdaBoostClassifier(
-        DecisionTreeClassifier(min_samples_leaf=0.01),
+        DecisionTreeClassifier(min_samples_leaf=min_leaf_fraction),
         n_estimators=10,
         learning_rate=1)
     
@@ -225,6 +226,33 @@ def plot_training_performance (bdt, training_sample, testing_sample, title_keywo
 
     return fig
 
+def calc_performance_for_run(df):
+    '''Given a data frame with the prediction and actual events, determine a set of numbers about it and return them.
+    
+    Args
+        df - DataFrame containing columns with Weight, PredClass, and Class
+    
+    Return
+        d - dict containing number of events of each type predicted for each time, and S/sqrt(B) for S as signal and B as mj+bib
+    '''
+    # Next, for each sample, calculate what we need.
+    class_events = [df.Class == index for index in (0,1,2)]
+    pred_events = [df.PredClass == index for index in (0,1,2)]        
+    labels = {0:'BIB', 1:'MJ', 2:'HSS'}
+    
+    d = {"{0}in{1}".format(labels[aclass], labels[pclass]):np.sum((class_events[aclass]&pred_events[pclass])*df.Weight) for pclass in (0,1,2) for aclass in (0,1,2)}
+    
+    # Calculated quantities
+    
+    d.update({'{0}Eff'.format(labels[aclass]):np.sum((pred_events[aclass]&class_events[aclass])*df.Weight)/np.sum(class_events[aclass]*df.Weight) for aclass in (0,1,2)})
+    d.update({'{0}Back'.format(labels[aclass]):np.sum((pred_events[aclass]&(~class_events[aclass]))*df.Weight) for aclass in (0,1,2)})
+    d.update({'{0}SsqrtB'.format(labels[aclass]):(d['{0}in{0}'.format(labels[aclass])]/sqrt(d['{0}Back'.format(labels[aclass])])) for aclass in (0,1,2)})
+
+    d.update({'{0}TotalWeight'.format(labels[aclass]):np.sum(class_events[aclass]*df.Weight) for aclass in (0,1,2)})
+    d.update({'{0}TotalCount'.format(labels[aclass]):np.sum(class_events[aclass]) for aclass in (0,1,2)})
+    
+    return d
+
 def calc_performance (bdt, testing_samples):
     '''Calculate the nubers in each class, as well as S/sqrt(B) for HSS
     
@@ -244,19 +272,6 @@ def calc_performance (bdt, testing_samples):
     # Assemble a single DataFrame with all the information we are going to need
     df = pd.DataFrame(test_predictions, columns=['PredClass'])
     df.loc[:,'Class'] = test_events_class
-    df.loc[:,'Weight'] = test_weights
+    df.loc[:,'Weight'] = test_eval_weights
     
-    # Next, for each sample, calculate what we need.
-    class_events = [df.Class == index for index in (0,1,2)]
-    pred_events = [df.PredClass == index for index in (0,1,2)]        
-    labels = {0:'BIB', 1:'MJ', 2:'HSS'}
-    
-    d = {"{0}in{1}".format(labels[aclass], labels[pclass]):np.sum((class_events[aclass]&pred_events[pclass])*test_eval_weights) for pclass in (0,1,2) for aclass in (0,1,2)}
-    
-    # Calculated quantities
-    
-    d.update({'{0}Eff'.format(labels[aclass]):np.sum((pred_events[aclass]&class_events[aclass])*test_eval_weights)/np.sum(class_events[aclass]*test_weights) for aclass in (0,1,2)})
-    d.update({'{0}Back'.format(labels[aclass]):np.sum((pred_events[aclass]&(~class_events[aclass]))*test_eval_weights) for aclass in (0,1,2)})
-    d.update({'{0}SsqrtB'.format(labels[aclass]):(d['{0}in{0}'.format(labels[aclass])]/sqrt(d['{0}Back'.format(labels[aclass])])) for aclass in (0,1,2)})
-    
-    return d
+    return calc_performance_for_run(df)
