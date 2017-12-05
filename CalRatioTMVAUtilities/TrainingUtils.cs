@@ -44,6 +44,16 @@ namespace CalRatioTMVAUtilities
         /// </summary>
         public double WeightFlatten;
 
+        /// <summary>
+        /// The MC value of Lxy for this event. Zero if not associated.
+        /// </summary>
+        public double mc_Lxy;
+
+        /// <summary>
+        /// The Lz value of this event, zero if not known.
+        /// </summary>
+        public double mc_Lz;
+
         public double JetPt;
         public double JetPhi;
         public double CalRatio;
@@ -106,6 +116,8 @@ namespace CalRatioTMVAUtilities
                 PredictedLxy = i.JetInfo.Jet.Predicted_Lxy,
                 PredictedLz = i.JetInfo.Jet.Predicted_Lz,
                 InteractionsPerCrossing = i.InteractionsPerCrossing,
+                mc_Lxy = i.JetInfo.Jet.LLP.IsGoodIndex() ? i.JetInfo.Jet.LLP.Lxy / 1000.0 : 0.0,
+                mc_Lz = i.JetInfo.Jet.LLP.IsGoodIndex() ? i.JetInfo.Jet.LLP.Lz / 1000.0 : 0.0,
             };
 
         /// <summary>

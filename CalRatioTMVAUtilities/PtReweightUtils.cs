@@ -117,6 +117,8 @@ namespace CalRatioTMVAUtilities
                     PredictedLxy = t.PredictedLxy,
                     PredictedLz = t.PredictedLz,
                     InteractionsPerCrossing = t.InteractionsPerCrossing,
+                    mc_Lxy = t.mc_Lxy,
+                    mc_Lz = t.mc_Lz,
                 });
 
             r
