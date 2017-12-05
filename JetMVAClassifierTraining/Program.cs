@@ -124,7 +124,7 @@ namespace JetMVAClassifierTraining
             Console.WriteLine("Fetching JZ Sample");
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, 
                 options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
-                weightByCrossSection: false);
+                weightByCrossSection: true);
 
             // Class: BIB
             Console.WriteLine("Fetching BIB15 Sample");
@@ -250,7 +250,7 @@ namespace JetMVAClassifierTraining
                 Console.WriteLine("Fetching JZ Sample");
                 var mj_training = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining,
                     options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
-                    weightByCrossSection: false, avoidPlaces: avoidPlaces);
+                    weightByCrossSection: true, avoidPlaces: avoidPlaces);
                 GenerateEfficiencyPlots(trainingResultDir.mkdir("training_mj"), mj_training,
                     cBDT, new string[] { "hss", "multijet", "bib" });
 
