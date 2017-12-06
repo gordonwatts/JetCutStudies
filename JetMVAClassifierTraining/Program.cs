@@ -218,6 +218,7 @@ namespace JetMVAClassifierTraining
                 }
 
                 // Now, for each sample, generate the weight plots
+                Console.WriteLine("Plots for Specific Samples");
                 var avoidPlaces = new[] { "Local", "UWTeV" };
                 var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
@@ -236,7 +237,7 @@ namespace JetMVAClassifierTraining
                 }
 
                 // LLP Training
-                Console.WriteLine("Fetching HSS Sample");
+                Console.WriteLine("Plots for HSS files");
                 var llp_training = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                     .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles * 2,
                         mdQueriable => mdQueriable
@@ -247,7 +248,7 @@ namespace JetMVAClassifierTraining
                     cBDT, new string[] { "hss", "multijet", "bib" });
 
                 // Multijet training
-                Console.WriteLine("Fetching JZ Sample");
+                Console.WriteLine("Plots for JZ files");
                 var mj_training = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining,
                     options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
                     weightByCrossSection: true, avoidPlaces: avoidPlaces);
@@ -256,6 +257,7 @@ namespace JetMVAClassifierTraining
 
                 // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
                 // version of root than we have locally on windows.
+                Console.WriteLine("Plots for BIB files");
                 var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut,
                     avoidPlaces: new[] { "Local", "UWTeV" },
                     useLessSamples: !options.UseFullDataset);
