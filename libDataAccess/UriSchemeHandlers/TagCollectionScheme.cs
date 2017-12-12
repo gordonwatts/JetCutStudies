@@ -129,6 +129,11 @@ namespace libDataAccess.UriSchemeHandlers
             {
                 dopt["avoidPlaces"] = opt.avoidPlaces;
             }
+            if (!string.IsNullOrWhiteSpace(opt.jobName))
+            {
+                dopt["jobName"] = opt.jobName;
+                dopt["jobVersion"] = opt.jobVersion.ToString();
+            }
 
             // THe list of samples.
             var raw_sample_names = SampleList(u);
