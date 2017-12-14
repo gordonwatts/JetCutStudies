@@ -27,6 +27,7 @@ namespace libDataAccess.Utils
         public int EventNumber;
         public int RunNumber;
         public double InteractionsPerCrossing;
+        public double MHTOverHT;
     }
 
     public static class SampleUtils
@@ -50,7 +51,8 @@ namespace libDataAccess.Utils
                         WeightXSection = e.xSectionWeight,
                         EventNumber = e.Data.eventNumber,
                         RunNumber = e.Data.runNumber,
-                        InteractionsPerCrossing = e.Data.actualIntPerCrossing
+                        InteractionsPerCrossing = e.Data.actualIntPerCrossing,
+                        MHTOverHT = e.Data.event_HTMiss / e.Data.event_HT,
                     }));
 
             if (maxPtCut.HasValue)
@@ -107,7 +109,8 @@ namespace libDataAccess.Utils
                     WeightMCEvent = e.Data.eventWeight,
                     EventNumber = e.Data.eventNumber,
                     RunNumber = e.Data.runNumber,
-                    InteractionsPerCrossing = e.Data.actualIntPerCrossing
+                    InteractionsPerCrossing = e.Data.actualIntPerCrossing,
+                    MHTOverHT = e.Data.event_HTMiss / e.Data.event_HT,
                 })
                 .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;

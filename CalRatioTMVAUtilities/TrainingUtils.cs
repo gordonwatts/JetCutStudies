@@ -54,6 +54,11 @@ namespace CalRatioTMVAUtilities
         /// </summary>
         public double mc_Lz;
 
+        /// <summary>
+        /// The missing HT divided by the HT. A global event variable cut
+        /// </summary>
+        public double MHTOverHT;
+
         public double JetPt;
         public double JetPhi;
         public double CalRatio;
@@ -102,6 +107,7 @@ namespace CalRatioTMVAUtilities
                 MaxTrackPt = CalcMaxPt.Invoke(i.JetInfo.AllTracks),
                 EventNumber = i.EventNumber,
                 RunNumber = i.RunNumber,
+                MHTOverHT = i.MHTOverHT,
                 JetET = i.JetInfo.Jet.ET,
                 JetWidth = i.JetInfo.Jet.width,
                 JetDRTo2GeVTrack = PlotSpecifications.CalcDR2GeVTrack.Invoke(i.JetInfo.AllTracks, i.JetInfo.Jet),
