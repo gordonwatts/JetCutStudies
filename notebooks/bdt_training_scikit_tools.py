@@ -127,9 +127,9 @@ def train_me (bib, mj, sig, nEvents = 10000, training_variable_list = default_tr
     All events will be used in the fit (none for testing!)
     
     Args:
-        bib - BIB background
-        mj - MJ background
-        sig - signal
+        bib - BIB background (with weights)
+        mj - MJ background (with weights)
+        sig - signal (with weights)
         nEvents - how many events of each to use
     '''
     
