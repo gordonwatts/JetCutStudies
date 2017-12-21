@@ -469,7 +469,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\editbin.exe" /LARGEADDRESSAWARE $(TargetPath)</PostBuildEvent>
+    <PostBuildEvent>REM "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\editbin.exe" /LARGEADDRESSAWARE $(TargetPath)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets" Condition="Exists('..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
