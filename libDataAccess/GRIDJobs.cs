@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace libDataAccess
 {
@@ -19,10 +20,10 @@ namespace libDataAccess
         /// <param name="nFiles">How many files should we be running on?</param>
         /// <param name="intelligentLocal">If set to true, and we want only 1 or 2 files, and we can't get them first try, we will try to force a download</param>
         /// <returns></returns>
-        public static FileInfo[] FindJobFiles(string jobName, int jobVersion, string sourceDataset, int nFiles = 0, Action<string> statusUpdate = null, bool intelligentLocal = false, int timeoutDownloadSecs = 3600*4)
+        public static async Task<FileInfo[]> FindJobFiles(string jobName, int jobVersion, string sourceDataset, int nFiles = 0, Action<string> statusUpdate = null, bool intelligentLocal = false, int timeoutDownloadSecs = 3600*4)
         {
             string dataset = GetDatasetForJob(jobName, jobVersion, sourceDataset);
-            var uris = DatasetManager.ListOfFilesInDataset(dataset, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
+            var uris = await DatasetManager.ListOfFilesInDatasetAsync(dataset, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             if (nFiles != 0)
             {
                 uris = uris.OrderBy(u => u.Segments.Last()).Take(nFiles).ToArray();
@@ -32,7 +33,7 @@ namespace libDataAccess
             bool tryLocalIfFail = intelligentLocal && nFiles <= 2 && nFiles != 0;
             try
             {
-                result = DatasetManager.MakeFilesLocal(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
+                result = await DatasetManager.MakeFilesLocalAsync(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             }
             catch (DatasetManager.NoLocalPlaceToCopyToException e)
             {
@@ -51,7 +52,7 @@ namespace libDataAccess
                     var naming = nFiles == 0 ? "all" : nFiles.ToString();
                     statusUpdate($"  -> Trying to fetch {dataset} to Local location ({naming} files)");
                 }
-                result = DatasetManager.CopyFilesTo(DatasetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
+                result = await DatasetManager.CopyFilesToAsync(await DatasetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
             }
 
             if (result == null)
@@ -98,12 +99,12 @@ namespace libDataAccess
         /// <param name="nFiles"></param>
         /// <param name="statusUpdate"></param>
         /// <returns></returns>
-        internal static Uri[] FindJobUris(string jobName, int jobVersionNumber, string dsname, int nFiles, Action<string> statusUpdate = null, string[] avoidPlaces = null)
+        internal static async Task<Uri[]> FindJobUris(string jobName, int jobVersionNumber, string dsname, int nFiles, Action<string> statusUpdate = null, string[] avoidPlaces = null)
         {
             // Get the files and the places where those files are located.
             var ds = GetDatasetForJob(jobName, jobVersionNumber, dsname);
-            var allFiles = DatasetManager.ListOfFilesInDataset(ds).Take(nFiles == 0 ? 10000 : nFiles);
-            var places = DatasetManager.ListOfPlacesHoldingAllFiles(allFiles, maxDataTier: 60)
+            var allFiles = (await DatasetManager.ListOfFilesInDatasetAsync(ds)).Take(nFiles == 0 ? 10000 : nFiles);
+            var places = (await DatasetManager.ListOfPlacesHoldingAllFilesAsync(allFiles, maxDataTier: 60))
                 .Where(pl => avoidPlaces == null ? true : !avoidPlaces.Contains(pl))
                 .ToArray();
 
@@ -117,7 +118,7 @@ namespace libDataAccess
             var p = places.First();
 
             // Now, get the uri's
-            var uris = DatasetManager.LocalPathToFiles(p, allFiles);
+            var uris = await DatasetManager.LocalPathToFilesAsync(p, allFiles);
 
             // We need to run these either locally or remotely.
             // This is a huristic, sadly. Lets hope!

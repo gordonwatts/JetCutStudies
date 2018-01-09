@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace libDataAccess.UriSchemeHandlers
 {
@@ -91,14 +92,14 @@ namespace libDataAccess.UriSchemeHandlers
         /// </summary>
         /// <param name="u"></param>
         /// <returns></returns>
-        public IEnumerable<Uri> ResolveUri(Uri u)
+        public async Task<IEnumerable<Uri>> ResolveUri(Uri u)
         {
             // Get out options
             var opt = u.ParseOptions<Options>();
 
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
+            return await GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
         }
 
         /// <summary>
@@ -133,7 +134,7 @@ namespace libDataAccess.UriSchemeHandlers
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
-        public static Uri[] GetFileList(string dsname, string jobName, int jobNumber, string[] avoidPlaces = null, int nRequestedFiles = 0, bool verbose = false)
+        public static Task<Uri[]> GetFileList(string dsname, string jobName, int jobNumber, string[] avoidPlaces = null, int nRequestedFiles = 0, bool verbose = false)
         {
             TraceListener listener = null;
 
@@ -165,5 +166,9 @@ namespace libDataAccess.UriSchemeHandlers
             }
         }
 
+        Task<IEnumerable<Uri>> IDataFileSchemeHandler.ResolveUri(Uri u)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using libDataAccess.Utils;
 using System.Text;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace libDataAccess.UriSchemeHandlers
 {
@@ -175,6 +176,11 @@ namespace libDataAccess.UriSchemeHandlers
             return SampleMetaData.AllSamplesWithTag(tags)
                 .Select(sd => sd.Name)
                 .ToArray();
+        }
+
+        Task<IEnumerable<Uri>> IDataFileSchemeHandler.ResolveUri(Uri u)
+        {
+            throw new NotImplementedException();
         }
     }
 }

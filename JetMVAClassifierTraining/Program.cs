@@ -21,6 +21,7 @@ using static libDataAccess.Utils.SampleUtils;
 using static libDataAccess.Utils.FutureConsole;
 using static libDataAccess.Utils.BIBSamples;
 using LINQToTTreeLib.Files;
+using System.Threading.Tasks;
 
 namespace JetMVAClassifierTraining
 {
@@ -83,7 +84,7 @@ namespace JetMVAClassifierTraining
             public double LzCut { get; set; }
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             ConsoleMessageDumper.SetupConsoleMessageDumper();
 
@@ -187,7 +188,7 @@ namespace JetMVAClassifierTraining
                 methods.Add(m1);
 
                 // Do the training
-                var trainingResult = training.Train("JetMVAClassifier");
+                var trainingResult = await training.Train("JetMVAClassifier");
 
                 // Build a job name and coppy everything over to that for easy reference and so we can find the results.
                 var jobNameBuilder = new StringBuilder();

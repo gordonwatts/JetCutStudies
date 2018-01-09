@@ -24,6 +24,7 @@ using static libDataAccess.Utils.FutureConsole;
 using static libDataAccess.Utils.SampleUtils;
 using static LINQToTreeHelpers.PlottingUtils;
 using static CalRatioTMVAUtilities.BackgroundSampleUtils;
+using System.Threading.Tasks;
 
 namespace JetMVATraining
 {
@@ -73,7 +74,7 @@ namespace JetMVATraining
         /// so basically behind-this-guys-back. But it provides an easy single item to run.
         /// </summary>
         /// <param name="args"></param>
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // Parse command line arguments
             var options = CommandLineUtils.ParseOptions<Options>(args);
@@ -180,7 +181,7 @@ namespace JetMVATraining
                 methods.Add(m1);
 
                 // Do the training
-                var trainingResult = training.Train("JetMVATraining");
+                var trainingResult = await training.Train("JetMVATraining");
 
                 // Build a job name.
                 var jobNameBuilder = new StringBuilder();

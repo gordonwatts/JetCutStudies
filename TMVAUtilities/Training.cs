@@ -349,7 +349,7 @@ namespace TMVAUtilities
         /// <param name="forceTraining">If true, the force the training, even if all files are up to date</param>
         /// <param name="verbose">If not set to null, called with lots of output</param>
         /// <returns>A training result, including local access to the training files</returns>
-        public TrainingResult<T> Train(string jobName, bool forceTraining = false, Action<string> verbose = null)
+        public async Task<TrainingResult<T>> Train(string jobName, bool forceTraining = false, Action<string> verbose = null)
         {
             if (!string.IsNullOrWhiteSpace(JobName))
             {
@@ -460,7 +460,7 @@ namespace TMVAUtilities
 
             verbose?.Invoke("Training: Starting re-run");
             // Run the training
-            TrainInBash(jobName, weight_name, parameters_names, trainingSamples, hash, outputFile, hashFile);
+            await TrainInBash(jobName, weight_name, parameters_names, trainingSamples, hash, outputFile, hashFile);
             return resultObject;
         }
 
@@ -475,7 +475,7 @@ namespace TMVAUtilities
         /// <param name="outputFile"></param>
         /// <param name="hashFile"></param>
         /// <returns></returns>
-        private void TrainInBash(string jobName, string weight_name, List<string> parameters_names, Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType, string>[] trainingSamples, int hash, FileInfo outputFile, FileInfo hashFile)
+        private async Task TrainInBash(string jobName, string weight_name, List<string> parameters_names, Tuple<ROOTNET.Interface.NTTree, FileInfo, FileTrainingType, string>[] trainingSamples, int hash, FileInfo outputFile, FileInfo hashFile)
         {
             // Write commands to a buffer that we can then write out and execute.
             var script = new StringBuilder();
@@ -599,7 +599,7 @@ namespace TMVAUtilities
 
             // Now, run the script!
             script.AppendLine("}");
-            RemoteBashHelpers.RunROOTInBash("training", script.ToString(),
+            await RemoteBashHelpers.RunROOTInBashAsync("tev02.phys.washington.edu", "training", script.ToString(),
                 new DirectoryInfo(System.Environment.CurrentDirectory), s => Console.WriteLine(s),
                 filesToReceive: allWeightsFiles,
                 timeout: TimeSpan.FromHours(24));
