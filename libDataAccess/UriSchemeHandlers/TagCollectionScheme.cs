@@ -117,7 +117,7 @@ namespace libDataAccess.UriSchemeHandlers
         /// </summary>
         /// <param name="u"></param>
         /// <returns></returns>
-        public IEnumerable<Uri> ResolveUri(Uri u)
+        public Task<IEnumerable<Uri>> ResolveUri(Uri u)
         {
             // Optiosn we hand off to everything.
             var opt = u.ParseOptions<Options>();
@@ -140,8 +140,8 @@ namespace libDataAccess.UriSchemeHandlers
             var raw_sample_names = SampleList(u);
 
             // Now, turn them into grid datasets.
-            return raw_sample_names
-                .Select(s => RecoverUri(s, dopt));
+            return Task.FromResult(raw_sample_names
+                .Select(s => RecoverUri(s, dopt)));
         }
 
         /// <summary>
@@ -176,11 +176,6 @@ namespace libDataAccess.UriSchemeHandlers
             return SampleMetaData.AllSamplesWithTag(tags)
                 .Select(sd => sd.Name)
                 .ToArray();
-        }
-
-        Task<IEnumerable<Uri>> IDataFileSchemeHandler.ResolveUri(Uri u)
-        {
-            throw new NotImplementedException();
         }
     }
 }

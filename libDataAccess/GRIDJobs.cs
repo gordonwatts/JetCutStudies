@@ -91,6 +91,11 @@ namespace libDataAccess
         }
 
         /// <summary>
+        /// Random number generator that will send stuff to different machines.
+        /// </summary>
+        private static Lazy<Random> _random = new Lazy<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+
+        /// <summary>
         /// Fetch the Uri's of a set of data files
         /// </summary>
         /// <param name="jobName"></param>
@@ -99,7 +104,10 @@ namespace libDataAccess
         /// <param name="nFiles"></param>
         /// <param name="statusUpdate"></param>
         /// <returns></returns>
-        internal static async Task<Uri[]> FindJobUris(string jobName, int jobVersionNumber, string dsname, int nFiles, Action<string> statusUpdate = null, string[] avoidPlaces = null)
+        internal static async Task<Uri[]> FindJobUris(string jobName, int jobVersionNumber, string dsname, int nFiles,
+            Action<string> statusUpdate = null,
+            string[] avoidPlaces = null,
+            string[] preferPlaces = null)
         {
             // Get the files and the places where those files are located.
             var ds = GetDatasetForJob(jobName, jobVersionNumber, dsname);
@@ -107,6 +115,13 @@ namespace libDataAccess
             var places = (await DatasetManager.ListOfPlacesHoldingAllFilesAsync(allFiles, maxDataTier: 60))
                 .Where(pl => avoidPlaces == null ? true : !avoidPlaces.Contains(pl))
                 .ToArray();
+
+            // If anything is prefered, take it.
+            var prefered = places.Where(plac => preferPlaces.Contains(plac)).ToArray();
+            if (prefered.Length > 0)
+            {
+                places = prefered;
+            }
 
             // If there is no place, then we are done
             if (places.Length == 0)
@@ -123,6 +138,24 @@ namespace libDataAccess
             // We need to run these either locally or remotely.
             // This is a huristic, sadly. Lets hope!
             var newScheme = p.Contains("-linux") ? "remotebash" : "localwin";
+
+            // Next, if we have a linux guy, then we need to grab a file that we can use to execute.
+            if (p.Contains("-linux"))
+            {
+                var machine_info = File.ReadAllLines($"{p}.cluster_machines")
+                    .Where(l => !l.StartsWith("#"))
+                    .Select(l => l.Split(new[] { '=' }, 2))
+                    .ToDictionary(k => k[0].Trim(), k => k[1].Trim());
+
+                var nConnections = machine_info["connections"];
+                var machineList = machine_info["machines"]
+                    .Split(",")
+                    .Select(m => m.Trim())
+                    .ToArray();
+                Func<string> chooseMachine = () => machineList[_random.Value.Next(0, machineList.Length)];
+                uris = uris
+                    .Select(u => new UriBuilder(u) { Query = $"connections={nConnections}", Host = chooseMachine() }.Uri);
+            }
 
             return uris
                 .Select(u => new UriBuilder(u) { Scheme = newScheme }.Uri)

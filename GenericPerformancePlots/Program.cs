@@ -42,15 +42,16 @@ namespace GenericPerformancePlots
         static void Main(string[] args)
         {
             var opt = CommandLineUtils.ParseOptions<Options>(args);
+            var preferedPlacesToRun = new[] { "UWTeV-linux" };
 
-            Console.WriteLine("Finding the files");
+            Console.WriteLine("Setting up the queries");
 
             // All the background samples have to be done first.
             var backgroundSamples = SampleMetaData.AllSamplesWithTag("mc15c", "background")
-                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
+                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info, preferPlaces: preferedPlacesToRun), info.NickName))
                 .ToArray();
 
-            var backgroundEvents = Files.GetAllJetSamples().Select(e => e.Data);
+            var backgroundEvents = Files.GetAllJetSamples(preferedPlacesToRun).Select(e => e.Data);
 
             // All the signal we are going to make plots of.
             var tags = new[] { "mc15c", "signal", "hss" };
@@ -59,22 +60,22 @@ namespace GenericPerformancePlots
                 tags = tags.Add("quick_compare").ToArray();
             }
             var signalSamples = SampleMetaData.AllSamplesWithTag(tags)
-                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info), info.NickName))
+                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info, preferPlaces: preferedPlacesToRun), info.NickName))
                 .ToArray();
 
             // Get the beam-halo samples to use for testing and training
             var data15 = SampleMetaData.AllSamplesWithTag("data15_p2950")
                 .Take(opt.UseFullDataset ? 10000 : 2)
-                .SamplesAsSingleQueriable()
+                .SamplesAsSingleQueriable(preferPlaces: preferedPlacesToRun)
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data15);
 
             var data16 = SampleMetaData.AllSamplesWithTag("data16_p2950")
                 .Take(opt.UseFullDataset ? 10000 : 1)
-                .SamplesAsSingleQueriable()
+                .SamplesAsSingleQueriable(preferPlaces: preferedPlacesToRun)
                 .AsBeamHaloStream(SampleUtils.DataEpoc.data16);
 
             // Output file
-            Console.WriteLine("Opening output file");
+            Console.WriteLine("Opening output file & Running the queries");
             using (var outputHistograms = new FutureTFile("GenericPerformancePlots.root"))
             {
                 // First, lets do a small individual thing for each individual background sample.

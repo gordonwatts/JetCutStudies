@@ -47,6 +47,9 @@ namespace libDataAccess.UriSchemeHandlers
             [IgnoreAttributeForNormalization]
             public string avoidPlaces = "";
 
+            [IgnoreAttributeForNormalization]
+            public string preferPlaces = "";
+
             /// <summary>
             /// The job version
             /// </summary>
@@ -99,7 +102,9 @@ namespace libDataAccess.UriSchemeHandlers
 
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return await GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles, avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','));
+            return await GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles,
+                avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','),
+                preferPlaces: string.IsNullOrWhiteSpace(opt.preferPlaces) ? null : opt.preferPlaces.Split(','));
         }
 
         /// <summary>
@@ -134,7 +139,7 @@ namespace libDataAccess.UriSchemeHandlers
         /// </summary>
         /// <param name="dsname"></param>
         /// <returns></returns>
-        public static Task<Uri[]> GetFileList(string dsname, string jobName, int jobNumber, string[] avoidPlaces = null, int nRequestedFiles = 0, bool verbose = false)
+        private static Task<Uri[]> GetFileList(string dsname, string jobName, int jobNumber, string[] avoidPlaces = null, string[] preferPlaces = null, int nRequestedFiles = 0, bool verbose = false)
         {
             TraceListener listener = null;
 
@@ -155,7 +160,8 @@ namespace libDataAccess.UriSchemeHandlers
                     jobNumber,
                     dsname,
                     nRequestedFiles,
-                    avoidPlaces: avoidPlaces);
+                    avoidPlaces: avoidPlaces,
+                    preferPlaces: preferPlaces);
             }
             finally
             {
@@ -164,11 +170,6 @@ namespace libDataAccess.UriSchemeHandlers
                     Trace.Listeners.Remove(listener);
                 }
             }
-        }
-
-        Task<IEnumerable<Uri>> IDataFileSchemeHandler.ResolveUri(Uri u)
-        {
-            throw new NotImplementedException();
         }
     }
 }

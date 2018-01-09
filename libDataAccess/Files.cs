@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using static libDataAccess.SampleMetaData;
 using static libDataAccess.Utils.Constants;
 
@@ -85,7 +86,7 @@ namespace libDataAccess
         /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
         /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
         /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true, string[] avoidPlaces = null, int? nfiles = null)
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true, string[] avoidPlaces = null, string[] preferPlaces = null, int? nfiles = null)
         {
             // Options for the Uri for the grid dataset.
             var uriOptions = new Dictionary<string, string>();
@@ -93,6 +94,11 @@ namespace libDataAccess
             {
                 var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
                 uriOptions["avoidPlaces"] = placesToAvoid;
+            }
+            if (preferPlaces != null && preferPlaces.Length > 0)
+            { 
+                var placesToPrefer = preferPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
+                uriOptions["preferPlaces"] = placesToPrefer;
             }
             var nf = nfiles.HasValue
                 ? nfiles.Value
@@ -117,7 +123,7 @@ namespace libDataAccess
                 try
                 {
                     var sampleInfo = SampleMetaData.LoadFromCSV(sample);
-                    var bkgEvents = backgroundEvents.Count();
+                    var bkgEvents = backgroundEvents.Select(e => e.eventWeight).FutureSum().Value;
                     xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count());
                 }
                 catch (SampleNotFoundInListException e)
@@ -158,9 +164,10 @@ namespace libDataAccess
         /// <param name="s"></param>
         /// <param name="weightByCrossSection">True if we should weight this sample by cross section or by 1</param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true, string[] avoidPlaces = null)
+        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true, string[] avoidPlaces = null,
+            string[] preferPlaces = null)
         {
-            return GetSampleAsMetaData(s.Name, weightByCrossSection, avoidPlaces);
+            return GetSampleAsMetaData(s.Name, weightByCrossSection, avoidPlaces, preferPlaces: preferPlaces);
         }
 
         /// <summary>
@@ -170,10 +177,10 @@ namespace libDataAccess
         /// <param name="weightByCrossSection"></param>
         /// <param name="avoidPlaces"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> samples, bool weightByCrossSection = true, string[] avoidPlaces = null)
+        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> samples, bool weightByCrossSection = true, string[] avoidPlaces = null, string[] preferPlaces = null)
         {
             return samples
-                .Select(s => GetSampleAsMetaData(s, weightByCrossSection, avoidPlaces))
+                .Select(s => GetSampleAsMetaData(s, weightByCrossSection, avoidPlaces, preferPlaces: preferPlaces))
                 .Aggregate((acc, newSample) => acc.Concat(newSample));
         }
 
@@ -190,10 +197,10 @@ namespace libDataAccess
         /// Gets properly weighted background sample as one.
         /// </summary>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetAllJetSamples()
+        public static IQueryable<MetaData> GetAllJetSamples(string[] preferPlaces = null)
         {
             return SampleMetaData.AllSamplesWithTag("mc15c", "background", "jz")
-                .Select(smd => GetSampleAsMetaData(smd.Name))
+                .Select(smd => GetSampleAsMetaData(smd.Name, preferPlaces: preferPlaces))
                 .Aggregate((IQueryable<MetaData>)null, (s, add) => s == null ? add : s.Concat(add));
         }
 
@@ -221,7 +228,8 @@ namespace libDataAccess
             int numberOfEvents, int numberOfFiles,
             Func<IQueryable<Files.MetaData>, IQueryable<T>> sampleConverter,
             bool weightByCrossSection = true,
-            string[] avoidPlaces = null)
+            string[] avoidPlaces = null,
+            string[] preferPlaces = null)
         {
             // If there are no samples expected
             if (numberOfEvents == 0)
@@ -232,7 +240,7 @@ namespace libDataAccess
             // Helper function to turn a sample into a data stream
             IQueryable<T> get_sample(SampleMetaData sample)
             {
-                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, avoidPlaces: avoidPlaces, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection));
+                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, avoidPlaces: avoidPlaces, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection, preferPlaces: preferPlaces));
             }
 
             // If we are to take all samples... then this is easy.
