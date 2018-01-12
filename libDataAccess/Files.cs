@@ -86,7 +86,9 @@ namespace libDataAccess
         /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
         /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
         /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true, string[] avoidPlaces = null, string[] preferPlaces = null, int? nfiles = null)
+        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true,
+            string[] avoidPlaces = null, string[] preferPlaces = null,
+            int? nfiles = null)
         {
             // Options for the Uri for the grid dataset.
             var uriOptions = new Dictionary<string, string>();
@@ -100,9 +102,7 @@ namespace libDataAccess
                 var placesToPrefer = preferPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
                 uriOptions["preferPlaces"] = placesToPrefer;
             }
-            var nf = nfiles.HasValue
-                ? nfiles.Value
-                : Files.NFiles;
+            var nf = nfiles ?? Files.NFiles;
             if (nf > 0)
             {
                 uriOptions["nFiles"] = nf.ToString();
