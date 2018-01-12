@@ -139,27 +139,93 @@ namespace libDataAccess
             // This is a huristic, sadly. Lets hope!
             var newScheme = p.Contains("-linux") ? "remotebash" : "localwin";
 
-            // Next, if we have a linux guy, then we need to grab a file that we can use to execute.
-            if (p.Contains("-linux"))
-            {
-                var machine_info = File.ReadAllLines($"{p}.cluster_machines")
-                    .Where(l => !l.StartsWith("#"))
-                    .Select(l => l.Split(new[] { '=' }, 2))
-                    .ToDictionary(k => k[0].Trim(), k => k[1].Trim());
-
-                var nConnections = machine_info["connections"];
-                var machineList = machine_info["machines"]
-                    .Split(",")
-                    .Select(m => m.Trim())
-                    .ToArray();
-                Func<string> chooseMachine = () => machineList[_random.Value.Next(0, machineList.Length)];
-                uris = uris
-                    .Select(u => new UriBuilder(u) { Query = $"connections={nConnections}", Host = chooseMachine() }.Uri);
-            }
-
             return uris
-                .Select(u => new UriBuilder(u) { Scheme = newScheme }.Uri)
+                .Select(u => u.UpdateUriWithMachineAccessAndScheme(newScheme))
                 .ToArray();
+        }
+
+        private struct ClusterMachineInfo
+        {
+            public string User;
+            public int nConnections;
+            public string[] MachineList;
+
+            /// <summary>
+            /// Return a random machine from our collection of machines.
+            /// </summary>
+            /// <returns></returns>
+            public string RandomMachine() => MachineList[_random.Value.Next(0, MachineList.Length)];
+        }
+
+        /// <summary>
+        /// Cache the cluster info we read from an externa file.
+        /// </summary>
+        private static Dictionary<string, ClusterMachineInfo> _cluster_machine_info = new Dictionary<string, ClusterMachineInfo>();
+
+        /// <summary>
+        /// Update a Uri:
+        ///  - New scheme
+        ///  - If we can find it, with randomized machine information
+        /// </summary>
+        /// <param name="u"></param>
+        /// <param name="newScheme"></param>
+        /// <returns></returns>
+        private static Uri UpdateUriWithMachineAccessAndScheme (this Uri u, string newScheme)
+        {
+            // Look at the current machine name and see if we have any sort of a cluster information file.
+            var mName = u.Host;
+            return _cluster_machine_info.ContainsKey(mName) ? u.UpdateUriFromCache(newScheme)
+                : File.Exists(ClusterFilename(mName)) ? u.UpdateUriFromClusterFile(newScheme)
+                : new UriBuilder(u) { Scheme = newScheme}.Uri;
+        }
+
+        /// <summary>
+        /// Get back a Uri for a machine we have already cached info for.
+        /// </summary>
+        /// <param name="u"></param>
+        /// <param name="newSchemeName"></param>
+        /// <returns></returns>
+        private static Uri UpdateUriFromCache (this Uri u, string newSchemeName)
+        {
+            var info = _cluster_machine_info[u.Host];
+            return new UriBuilder(u) { Scheme = newSchemeName, Query = $"connections={info.nConnections}", Host=info.RandomMachine(), UserName = info.User }.Uri;
+        }
+
+        /// <summary>
+        /// Load up some cluster info from a file, and then update the Uri.
+        /// </summary>
+        /// <param name="u"></param>
+        /// <param name="newSchemeName"></param>
+        /// <returns></returns>
+        private static Uri UpdateUriFromClusterFile(this Uri u, string newSchemeName)
+        {
+            // Load the cache
+            var machine_info = File.ReadAllLines(ClusterFilename(u.Host))
+                .Where(l => !l.StartsWith("#"))
+                .Select(l => l.Split(new[] { '=' }, 2))
+                .Where(k => k.Length == 2)
+                .ToDictionary(k => k[0].Trim(), k => k[1].Trim());
+
+            var info = new ClusterMachineInfo()
+            {
+                MachineList = machine_info["machines"].Split(',').Select(m => m.Trim()).ToArray(),
+                User = machine_info["user"],
+                nConnections = Int32.Parse(machine_info["connections"])
+            };
+            _cluster_machine_info[u.Host] = info;
+
+            // Do the substitution
+            return u.UpdateUriFromCache(newSchemeName);
+        }
+
+        /// <summary>
+        /// Return the cluster filename file for a particular machine name.
+        /// </summary>
+        /// <param name="mName"></param>
+        /// <returns></returns>
+        private static string ClusterFilename(string mName)
+        {
+            return $"{mName}.cluster_machines";
         }
 
         /// <summary>

@@ -1,0 +1,7 @@
+﻿# For the TeV cluster
+# Allow 10 for any machine
+connections = 10
+
+# Partial list
+machines = tev02.phys.washington.edu, tev03.phys.washington.edu, tev04.phys.washington.edu, tev05.phys.washington.edu, tev06.phys.washington.edu, tev07.phys.washington.edu, tev08.phys.washington.edu, tev09.phys.washington.edu, tev10.phys.washington.edu
+user = gwatts

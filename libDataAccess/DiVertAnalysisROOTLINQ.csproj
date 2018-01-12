@@ -247,6 +247,9 @@
     </None>
     <None Include="DiVertAnalysisROOTLINQ.nuspec" />
     <None Include="packages.config" />
+    <None Include="UWTeV-linux.cluster_machines">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="DiVertAnalysis\junk_macro_parsettree_recoTree.C" />
