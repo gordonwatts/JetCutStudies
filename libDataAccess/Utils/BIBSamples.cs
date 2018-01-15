@@ -22,7 +22,7 @@ namespace libDataAccess.Utils
         /// <remarks>
         /// If the flag for "useLessSamples" is set, then we will try to use only the first 10 samples.
         /// </remarks>
-        public static IQueryable<JetStream> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null,
+        public static async Task<IQueryable<JetStream>> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null,
             bool useLessSamples = false, double? maxPtCut = null)
         {
             // If no events, then we need to just return everything
@@ -64,7 +64,7 @@ namespace libDataAccess.Utils
             {
                 dataSamples = dataSamples.Take(20);
             }
-            return dataSamples.TakeEventsFromSamlesEvenly(requestedNumberOfEvents, filesToAskFor,
+            return await dataSamples.TakeEventsFromSamlesEvenly(requestedNumberOfEvents, filesToAskFor,
                 qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut, maxPtCut), avoidPlaces: avoidPlaces, weightByCrossSection: false);
         }
 

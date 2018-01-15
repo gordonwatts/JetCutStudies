@@ -1,5 +1,6 @@
 ﻿using libDataAccess.Utils;
 using LinqToTTreeInterfacesLib;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -131,7 +132,11 @@ namespace libDataAccess.UriSchemeHandlers
         /// <param name="opt"></param>
         private void WriteToLocalFile(string dataset_name, Options opt)
         {
-            File.AppendAllText(datasets_needed, $"{opt.jobName} {opt.jobVersion} {opt.nFiles} {dataset_name}\r\n");
+            // There could be a few of us accessing this file for writing at once, so we need to protect against that.
+            Policy
+                .Handle<IOException>()
+                .WaitAndRetryForever(count => TimeSpan.FromMilliseconds(100))
+                .Execute(() => File.AppendAllText(datasets_needed, $"{opt.jobName} {opt.jobVersion} {opt.nFiles} {dataset_name}\r\n"));
         }
 
         /// <summary>

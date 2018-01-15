@@ -74,7 +74,7 @@ namespace libDataAccess
         /// </summary>
         /// <param name="jzIndex"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetJZ(int jzIndex)
+        public static Task<IQueryable<MetaData>> GetJZ(int jzIndex)
         {
             var sample = SampleMetaData.LoadFromCSV($"J{jzIndex}Z");
             return GetSampleAsMetaData(sample.Name);
@@ -86,7 +86,7 @@ namespace libDataAccess
         /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
         /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
         /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(string sample, bool weightByCrossSection = true,
+        public static async Task<IQueryable<MetaData>> GetSampleAsMetaData(string sample, bool weightByCrossSection = true,
             string[] avoidPlaces = null, string[] preferPlaces = null,
             int? nfiles = null)
         {
@@ -115,6 +115,7 @@ namespace libDataAccess
             var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { backgroundFile });
             backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
             backgroundEvents.IgnoreQueryCache = IgnoreQueires;
+            backgroundEvents.Verbose = true;
 
             // fetch the cross section weight so that we can re-weight this sample if need be.
             double xSectionWeight = 1.0;
@@ -123,7 +124,7 @@ namespace libDataAccess
                 try
                 {
                     var sampleInfo = SampleMetaData.LoadFromCSV(sample);
-                    var bkgEvents = backgroundEvents.Select(e => e.eventWeight).FutureSum().Value;
+                    var bkgEvents = await backgroundEvents.Select(e => e.eventWeight).FutureSum();
                     xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count());
                 }
                 catch (SampleNotFoundInListException e)
@@ -164,7 +165,7 @@ namespace libDataAccess
         /// <param name="s"></param>
         /// <param name="weightByCrossSection">True if we should weight this sample by cross section or by 1</param>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true, string[] avoidPlaces = null,
+        public static Task<IQueryable<MetaData>> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true, string[] avoidPlaces = null,
             string[] preferPlaces = null)
         {
             return GetSampleAsMetaData(s.Name, weightByCrossSection, avoidPlaces, preferPlaces: preferPlaces);
@@ -177,10 +178,14 @@ namespace libDataAccess
         /// <param name="weightByCrossSection"></param>
         /// <param name="avoidPlaces"></param>
         /// <returns></returns>
-        public static IQueryable<MetaData> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> samples, bool weightByCrossSection = true, string[] avoidPlaces = null, string[] preferPlaces = null)
+        public static async Task<IQueryable<MetaData>> SamplesAsSingleQueriable(this IEnumerable<SampleMetaData> samples, bool weightByCrossSection = true, string[] avoidPlaces = null, string[] preferPlaces = null)
         {
-            return samples
+            var metadata = await Task.WhenAll(
+                samples
                 .Select(s => GetSampleAsMetaData(s, weightByCrossSection, avoidPlaces, preferPlaces: preferPlaces))
+                );
+
+            return metadata
                 .Aggregate((acc, newSample) => acc.Concat(newSample));
         }
 
@@ -197,10 +202,13 @@ namespace libDataAccess
         /// Gets properly weighted background sample as one.
         /// </summary>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetAllJetSamples(string[] preferPlaces = null)
+        public static async Task<IQueryable<MetaData>> GetAllJetSamples(string[] preferPlaces = null)
         {
-            return SampleMetaData.AllSamplesWithTag("mc15c", "background", "jz")
+            var metadata = await Task.WhenAll(
+                SampleMetaData.AllSamplesWithTag("mc15c", "background", "jz")
                 .Select(smd => GetSampleAsMetaData(smd.Name, preferPlaces: preferPlaces))
+                );
+            return metadata
                 .Aggregate((IQueryable<MetaData>)null, (s, add) => s == null ? add : s.Concat(add));
         }
 
@@ -224,7 +232,7 @@ namespace libDataAccess
         /// <param name="dataSamples">List of the samples we want to pull events from</param>
         /// <param name="sampleConverter">Convert a MetaData queryable to the thign we want to count for distribution (and return)</param>
         /// <returns></returns>
-        public static IQueryable<T> TakeEventsFromSamlesEvenly<T>(this IEnumerable<SampleMetaData> dataSamples,
+        public static async Task<IQueryable<T>> TakeEventsFromSamlesEvenly<T>(this IEnumerable<SampleMetaData> dataSamples,
             int numberOfEvents, int numberOfFiles,
             Func<IQueryable<Files.MetaData>, IQueryable<T>> sampleConverter,
             bool weightByCrossSection = true,
@@ -238,23 +246,30 @@ namespace libDataAccess
             }
 
             // Helper function to turn a sample into a data stream
-            IQueryable<T> get_sample(SampleMetaData sample)
+            async Task<IQueryable<T>> get_sample(SampleMetaData sample)
             {
-                return sampleConverter(Files.GetSampleAsMetaData(sample.Name, avoidPlaces: avoidPlaces, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection, preferPlaces: preferPlaces));
+                return sampleConverter(await Files.GetSampleAsMetaData(sample.Name, avoidPlaces: avoidPlaces, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection, preferPlaces: preferPlaces));
             }
 
             // If we are to take all samples... then this is easy.
             if (numberOfEvents < 0)
             {
-                return dataSamples
-                    .Select(s => get_sample(s))
+                var metadata = await Task.WhenAll(
+                                dataSamples
+                                    .Select(s => get_sample(s))
+                                );
+
+                return metadata
                     .Aggregate((acc, news) => acc.Concat(news));
             }
 
             // Get the number of events in each sample.
             var allSamples = dataSamples.ToArray();
-            var eventCounts = allSamples
-                .Select(s => (sample: s, count: get_sample(s).Count()))
+
+            var eventCounts = (await Task.WhenAll(
+                                allSamples
+                                    .Select(async s => (sample: s, count: await (await get_sample(s)).FutureCount()))
+                                    ))
                 .Where(ec => ec.count > 0)
                 .ToArray();
 
@@ -268,8 +283,7 @@ namespace libDataAccess
 
                 return totalEvents == 0
                     ? null
-                    : eventCounts
-                      .Select(ec => get_sample(ec.sample))
+                    : (await Task.WhenAll(eventCounts.Select(ec => get_sample(ec.sample))))
                       .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
             }
 
@@ -288,9 +302,10 @@ namespace libDataAccess
                     .ToArray();
 
             // Now build and return the dude!
-            return toTakeFromSample
+            return (await Task.WhenAll(toTakeFromSample
                 .Where(ec => ec.count > 0)
-                .Select(tf => get_sample(tf.sample).Take(tf.count))
+                .Select(async tf => (await get_sample(tf.sample)).Take(tf.count))
+                ))
                 .Aggregate((acc, sampleToAppend) => acc.Concat(sampleToAppend));
         }
     }

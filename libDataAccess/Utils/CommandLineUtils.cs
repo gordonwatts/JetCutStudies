@@ -54,7 +54,7 @@ namespace libDataAccess.Utils
         /// Fetch the requested background depending on the signal.
         /// </summary>
         /// <returns></returns>
-        public static IQueryable<MetaData> GetRequestedBackground()
+        public static Task<IQueryable<MetaData>> GetRequestedBackground()
         {
             switch (RequstedBackgroundSample)
             {
@@ -96,10 +96,11 @@ namespace libDataAccess.Utils
         /// </summary>
         /// <param name="enumerable"></param>
         /// <returns></returns>
-        private static IEnumerable<Tuple<string, IQueryable<MetaData>>> SamplesAsNamedSequence(IEnumerable<SampleMetaData> samples, string[] avoidPlaces = null)
+        private static Task<Tuple<string, IQueryable<MetaData>>[]> SamplesAsNamedSequence(IEnumerable<SampleMetaData> samples, string[] avoidPlaces = null)
         {
-            return samples
-                .Select(s => Tuple.Create(s.Name, Files.GetSampleAsMetaData(s, avoidPlaces: avoidPlaces)));
+            return Task.WhenAll(samples
+                            .Select(async s => Tuple.Create(s.Name, await Files.GetSampleAsMetaData(s, avoidPlaces: avoidPlaces)))
+                   );
         }
 
         /// <summary>

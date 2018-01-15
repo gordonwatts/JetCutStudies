@@ -17,6 +17,7 @@ using static libDataAccess.Utils.Constants;
 using static libDataAccess.Utils.CommandLineUtils;
 using ROOTNET.Globals;
 using CommandLine;
+using System.Threading.Tasks;
 
 namespace GenericPerformancePlots
 {
@@ -39,7 +40,7 @@ namespace GenericPerformancePlots
         ///       It could be those are far forward and thus have no tracks.
         /// TODO: Should any of these plots look at stuff in the way that Heather has (2D heat maps for cuts)?
         /// </remarks>
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var opt = CommandLineUtils.ParseOptions<Options>(args);
             var preferedPlacesToRun = new[] { "UWTeV-linux" };
@@ -47,11 +48,14 @@ namespace GenericPerformancePlots
             Console.WriteLine("Setting up the queries");
 
             // All the background samples have to be done first.
-            var backgroundSamples = SampleMetaData.AllSamplesWithTag("mc15c", "background")
-                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info, preferPlaces: preferedPlacesToRun), info.NickName))
-                .ToArray();
+            var backgroundSamples = Task.WhenAll(
+                    SampleMetaData.AllSamplesWithTag("mc15c", "background")
+                    .Select(async info => Tuple.Create(await Files.GetSampleAsMetaData(info, preferPlaces: preferedPlacesToRun), info.NickName))
+                    .ToArray()
+                    );
 
-            var backgroundEvents = Files.GetAllJetSamples(preferedPlacesToRun).Select(e => e.Data);
+            var backgroundEvents = Files.GetAllJetSamples(preferedPlacesToRun)
+                .ContinueWith(r => r.Result.Select(e => e.Data));
 
             // All the signal we are going to make plots of.
             var tags = new[] { "mc15c", "signal", "hss" };
@@ -59,20 +63,25 @@ namespace GenericPerformancePlots
             {
                 tags = tags.Add("quick_compare").ToArray();
             }
-            var signalSamples = SampleMetaData.AllSamplesWithTag(tags)
-                .Select(info => Tuple.Create(Files.GetSampleAsMetaData(info, preferPlaces: preferedPlacesToRun), info.NickName))
-                .ToArray();
+            var signalSamples = Task.WhenAll(
+                    SampleMetaData.AllSamplesWithTag(tags)
+                        .Select(async info => Tuple.Create(await Files.GetSampleAsMetaData(info, preferPlaces: preferedPlacesToRun), info.NickName))
+                        .ToArray()
+                );
 
             // Get the beam-halo samples to use for testing and training
             var data15 = SampleMetaData.AllSamplesWithTag("data15_p2950")
                 .Take(opt.UseFullDataset ? 10000 : 2)
                 .SamplesAsSingleQueriable(preferPlaces: preferedPlacesToRun)
-                .AsBeamHaloStream(SampleUtils.DataEpoc.data15);
+                .ContinueWith(r => r.Result.AsBeamHaloStream(SampleUtils.DataEpoc.data15));
 
             var data16 = SampleMetaData.AllSamplesWithTag("data16_p2950")
                 .Take(opt.UseFullDataset ? 10000 : 1)
                 .SamplesAsSingleQueriable(preferPlaces: preferedPlacesToRun)
-                .AsBeamHaloStream(SampleUtils.DataEpoc.data16);
+                .ContinueWith(r => r.Result.AsBeamHaloStream(SampleUtils.DataEpoc.data16));
+
+            // Parallelize looking and running everything. This makes the below code execute more smoothly (I think).
+            await Task.WhenAll(backgroundSamples, backgroundEvents, signalSamples, data15, data16);
 
             // Output file
             Console.WriteLine("Opening output file & Running the queries");
@@ -82,7 +91,7 @@ namespace GenericPerformancePlots
                 var bkgDir = outputHistograms.mkdir("background");
 
                 Console.WriteLine("Making background plots.");
-                foreach (var background in backgroundSamples)
+                foreach (var background in backgroundSamples.Result)
                 {
                     Console.WriteLine(background.Item2);
                     NoGCExecute(() =>
@@ -100,10 +109,10 @@ namespace GenericPerformancePlots
                 NoGCExecute(() =>
                 {
                     var dr = bkgDir.mkdir("data15");
-                    data15.Select(m => (double) m.Data.actualIntPerCrossing)
+                    data15.Result.Select(m => (double) m.Data.actualIntPerCrossing)
                         .FuturePlot(EventInteractionsPerCossing, "all")
                         .Save(dr);
-                    BuildSuperJetInfo(data15.Select(d => d.Data))
+                    BuildSuperJetInfo(data15.Result.Select(d => d.Data))
                         .PlotBasicDataPlots(dr, "all");
                 });
 
@@ -111,23 +120,23 @@ namespace GenericPerformancePlots
                 NoGCExecute(() =>
                 {
                     var dr = bkgDir.mkdir("data16");
-                    data16.Select(m => (double) m.Data.actualIntPerCrossing)
+                    data16.Result.Select(m => (double) m.Data.actualIntPerCrossing)
                         .FuturePlot(EventInteractionsPerCossing, "all")
                         .Save(dr);
-                    BuildSuperJetInfo(data16.Select(d => d.Data))
+                    BuildSuperJetInfo(data16.Result.Select(d => d.Data))
                         .PlotBasicDataPlots(dr, "all");
                 });
 
                 // Do a quick study for each signal sample, using all the backgrounds at once to make
                 // performance plots. 
                 Console.WriteLine("Making the signal/background plots.");
-                foreach (var sample in signalSamples)
+                foreach (var sample in signalSamples.Result)
                 {
                     Console.WriteLine(sample.Item2);
                     var w = outputHistograms.mkdir(sample.Item2);
                     NoGCExecute(() =>
                     {
-                        var status = PerSampleStudies(backgroundEvents, sample.Item1.Select(md => md.Data), w);
+                        var status = PerSampleStudies(backgroundEvents.Result, sample.Item1.Select(md => md.Data), w);
                         DumpResults($"Sample {sample.Item2}:", status);
                     });
                 }
