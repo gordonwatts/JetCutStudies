@@ -103,6 +103,7 @@ namespace CalRatioTMVAUtilities
                     SumPtOfAllTracks = t.SumPtOfAllTracks,
                     EventNumber = t.EventNumber,
                     RunNumber = t.RunNumber,
+                    MHTOverHT = t.MHTOverHT,
                     JetET = t.JetET,
                     JetWidth = t.JetWidth,
                     JetDRTo2GeVTrack = t.JetDRTo2GeVTrack,
