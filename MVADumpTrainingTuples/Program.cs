@@ -102,15 +102,21 @@ namespace MVADumpTrainingTuples
                 // Flatten everything as needed.
                 var toMakeFlat = BuildFlatteningExpression(options.FlattenBy);
 
-                Console.WriteLine("Writing out csv files for multijet.");
-                var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat)
-                    .AsCSV(new FileInfo("multijet.csv"));
-                CopyFilesOver(backgroundTrees, "multijet");
+                if (options.EventsToUseForJzTraining > 0)
+                {
+                    Console.WriteLine("Writing out csv files for multijet.");
+                    var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat)
+                        .AsCSV(new FileInfo("multijet.csv"));
+                    CopyFilesOver(backgroundTrees, "multijet");
+                }
 
-                Console.WriteLine("Writing out csv files for signal.");
-                var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat)
-                    .AsCSV(new FileInfo("signal.csv"));
-                CopyFilesOver(flatSignalTrainingData, "signal");
+                if (options.EventsToUseForSignalTraining > 0)
+                {
+                    Console.WriteLine("Writing out csv files for signal.");
+                    var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat)
+                        .AsCSV(new FileInfo("signal.csv"));
+                    CopyFilesOver(flatSignalTrainingData, "signal");
+                }
 
 
                 if (data15TrainingAndTesting != null)
