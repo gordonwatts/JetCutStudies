@@ -137,15 +137,18 @@ namespace JetMVAClassifierTraining
                 options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining,
                 useLessSamples: !options.UseFullDataset);
 
+            // Wait for them all to complete.
+            await Task.WhenAll(signalInCalOnly, backgroundTrainingTree, data15TrainingAndTesting, data16TrainingAndTesting);
+
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("JetMVAClassifierTraining.root"))
             {
                 // Flatten everything as needed.
                 var toMakeFlat = BuildFlatteningExpression(options.FlattenBy);
-                var flatBackgroundTrainingData = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat);
-                var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat);
-                var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat);
-                var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat);
+                var flatBackgroundTrainingData = FlattenTrainingTree(backgroundTrainingTree.Result, outputHistograms, toMakeFlat);
+                var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.Result.AsTrainingTree(), outputHistograms, toMakeFlat);
+                var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat);
+                var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat);
 
                 // Finally, plots of all the training input variables.
                 flatBackgroundTrainingData
@@ -223,8 +226,9 @@ namespace JetMVAClassifierTraining
                 var avoidPlaces = new[] { "Local", "UWTeV" };
                 var trainingResultDir = outputHistograms.mkdir("Results");
                 var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
-                var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
-                    .Select(info => (name: info.NickName, file: Files.GetSampleAsMetaData(info, avoidPlaces: avoidPlaces, weightByCrossSection: false)));
+                var signalTestSourcesList = SampleMetaData.AllSamplesWithTag(tags.ToArray())
+                    .Select(async info => (name: info.NickName, file: await Files.GetSampleAsMetaData(info, avoidPlaces: avoidPlaces, weightByCrossSection: false)));
+                var signalTestSources = await Task.WhenAll(signalTestSourcesList);
                 var cBDT = m1.GetMVAMulticlassValue();
                 foreach (var s in signalTestSources)
                 {
@@ -237,41 +241,45 @@ namespace JetMVAClassifierTraining
                     GenerateEfficiencyPlots(trainingResultDir.mkdir(s.Item1), sEvents, cBDT, new string[] { "hss", "multijet", "bib" });
                 }
 
-                // LLP Training
-                Console.WriteLine("Plots for HSS files");
+                // Get the samples against which we will dump everything.
                 var llp_training = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                     .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles * 2,
                         mdQueriable => mdQueriable
                                         .AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining)
                                         .FilterSignal(options.LxyCut * 1000.0, options.LzCut * 1000.0),
                         weightByCrossSection: false, avoidPlaces: avoidPlaces);
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("training_hss"), llp_training.AsTrainingTree(),
-                    cBDT, new string[] { "hss", "multijet", "bib" });
-
-                // Multijet training
-                Console.WriteLine("Plots for JZ files");
                 var mj_training = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining,
                     options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
                     weightByCrossSection: true, avoidPlaces: avoidPlaces);
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("training_mj"), mj_training,
-                    cBDT, new string[] { "hss", "multijet", "bib" });
-
-                // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
-                // version of root than we have locally on windows.
-                Console.WriteLine("Plots for BIB files");
                 var bib15 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut,
                     avoidPlaces: new[] { "Local", "UWTeV" },
                     useLessSamples: !options.UseFullDataset);
                 var bib16 = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut,
                     avoidPlaces: new[] { "Local", "UWTeV" },
                     useLessSamples: !options.UseFullDataset);
-
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), bib15.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bib16.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
-
                 var multijet = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining, options.pTCut,
                     Files.NFiles, avoidPlaces: new[] { "Local", "UWTeV" });
-                GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), multijet, cBDT, new string[] { "hss", "multijet", "bib" });
+
+                await Task.WhenAll(llp_training, mj_training, bib15, bib16, multijet);
+
+                // LLP Training
+                Console.WriteLine("Plots for HSS files");
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("training_hss"), llp_training.Result.AsTrainingTree(),
+                    cBDT, new string[] { "hss", "multijet", "bib" });
+
+                // Multijet training
+                Console.WriteLine("Plots for JZ files");
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("training_mj"), mj_training.Result,
+                    cBDT, new string[] { "hss", "multijet", "bib" });
+
+                // Do do background and bib we need to force the data onto the non-local root stuff as the training happens with a more advanced
+                // version of root than we have locally on windows.
+                Console.WriteLine("Plots for BIB files");
+
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("data15"), bib15.Result.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("data16"), bib16.Result.AsTrainingTree(), cBDT, new string[] { "hss", "multijet", "bib" });
+
+                GenerateEfficiencyPlots(trainingResultDir.mkdir("jz"), multijet.Result, cBDT, new string[] { "hss", "multijet", "bib" });
 
 #if false
                 // Calculate the cut value for each output in order to determine the precision.
