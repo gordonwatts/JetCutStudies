@@ -1,4 +1,5 @@
-﻿using DiVertAnalysis;
+﻿using CommandLine;
+using DiVertAnalysis;
 using libDataAccess;
 using libDataAccess.Utils;
 using LINQToTreeHelpers;
@@ -9,15 +10,13 @@ using ROOTNET.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static libDataAccess.JetInfoExtraHelpers;
 using static libDataAccess.PlotSpecifications;
+using static libDataAccess.Utils.CommandLineUtils;
+using static libDataAccess.Utils.Constants;
 using static LINQToTreeHelpers.PlottingUtils;
 using static System.Linq.Enumerable;
-using static libDataAccess.Utils.Constants;
-using static libDataAccess.Utils.CommandLineUtils;
-using ROOTNET.Globals;
-using CommandLine;
-using System.Threading.Tasks;
 
 namespace GenericPerformancePlots
 {
@@ -42,6 +41,8 @@ namespace GenericPerformancePlots
         /// </remarks>
         static async Task Main(string[] args)
         {
+            ConsoleMessageDumper.SetupConsoleMessageDumper();
+
             var opt = CommandLineUtils.ParseOptions<Options>(args);
             var preferedPlacesToRun = new[] { "UWTeV-linux" };
 

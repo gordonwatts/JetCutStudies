@@ -111,11 +111,11 @@ namespace libDataAccess
             uriOptions["jobVersion"] = JobVersionNumber.ToString();
 
             // Build the query tree.
-            var backgroundFile = RecoverUri(sample, uriOptions);
-            var backgroundEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { backgroundFile });
-            backgroundEvents.UseStatementOptimizer = UseCodeOptimizer;
-            backgroundEvents.IgnoreQueryCache = IgnoreQueires;
-            backgroundEvents.Verbose = true;
+            var sampleFileUri = RecoverUri(sample, uriOptions);
+            var sampleEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { sampleFileUri });
+            sampleEvents.UseStatementOptimizer = UseCodeOptimizer;
+            sampleEvents.IgnoreQueryCache = IgnoreQueires;
+            //backgroundEvents.Verbose = true;
 
             // fetch the cross section weight so that we can re-weight this sample if need be.
             double xSectionWeight = 1.0;
@@ -124,8 +124,8 @@ namespace libDataAccess
                 try
                 {
                     var sampleInfo = SampleMetaData.LoadFromCSV(sample);
-                    var bkgEvents = await backgroundEvents.Select(e => e.eventWeight).FutureSum();
-                    xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / backgroundEvents.Count());
+                    var bkgEvents = await sampleEvents.Select(e => e.eventWeight).FutureSum();
+                    xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / sampleEvents.Count());
                 }
                 catch (SampleNotFoundInListException e)
                 {
@@ -135,7 +135,7 @@ namespace libDataAccess
             }
 
             // And return the stream.
-            return GenerateStream(backgroundEvents, xSectionWeight);
+            return GenerateStream(sampleEvents, xSectionWeight);
         }
 
         /// <summary>

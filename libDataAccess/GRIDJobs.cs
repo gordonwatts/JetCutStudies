@@ -23,7 +23,7 @@ namespace libDataAccess
         public static async Task<FileInfo[]> FindJobFiles(string jobName, int jobVersion, string sourceDataset, int nFiles = 0, Action<string> statusUpdate = null, bool intelligentLocal = false, int timeoutDownloadSecs = 3600*4)
         {
             string dataset = GetDatasetForJob(jobName, jobVersion, sourceDataset);
-            var uris = await DatasetManager.ListOfFilesInDatasetAsync(dataset, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
+            var uris = await DataSetManager.ListOfFilesInDataSetAsync(dataset, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             if (nFiles != 0)
             {
                 uris = uris.OrderBy(u => u.Segments.Last()).Take(nFiles).ToArray();
@@ -33,9 +33,9 @@ namespace libDataAccess
             bool tryLocalIfFail = intelligentLocal && nFiles <= 2 && nFiles != 0;
             try
             {
-                result = await DatasetManager.MakeFilesLocalAsync(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
+                result = await DataSetManager.MakeFilesLocalAsync(uris, statusUpdate: m => statusUpdate($"{m} ({dataset})"));
             }
-            catch (DatasetManager.NoLocalPlaceToCopyToException e)
+            catch (NoLocalPlaceToCopyToException e)
             {
                 if (statusUpdate != null)
                 {
@@ -52,7 +52,7 @@ namespace libDataAccess
                     var naming = nFiles == 0 ? "all" : nFiles.ToString();
                     statusUpdate($"  -> Trying to fetch {dataset} to Local location ({naming} files)");
                 }
-                result = await DatasetManager.CopyFilesToAsync(await DatasetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
+                result = await DataSetManager.CopyFilesToAsync(await DataSetManager.FindLocation("Local"), uris, m => statusUpdate($"{m} ({dataset})"));
             }
 
             if (result == null)
@@ -80,7 +80,7 @@ namespace libDataAccess
             }
 
             // Get the resulting job name for this guy.
-            var pandaJobName = job.ResultingDatasetName(sourceDataset) + "/";
+            var pandaJobName = job.ResultingDataSetName(sourceDataset) + "/";
 
             string[] containers = GetContainersForPandJob(jobName, jobVersion, sourceDataset, pandaJobName);
 
@@ -111,8 +111,8 @@ namespace libDataAccess
         {
             // Get the files and the places where those files are located.
             var ds = GetDatasetForJob(jobName, jobVersionNumber, dsname);
-            var allFiles = (await DatasetManager.ListOfFilesInDatasetAsync(ds)).Take(nFiles == 0 ? 10000 : nFiles);
-            var places = (await DatasetManager.ListOfPlacesHoldingAllFilesAsync(allFiles, maxDataTier: 60))
+            var allFiles = (await DataSetManager.ListOfFilesInDataSetAsync(ds)).Take(nFiles == 0 ? 10000 : nFiles);
+            var places = (await DataSetManager.ListOfPlacesHoldingAllFilesAsync(allFiles, maxDataTier: 60))
                 .Where(pl => avoidPlaces == null ? true : !avoidPlaces.Contains(pl))
                 .ToArray();
 
@@ -133,7 +133,7 @@ namespace libDataAccess
             var p = places.First();
 
             // Now, get the uri's
-            var uris = await DatasetManager.LocalPathToFilesAsync(p, allFiles);
+            var uris = await DataSetManager.LocalPathToFilesAsync(p, allFiles);
 
             // We need to run these either locally or remotely.
             // This is a huristic, sadly. Lets hope!
@@ -272,7 +272,7 @@ namespace libDataAccess
                 }
 
                 pandaTaskStatus = pandaTask.status;
-                containers = pandaTask.DatasetNamesOUT();
+                containers = pandaTask.DataSetNamesOUT();
 
                 if (!cacheFile.Directory.Exists)
                 {
