@@ -23,7 +23,7 @@ namespace libDataAccess.Utils
         /// If the flag for "useLessSamples" is set, then we will try to use only the first 10 samples.
         /// </remarks>
         public static async Task<IQueryable<JetStream>> GetBIBSamples(int requestedNumberOfEvents, DataEpoc epoc, double pTCut, string[] avoidPlaces = null,
-            bool useLessSamples = false, double? maxPtCut = null)
+            bool useLessSamples = false, double? maxPtCut = null, string[] preferPlaces = null)
         {
             // If no events, then we need to just return everything
             if (requestedNumberOfEvents == 0)
@@ -49,8 +49,11 @@ namespace libDataAccess.Utils
                 var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
                 var placesToAvoidTag = placesToAvoid == null ? "" : $"&avoidPlaces={placesToAvoid}";
 
+                var placesToGo = preferPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
+                var placesToGoTag = placesToGo == null ? "" : $"&preferPlaces={placesToGo}";
+
                 // Since everything is evenly weighted, just grab everything.
-                var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={filesToAskFor}{placesToAvoidTag}&jobName={Files.JobName}&jobVersion={Files.JobVersionNumber.ToString()}");
+                var tagUri = new Uri($"tagcollection://{tag}?nFilesPerSample={filesToAskFor}{placesToAvoidTag}{placesToGo}&jobName={Files.JobName}&jobVersion={Files.JobVersionNumber.ToString()}");
                 var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
                 return Files.GenerateStream(queriable, 1.0)
                     .AsBeamHaloStream(epoc)
@@ -65,7 +68,7 @@ namespace libDataAccess.Utils
                 dataSamples = dataSamples.Take(20);
             }
             return await dataSamples.TakeEventsFromSamlesEvenly(requestedNumberOfEvents, filesToAskFor,
-                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut, maxPtCut), avoidPlaces: avoidPlaces, weightByCrossSection: false);
+                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut, maxPtCut), avoidPlaces: avoidPlaces, preferPlaces: preferPlaces, weightByCrossSection: false);
         }
 
     }

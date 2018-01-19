@@ -4,9 +4,11 @@ using libDataAccess;
 using libDataAccess.Utils;
 using LINQToTreeHelpers.FutureUtils;
 using LINQToTTreeLib.Files;
+using LINQToTTreeLib;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using static CalRatioTMVAUtilities.BackgroundSampleUtils;
 using static CalRatioTMVAUtilities.PtReweightUtils;
 using static libDataAccess.Utils.BIBSamples;
@@ -51,7 +53,7 @@ namespace MVADumpTrainingTuples
             public double LzCut { get; set; }
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             ConsoleMessageDumper.SetupConsoleMessageDumper();
 
@@ -79,22 +81,29 @@ namespace MVADumpTrainingTuples
                     : options.EventsToUseForTrainingAndTestingBIB16;
             }
 
+            // Where we'd like to run
+            var whereToRun = new[] { "UWTeV-linux", "CERNLLP-linux" };
+
             // Class: LLP
             Console.WriteLine("Fetching HSS Sample");
             var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles * 2,
-                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut * 1000.0, options.LzCut * 1000.0), weightByCrossSection: false);
+                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut * 1000.0, options.LzCut * 1000.0),
+                    weightByCrossSection: false, preferPlaces: whereToRun);
 
             // Class: Multijet
             Console.WriteLine("Fetching JZ Sample");
             var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining,
-                options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining);
+                options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
+                preferPlaces: whereToRun);
 
             // Class: BIB
             Console.WriteLine("Fetching BIB15 Sample");
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
+            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset, preferPlaces: whereToRun);
             Console.WriteLine("Fetching BIB16 Sample");
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset);
+            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset, preferPlaces: whereToRun);
+
+            await Task.WhenAll(signalInCalOnly, backgroundTrainingTree, data15TrainingAndTesting, data16TrainingAndTesting);
 
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("MVADumpTrainingTuples.root"))
@@ -102,38 +111,51 @@ namespace MVADumpTrainingTuples
                 // Flatten everything as needed.
                 var toMakeFlat = BuildFlatteningExpression(options.FlattenBy);
 
-                if (options.EventsToUseForJzTraining > 0)
+                async Task GenerateJZFiles()
                 {
-                    Console.WriteLine("Writing out csv files for multijet.");
-                    var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat)
-                        .AsCSV(new FileInfo("multijet.csv"));
-                    CopyFilesOver(backgroundTrees, "multijet");
+                    if (options.EventsToUseForJzTraining > 0)
+                    {
+                        Console.WriteLine("Writing out csv files for multijet.");
+                        var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree.Result, outputHistograms, toMakeFlat)
+                            .FutureAsCSV(new FileInfo("multijet.csv"));
+                        CopyFilesOver(await backgroundTrees, "multijet");
+                    }
                 }
 
-                if (options.EventsToUseForSignalTraining > 0)
+                async Task GenerateSignalFiles()
                 {
-                    Console.WriteLine("Writing out csv files for signal.");
-                    var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.AsTrainingTree(), outputHistograms, toMakeFlat)
-                        .AsCSV(new FileInfo("signal.csv"));
-                    CopyFilesOver(flatSignalTrainingData, "signal");
+                    if (options.EventsToUseForSignalTraining > 0)
+                    {
+                        Console.WriteLine("Writing out csv files for signal.");
+                        var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
+                            .FutureAsCSV(new FileInfo("signal.csv"));
+                        CopyFilesOver(await flatSignalTrainingData, "signal");
+                    }
                 }
 
-
-                if (data15TrainingAndTesting != null)
+                async Task GenerateBiB15Files()
                 {
-                    Console.WriteLine("Writing out csv files for BIB15.");
-                    var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
-                        .AsCSV(new FileInfo("bib15.csv"));
-                    CopyFilesOver(flatData15, "bib15");
+                    if (data15TrainingAndTesting != null)
+                    {
+                        Console.WriteLine("Writing out csv files for BIB15.");
+                        var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
+                            .FutureAsCSV(new FileInfo("bib15.csv"));
+                        CopyFilesOver(await flatData15, "bib15");
+                    }
                 }
 
-                if (data16TrainingAndTesting != null)
+                async Task GenerateBiB16Files()
                 {
-                    Console.WriteLine("Writing out csv files for BIB16.");
-                    var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
-                        .AsCSV(new FileInfo("bib16.csv"));
-                    CopyFilesOver(flatData16, "bib16");
+                    if (data16TrainingAndTesting != null)
+                    {
+                        Console.WriteLine("Writing out csv files for BIB16.");
+                        var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
+                            .FutureAsCSV(new FileInfo("bib16.csv"));
+                        CopyFilesOver(await flatData16, "bib16");
+                    }
                 }
+
+                await Task.WhenAll(GenerateJZFiles(), GenerateSignalFiles(), GenerateBiB15Files(), GenerateBiB16Files());
             }
 
             // Done. Dump all output.

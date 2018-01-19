@@ -117,10 +117,13 @@ namespace libDataAccess
                 .ToArray();
 
             // If anything is prefered, take it.
-            var prefered = places.Where(plac => preferPlaces.Contains(plac)).ToArray();
-            if (prefered.Length > 0)
+            if (preferPlaces != null)
             {
-                places = prefered;
+                var prefered = places.Where(plac => preferPlaces.Contains(plac)).ToArray();
+                if (prefered.Length > 0)
+                {
+                    places = prefered;
+                }
             }
 
             // If there is no place, then we are done
