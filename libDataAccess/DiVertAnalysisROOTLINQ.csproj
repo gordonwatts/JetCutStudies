@@ -52,7 +52,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Doddle.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=183ffec7490b24a9, processorArchitecture=MSIL">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build573\lib\net45\Doddle.Reporting.dll</HintPath>
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build575\lib\net45\Doddle.Reporting.dll</HintPath>
     </Reference>
     <Reference Include="libCoreWrapper, Version=13.13.6037.39753, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\ROOT.NET.Dynamic.5.34.36.13\lib\net40\libCoreWrapper.dll</HintPath>
@@ -114,14 +114,14 @@
       <HintPath>..\packages\ROOT.NET.Tree.5.34.36.13\lib\net40\libTreeWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LINQToTreeHelpers, Version=0.50.6592.42621, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build573\lib\net45\LINQToTreeHelpers.dll</HintPath>
+    <Reference Include="LINQToTreeHelpers, Version=0.50.6593.7817, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build575\lib\net45\LINQToTreeHelpers.dll</HintPath>
     </Reference>
     <Reference Include="LinqToTTreeInterfacesLib, Version=0.42.6592.42599, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build573\lib\net45\LinqToTTreeInterfacesLib.dll</HintPath>
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build575\lib\net45\LinqToTTreeInterfacesLib.dll</HintPath>
     </Reference>
     <Reference Include="LINQToTTreeLib, Version=0.51.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build573\lib\net45\LINQToTTreeLib.dll</HintPath>
+      <HintPath>..\packages\LINQToTTree-Head.0.51.0-build575\lib\net45\LINQToTTreeLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
@@ -276,11 +276,11 @@
     <Error Condition="!Exists('..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ROOT.NET.Dynamic.5.34.36.13\build\net40\ROOT.NET.Dynamic.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
     <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets'))" />
-    <Error Condition="!Exists('..\packages\LINQToTTree-Head.0.51.0-build573\build\LINQToTTree-Head.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LINQToTTree-Head.0.51.0-build573\build\LINQToTTree-Head.targets'))" />
+    <Error Condition="!Exists('..\packages\LINQToTTree-Head.0.51.0-build575\build\LINQToTTree-Head.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LINQToTTree-Head.0.51.0-build575\build\LINQToTTree-Head.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Import Project="..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
-  <Import Project="..\packages\LINQToTTree-Head.0.51.0-build573\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build573\build\LINQToTTree-Head.targets')" />
+  <Import Project="..\packages\LINQToTTree-Head.0.51.0-build575\build\LINQToTTree-Head.targets" Condition="Exists('..\packages\LINQToTTree-Head.0.51.0-build575\build\LINQToTTree-Head.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

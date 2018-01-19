@@ -103,9 +103,11 @@ namespace libDataAccess.UriSchemeHandlers
 
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            return await GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles,
+            var files = await GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles,
                 avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','),
                 preferPlaces: string.IsNullOrWhiteSpace(opt.preferPlaces) ? null : opt.preferPlaces.Split(','));
+
+            return files;
         }
 
         /// <summary>
