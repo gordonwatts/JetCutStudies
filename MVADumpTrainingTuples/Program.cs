@@ -135,7 +135,7 @@ namespace MVADumpTrainingTuples
 
                 async Task GenerateBiB15Files()
                 {
-                    if (data15TrainingAndTesting != null)
+                    if (data15TrainingAndTesting.Result != null)
                     {
                         Console.WriteLine("Writing out csv files for BIB15.");
                         var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
@@ -146,7 +146,7 @@ namespace MVADumpTrainingTuples
 
                 async Task GenerateBiB16Files()
                 {
-                    if (data16TrainingAndTesting != null)
+                    if (data16TrainingAndTesting.Result != null)
                     {
                         Console.WriteLine("Writing out csv files for BIB16.");
                         var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
