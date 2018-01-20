@@ -26,7 +26,7 @@ namespace CalRatioTMVAUtilities
             return await CommandLineUtils.GetRequestedBackgroundSourceList(avoidPlaces)
                 .TakeEventsFromSamlesEvenly(eventsToUseForTrainingAndTesting, numberOfFiles,
                     qm => qm.AsGoodJetStream(pTCut, maxPtCut).AsTrainingTree(), weightByCrossSection: weightByCrossSection,
-                    avoidPlaces: avoidPlaces);
+                    avoidPlaces: avoidPlaces, preferPlaces: preferPlaces);
         }
     }
 }
