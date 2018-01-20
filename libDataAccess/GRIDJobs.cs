@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace libDataAccess
@@ -235,7 +236,22 @@ namespace libDataAccess
         /// <returns></returns>
         private static string ClusterFilename(string mName)
         {
-            return new FileInfo($"{mName}.cluster_machines").FullName;
+            var dir = new FileInfo(Assembly.GetCallingAssembly().Location).DirectoryName;
+            var allPossible = ParentDirectories(new DirectoryInfo(dir))
+                .Select(d => new FileInfo($"{d}\\{mName}.cluster_machines"))
+                .Where(f => f.Exists);
+
+            return allPossible.FirstOrDefault()?.FullName;
+        }
+
+        private static IEnumerable<string> ParentDirectories (DirectoryInfo startFrom)
+        {
+            var startDir = startFrom ?? new DirectoryInfo(System.Environment.CurrentDirectory);
+            while (startDir.Name != "")
+            {
+                yield return startDir.FullName;
+                startDir = startDir.Parent;
+            }
         }
 
         /// <summary>
