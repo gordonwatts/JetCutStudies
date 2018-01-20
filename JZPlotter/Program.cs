@@ -10,6 +10,7 @@ using libDataAccess.Utils;
 using System.Collections.Generic;
 using libDataAccess;
 using static libDataAccess.Utils.CommandLineUtils;
+using System.Threading.Tasks;
 
 namespace JZPlotter
 {
@@ -26,14 +27,14 @@ namespace JZPlotter
 
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // Get command line arguments
             var opt = ParseOptions<Options>(args);
 
             // Build our own set of background samples so we can experiment.
-            var jets = SampleMetaData.AllSamplesWithTag("background")
-                .Select(info => Files.GetSampleAsMetaData(info));
+            var jets = await Task.WhenAll(SampleMetaData.AllSamplesWithTag("background")
+                .Select(info => Files.GetSampleAsMetaData(info)));
 
             // Count them individually
             var individualCounts = jets.Select(sample => sample.FutureCount()).ToArray();
@@ -46,14 +47,14 @@ namespace JZPlotter
                 .Concat(SampleMetaData.AllSamplesWithTag("background").Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info))))
                 .ToArray();
 
-            var totalCount = GetAllJetSamples().FutureCount();
+            var totalCount = (await GetAllJetSamples()).FutureCount();
 
             // Make a pT plot
             using (var outputHistograms = new FutureTFile("JZPlotter.root"))
             {
                 foreach (var sampleInfo in allSamplesToTest)
                 {
-                    var events = sampleInfo.Item2;
+                    var events = await sampleInfo.Item2;
                     var hdir = outputHistograms.mkdir(sampleInfo.Item1);
 
                     events

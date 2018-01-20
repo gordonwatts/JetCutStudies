@@ -235,6 +235,7 @@
     <Compile Include="Utils\ObjectUtils.cs" />
     <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Utils\SampleUtils.cs" />
+    <Compile Include="Utils\TaskUtils.cs" />
     <Compile Include="Utils\UriExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

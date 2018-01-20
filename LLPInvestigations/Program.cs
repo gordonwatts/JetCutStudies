@@ -15,6 +15,7 @@ using static LINQToTreeHelpers.ROOTUtils;
 using static System.Math;
 using System.IO;
 using static libDataAccess.Utils.CommandLineUtils;
+using System.Threading.Tasks;
 
 namespace LLPInvestigations
 {
@@ -27,12 +28,13 @@ namespace LLPInvestigations
         {
 
         }
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var opt = ParseOptions<Options>(args);
 
-            var signalSources = SampleMetaData.AllSamplesWithTag("signal")
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
+            var signalSources = await SampleMetaData.AllSamplesWithTag("signal")
+                .Select(async info => Tuple.Create(info.NickName, await Files.GetSampleAsMetaData(info)))
+                .WhenAll();
 
             using (var outputHistograms = new FutureTFile("LLPInvestigations.root"))
             {

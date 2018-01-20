@@ -80,9 +80,9 @@ namespace JetMVATraining
             var options = CommandLineUtils.ParseOptions<Options>(args);
 
             // Get the signal samples to use for testing and training.
-            var signalSources = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
-                .ToArray();
+            var signalSources = await SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
+                .Select(async info => Tuple.Create(info.NickName, await Files.GetSampleAsMetaData(info, false)))
+                .WhenAll();
 
             if (signalSources.Length == 0)
             {
@@ -97,25 +97,26 @@ namespace JetMVATraining
                 .FilterSignal();
 
             var tags = new string[] { "mc15c", "signal", "hss" }.Add(options.SmallTestingMenu ? "quick_compare" : "compare");
-            var signalTestSources = SampleMetaData.AllSamplesWithTag(tags.ToArray())
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info)));
+            var signalTestSources = await SampleMetaData.AllSamplesWithTag(tags.ToArray())
+                .Select(async info => Tuple.Create(info.NickName, await Files.GetSampleAsMetaData(info)))
+                .WhenAll();
 
             // Get the background samples to use for testing and training
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting);
+            var backgroundTrainingTree = await BuildBackgroundTrainingTreeDataSource(options.EventsToUseForTrainingAndTesting);
 
             // Get the beam-halo samples to use for testing and training
-            var data15 = SampleMetaData.AllSamplesWithTag("data15_new")
+            var data15 = (await SampleMetaData.AllSamplesWithTag("data15_new")
                 .Take(options.UseFullDataset ? 10000 : 1)
-                .SamplesAsSingleQueriable()
+                .SamplesAsSingleQueriable())
                 .AsBeamHaloStream(DataEpoc.data15)
                 .AsGoodJetStream();
 
             var data15TrainingAndTesting = data15
                 .Take(options.EventsToUseForTrainingAndTestingBIB15);
 
-            var data16 = SampleMetaData.AllSamplesWithTag("data16")
+            var data16 = (await SampleMetaData.AllSamplesWithTag("data16")
                 .Take(options.UseFullDataset ? 10000 : 1)
-                .SamplesAsSingleQueriable()
+                .SamplesAsSingleQueriable())
                 .AsBeamHaloStream(DataEpoc.data16)
                 .AsGoodJetStream();
 
@@ -214,7 +215,7 @@ namespace JetMVATraining
                 };
 
                 // Now, for each of the trained methods, we need to do the same thing.
-                var fullBackgroundSample = Files.GetAllJetSamples()
+                var fullBackgroundSample = (await Files.GetAllJetSamples())
                     .AsGoodJetStream();
                 var standardBackgroundEff = fullBackgroundSample
                     .CalcualteEfficiency(cuts[0].Cut, js => js.Weight);

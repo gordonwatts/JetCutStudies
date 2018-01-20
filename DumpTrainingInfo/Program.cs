@@ -32,7 +32,7 @@ namespace DumpTrainingInfo
         /// Pass an event number and basic training information will be dumped.
         /// </summary>
         /// <param name="args"></param>
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // Parse the arguments.
             var options = CommandLineUtils.ParseOptions<Options>(args);
@@ -40,7 +40,7 @@ namespace DumpTrainingInfo
             // Get all the samples we want to look at, and turn them into
             // jets with the proper weights attached for later use.
 
-            var backgroundJets = CommandLineUtils.GetRequestedBackground();
+            var backgroundJets = await CommandLineUtils.GetRequestedBackground();
 
             //var allSources = new List<Tuple<string, IQueryable<Files.MetaData>>>() {
             //    Tuple.Create("600pi150lt9m", Files.Get600pi150lt9m().GenerateStream(1.0)),

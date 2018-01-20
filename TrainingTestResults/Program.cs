@@ -13,6 +13,7 @@ using TMVAUtilities;
 using CalRatioTMVAUtilities;
 using static libDataAccess.PlotSpecifications;
 using static LINQToTreeHelpers.PlottingUtils;
+using System.Threading.Tasks;
 
 namespace TrainingTestResults
 {
@@ -27,7 +28,7 @@ namespace TrainingTestResults
         /// Look at a number of MVA trainings and use them as results.
         /// </summary>
         /// <param name="args"></param>
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // Parse the arguments.
             var opt = CommandLineUtils.ParseOptions<Options>(args);
@@ -35,15 +36,15 @@ namespace TrainingTestResults
             // Get all the samples we want to look at, and turn them into
             // jets with the proper weights attached for later use.
 
-            var backgroundJets = CommandLineUtils.GetRequestedBackground();
+            var backgroundJets = await CommandLineUtils.GetRequestedBackground();
             var allBackgrounds = new List<Tuple<string, IQueryable<Files.MetaData>>>()
             {
                 Tuple.Create("QCD", backgroundJets),
             };
 
-            var allSources = SampleMetaData.AllSamplesWithTag(opt.SignalTag)
-                .Select(info => Tuple.Create(info.NickName, Files.GetSampleAsMetaData(info, false)))
-                .ToArray();
+            var allSources = await SampleMetaData.AllSamplesWithTag(opt.SignalTag)
+                .Select(async info => Tuple.Create(info.NickName, await Files.GetSampleAsMetaData(info, false)))
+                .WhenAll();
             if (allSources.Length == 0)
             {
                 throw new ArgumentException($"No samples were found with tag '{opt.SignalTag}'.");
