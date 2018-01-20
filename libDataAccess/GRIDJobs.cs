@@ -177,9 +177,16 @@ namespace libDataAccess
         {
             // Look at the current machine name and see if we have any sort of a cluster information file.
             var mName = u.Host;
-            return _cluster_machine_info.ContainsKey(mName) ? u.UpdateUriFromCache(newScheme)
-                : File.Exists(ClusterFilename(mName)) ? u.UpdateUriFromClusterFile(newScheme)
-                : new UriBuilder(u) { Scheme = newScheme}.Uri;
+            if (_cluster_machine_info.ContainsKey(mName)) {
+                return u.UpdateUriFromCache(newScheme);
+            }
+            string cFName = ClusterFilename(mName);
+            if (File.Exists(cFName))
+            {
+                return u.UpdateUriFromClusterFile(newScheme, cFName);
+            }
+            Console.WriteLine($"Unable to find cluster file {cFName}.");
+            return new UriBuilder(u) { Scheme = newScheme }.Uri;
         }
 
         /// <summary>
@@ -200,10 +207,10 @@ namespace libDataAccess
         /// <param name="u"></param>
         /// <param name="newSchemeName"></param>
         /// <returns></returns>
-        private static Uri UpdateUriFromClusterFile(this Uri u, string newSchemeName)
+        private static Uri UpdateUriFromClusterFile(this Uri u, string newSchemeName, string clusterFileName)
         {
             // Load the cache
-            var machine_info = File.ReadAllLines(ClusterFilename(u.Host))
+            var machine_info = File.ReadAllLines(clusterFileName)
                 .Where(l => !l.StartsWith("#"))
                 .Select(l => l.Split(new[] { '=' }, 2))
                 .Where(k => k.Length == 2)
@@ -228,7 +235,7 @@ namespace libDataAccess
         /// <returns></returns>
         private static string ClusterFilename(string mName)
         {
-            return $"{mName}.cluster_machines";
+            return new FileInfo($"{mName}.cluster_machines").FullName;
         }
 
         /// <summary>
