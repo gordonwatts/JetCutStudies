@@ -94,12 +94,12 @@ namespace libDataAccess
             var uriOptions = new Dictionary<string, string>();
             if (avoidPlaces != null && avoidPlaces.Length > 0)
             {
-                var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
+                var placesToAvoid = avoidPlaces?.Aggregate((acc, p) => acc + "," + p);
                 uriOptions["avoidPlaces"] = placesToAvoid;
             }
             if (preferPlaces != null && preferPlaces.Length > 0)
             { 
-                var placesToPrefer = preferPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
+                var placesToPrefer = preferPlaces?.Aggregate((acc, p) => acc + "," + p);
                 uriOptions["preferPlaces"] = placesToPrefer;
             }
             var nf = nfiles ?? Files.NFiles;
