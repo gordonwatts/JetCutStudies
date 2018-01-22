@@ -4,5 +4,5 @@ connections = 10
 
 # Partial list
 # tev09 removed because it isn't currently functioning properlyex
-machines = tev02.phys.washington.edu, tev03.phys.washington.edu, tev04.phys.washington.edu, tev05.phys.washington.edu, tev06.phys.washington.edu, tev07.phys.washington.edu, tev08.phys.washington.edu, tev10.phys.washington.edu
+machines = tev02.phys.washington.edu, tev03.phys.washington.edu, tev04.phys.washington.edu, tev05.phys.washington.edu, tev06.phys.washington.edu, tev07.phys.washington.edu, tev08.phys.washington.edu, tev09.phys.washington.edu, tev10.phys.washington.edu
 user = gwatts
