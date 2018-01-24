@@ -115,7 +115,7 @@ namespace libDataAccess
             var sampleEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { sampleFileUri });
             sampleEvents.UseStatementOptimizer = UseCodeOptimizer;
             sampleEvents.IgnoreQueryCache = IgnoreQueires;
-            //backgroundEvents.Verbose = true;
+            sampleEvents.Verbose = VerboseFileFetch;
 
             // fetch the cross section weight so that we can re-weight this sample if need be.
             double xSectionWeight = 1.0;
