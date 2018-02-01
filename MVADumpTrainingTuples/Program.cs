@@ -160,6 +160,7 @@ namespace MVADumpTrainingTuples
 
             // Done. Dump all output.
             Console.Out.DumpFutureLines();
+            Console.WriteLine("Done!");
         }
 
         /// <summary>
