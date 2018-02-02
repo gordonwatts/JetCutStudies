@@ -242,3 +242,4 @@ JetCutStudies.VC.VC.opendb
 /notebooks/.ipynb_checkpoints
 /plots/TMVAInputPlots/loadAllData.c
 /notebooks/__pycache__
+*.svg
