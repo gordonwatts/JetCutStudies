@@ -253,7 +253,7 @@ def calc_performance_for_run(df):
     
     return d
 
-def calc_performance (bdt, testing_samples):
+def calc_performance (bdt, testing_samples, training_variables = default_training_variable_list):
     '''Calculate the nubers in each class, as well as S/sqrt(B) for HSS
     
     All sums are done with event weights taken into account
@@ -266,7 +266,7 @@ def calc_performance (bdt, testing_samples):
         d - dict containing number of events of each type predicted for each time, and S/sqrt(B) for S as signal and B as mj+bib
     '''
     
-    test_events, test_events_class, test_weights, test_eval_weights = prep_samples(testing_samples[0], testing_samples[1], testing_samples[2])
+    test_events, test_events_class, test_weights, test_eval_weights = prep_samples(testing_samples[0], testing_samples[1], testing_samples[2], training_variable_list = training_variables)
     test_predictions = bdt.predict(test_events)
     
     # Assemble a single DataFrame with all the information we are going to need
