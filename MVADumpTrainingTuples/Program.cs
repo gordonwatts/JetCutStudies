@@ -15,6 +15,7 @@ using static libDataAccess.Utils.BIBSamples;
 using static libDataAccess.Utils.CommandLineUtils;
 using static libDataAccess.Utils.FutureConsole;
 using static libDataAccess.Utils.SampleUtils;
+using System.Linq.Expressions;
 
 namespace MVADumpTrainingTuples
 {
@@ -51,6 +52,9 @@ namespace MVADumpTrainingTuples
 
             [Option("LzCut", HelpText = "Restrict endcap signal to have a Lxy of at least this value (meters)", Default = 0.0)]
             public double LzCut { get; set; }
+
+            [Option("InputFile", HelpText = "Instead of default data sets, run on this particular file as a sample.")]
+            public string InputFile { get; set; }
         }
 
         static async Task Main(string[] args)
@@ -84,83 +88,115 @@ namespace MVADumpTrainingTuples
             // Where we'd like to run
             var whereToRun = new[] { "UWTeV-linux", "CERNLLP-linux" };
 
-            // Class: LLP
-            Console.WriteLine("Fetching HSS Sample");
-            var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
-                .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles * 2,
-                    mdQueriable => mdQueriable.AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(options.LxyCut * 1000.0, options.LzCut * 1000.0),
-                    weightByCrossSection: false, preferPlaces: whereToRun);
-
-            // Class: Multijet
-            Console.WriteLine("Fetching JZ Sample");
-            var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(options.EventsToUseForJzTraining,
-                options.pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
-                preferPlaces: whereToRun);
-
-            // Class: BIB
-            Console.WriteLine("Fetching BIB15 Sample");
-            var data15TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB15, DataEpoc.data15, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset, preferPlaces: whereToRun);
-            Console.WriteLine("Fetching BIB16 Sample");
-            var data16TrainingAndTesting = GetBIBSamples(options.EventsToUseForTrainingAndTestingBIB16, DataEpoc.data16, options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining, useLessSamples: !options.UseFullDataset, preferPlaces: whereToRun);
-
-            await Task.WhenAll(signalInCalOnly, backgroundTrainingTree, data15TrainingAndTesting, data16TrainingAndTesting);
-
             // The file we will use to dump everything about this training.
             using (var outputHistograms = new FutureTFile("MVADumpTrainingTuples.root"))
             {
                 // Flatten everything as needed.
                 var toMakeFlat = BuildFlatteningExpression(options.FlattenBy);
 
-                async Task GenerateJZFiles()
+                if (options.InputFile == null)
                 {
-                    if (options.EventsToUseForJzTraining > 0)
-                    {
-                        Console.WriteLine("Writing out csv files for multijet.");
-                        var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree.Result, outputHistograms, toMakeFlat)
-                            .FutureAsCSV(new FileInfo("multijet.csv"));
-                        CopyFilesOver(await backgroundTrees, "multijet");
-                    }
-                }
-
-                async Task GenerateSignalFiles()
+                    var allOut = new Task[] {WriteOutSignal(options.EventsToUseForSignalTraining, options.pTCut, options.LxyCut, options.LzCut, whereToRun, outputHistograms, toMakeFlat),
+                    WriteOutMJ(options.EventsToUseForJzTraining, options.pTCut, whereToRun, outputHistograms, toMakeFlat),
+                    WriteOutBIB(DataEpoc.data15, options.EventsToUseForTrainingAndTestingBIB15, options.pTCut, options.UseFullDataset, whereToRun, toMakeFlat, outputHistograms),
+                    WriteOutBIB(DataEpoc.data16, options.EventsToUseForTrainingAndTestingBIB16, options.pTCut, options.UseFullDataset, whereToRun, toMakeFlat, outputHistograms) };
+                    
+                    await Task.WhenAll(allOut);
+                } else
                 {
-                    if (options.EventsToUseForSignalTraining > 0)
-                    {
-                        Console.WriteLine("Writing out csv files for signal.");
-                        var flatSignalTrainingData = FlattenTrainingTree(signalInCalOnly.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
-                            .FutureAsCSV(new FileInfo("signal.csv"));
-                        CopyFilesOver(await flatSignalTrainingData, "signal");
-                    }
+                    // just do one file.
+                    await WriteOutForFile(options.InputFile, options.pTCut, toMakeFlat, outputHistograms);
                 }
-
-                async Task GenerateBiB15Files()
-                {
-                    if (data15TrainingAndTesting.Result != null)
-                    {
-                        Console.WriteLine("Writing out csv files for BIB15.");
-                        var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
-                            .FutureAsCSV(new FileInfo("bib15.csv"));
-                        CopyFilesOver(await flatData15, "bib15");
-                    }
-                }
-
-                async Task GenerateBiB16Files()
-                {
-                    if (data16TrainingAndTesting.Result != null)
-                    {
-                        Console.WriteLine("Writing out csv files for BIB16.");
-                        var flatData16 = FlattenTrainingTree(data16TrainingAndTesting.Result.AsTrainingTree(), outputHistograms, toMakeFlat)
-                            .FutureAsCSV(new FileInfo("bib16.csv"));
-                        CopyFilesOver(await flatData16, "bib16");
-                    }
-                }
-
-                await Task.WhenAll(GenerateJZFiles(), GenerateSignalFiles(), GenerateBiB15Files(), GenerateBiB16Files());
             }
 
             // Done. Dump all output.
             Console.Out.DumpFutureLines();
             Console.WriteLine("Done!");
+        }
+
+        /// <summary>
+        /// Write out results for a single file
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="pTCut"></param>
+        /// <param name="toMakeFlat"></param>
+        /// <param name="outputHistograms"></param>
+        /// <returns></returns>
+        private static async Task WriteOutForFile(string inputFile, double pTCut, Expression<Func<TrainingTree, double>> toMakeFlat, FutureTDirectory outputHistograms)
+        {
+            var sampleEvents = Files.FileAsStream(new FileInfo(inputFile))
+                .AsGoodJetStream(pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining);
+
+            var r = await (FlattenTrainingTree(sampleEvents.AsTrainingTree(), outputHistograms, toMakeFlat)
+                .FutureAsCSV(new FileInfo("fileout.csv")));
+            CopyFilesOver(r, "data");
+        }
+
+        /// <summary>
+        /// Write out the signal to a CSV file.
+        /// </summary>
+        /// <returns></returns>
+        private static async Task WriteOutSignal(int eventsToUseForSignalTraining,
+            double pTCut, double LxyCut, double LzCut,
+            string[] whereToRun, FutureTDirectory histOutput,
+            Expression<Func<TrainingTree,double>> toMakeFlat)
+        {
+            if (eventsToUseForSignalTraining > 0)
+            {
+                // Class: LLP
+                Console.WriteLine("Fetching HSS Sample");
+                var signalInCalOnly = SampleMetaData.AllSamplesWithTag("mc15c", "signal", "train", "hss")
+                    .TakeEventsFromSamlesEvenly(eventsToUseForSignalTraining, Files.NFiles * 2,
+                        mdQueriable => mdQueriable.AsGoodJetStream(pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(LxyCut * 1000.0, LzCut * 1000.0),
+                        weightByCrossSection: false, preferPlaces: whereToRun);
+
+                Console.WriteLine("Writing out csv files for signal.");
+                var flatSignalTrainingData = FlattenTrainingTree((await signalInCalOnly).AsTrainingTree(), histOutput, toMakeFlat)
+                    .FutureAsCSV(new FileInfo("signal.csv"));
+                CopyFilesOver(await flatSignalTrainingData, "signal");
+            }
+        }
+
+        private static async Task WriteOutMJ(int eventsToUseForJzTraining, double pTCut,
+            string[] whereToRun, FutureTDirectory outputHistograms,
+            Expression<Func<TrainingTree, double>> toMakeFlat)
+        {
+            if (eventsToUseForJzTraining > 0)
+            {
+                Console.WriteLine("Fetching JZ Sample");
+                var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(eventsToUseForJzTraining,
+                pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
+                preferPlaces: whereToRun);
+
+                Console.WriteLine("Writing out csv files for multijet.");
+                var backgroundTrees = FlattenTrainingTree(await backgroundTrainingTree, outputHistograms, toMakeFlat)
+                    .FutureAsCSV(new FileInfo("multijet.csv"));
+                CopyFilesOver(await backgroundTrees, "multijet");
+
+            }
+        }
+
+        public static async Task WriteOutBIB(DataEpoc epoc, int eventsToUse, double pTCut, bool useFullDataset,
+            string[] whereToRun, Expression<Func<TrainingTree,double>> toMakeFlat,
+            FutureTDirectory outputHistograms)
+        {
+            Console.WriteLine("Fetching BIB15 Sample");
+            var data15TrainingAndTesting = await GetBIBSamples(eventsToUse, epoc, pTCut,
+                maxPtCut: TrainingUtils.MaxJetPtForTraining, 
+                useLessSamples: !useFullDataset, preferPlaces: whereToRun);
+
+            if (data15TrainingAndTesting != null)
+            {
+                var stub = epoc == DataEpoc.data15
+                    ? "bib15"
+                    : "bib16";
+
+                Console.WriteLine("Writing out csv files for BIB15.");
+                var flatData15 = FlattenTrainingTree(data15TrainingAndTesting.AsTrainingTree(), outputHistograms, toMakeFlat)
+                    .FutureAsCSV(new FileInfo($"{stub}.csv"));
+                CopyFilesOver(await flatData15, stub);
+            }
+
         }
 
         /// <summary>

@@ -139,6 +139,17 @@ namespace libDataAccess
         }
 
         /// <summary>
+        /// Jsut get back all the data.
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <returns></returns>
+        public static IQueryable<MetaData> FileAsStream(FileInfo inputFile)
+        {
+            var events = DiVertAnalysis.QueryablerecoTree.CreateQueriable(inputFile);
+            return GenerateStream(events, 1.0);
+        }
+
+        /// <summary>
         /// Build a URI for gridds with options.
         /// </summary>
         /// <param name="s"></param>

@@ -30,7 +30,7 @@ namespace CalRatioTMVAUtilities
         /// <param name="outputHistograms"></param>
         /// <param name="toMakeFlat">Function to flatten by. If null, then no flattening is done.</param>
         /// <returns></returns>
-        public static IQueryable<TrainingTree> FlattenTrainingTree(IQueryable<TrainingTree> backgroundTrainingTree, FutureTFile outputHistograms, Expression<Func<TrainingTree, double>> toMakeFlat)
+        public static IQueryable<TrainingTree> FlattenTrainingTree(IQueryable<TrainingTree> backgroundTrainingTree, FutureTDirectory outputHistograms, Expression<Func<TrainingTree, double>> toMakeFlat)
         {
             if (backgroundTrainingTree == null)
             {
