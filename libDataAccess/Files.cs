@@ -77,7 +77,7 @@ namespace libDataAccess
         public static Task<IQueryable<MetaData>> GetJZ(int jzIndex)
         {
             var sample = SampleMetaData.LoadFromCSV($"J{jzIndex}Z");
-            return GetSampleAsMetaData(sample.Name);
+            return GetSampleAsMetaData(sample);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace libDataAccess
         /// <param name="sample">Name of the sample we can find by doing the lookup in the CSV data file</param>
         /// <param name="weightByCrossSection">If true, pull x-section weights from the file, otherwise set them to be all 1.</param>
         /// <returns>A queriable that has the weights built in and the complete recoTree plus weights.</returns>
-        public static async Task<IQueryable<MetaData>> GetSampleAsMetaData(string sample, bool weightByCrossSection = true,
+        public static async Task<IQueryable<MetaData>> GetSampleAsMetaData(SampleMetaData sample, bool weightByCrossSection = true,
             string[] avoidPlaces = null, string[] preferPlaces = null,
             int? nfiles = null)
         {
@@ -107,11 +107,13 @@ namespace libDataAccess
             {
                 uriOptions["nFiles"] = nf.ToString();
             }
-            uriOptions["jobName"] = JobName;
-            uriOptions["jobVersion"] = JobVersionNumber.ToString();
+            if (!sample.HasTag("emma")) {
+                uriOptions["jobName"] = JobName;
+                uriOptions["jobVersion"] = JobVersionNumber.ToString();
+            }
 
             // Build the query tree.
-            var sampleFileUri = RecoverUri(sample, uriOptions);
+            var sampleFileUri = RecoverUri(sample.Name, uriOptions);
             var sampleEvents = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { sampleFileUri });
             sampleEvents.UseStatementOptimizer = UseCodeOptimizer;
             sampleEvents.IgnoreQueryCache = IgnoreQueires;
@@ -123,7 +125,7 @@ namespace libDataAccess
             {
                 try
                 {
-                    var sampleInfo = SampleMetaData.LoadFromCSV(sample);
+                    var sampleInfo = SampleMetaData.LoadFromCSV(sample.Name);
                     var bkgEvents = await sampleEvents.Select(e => e.eventWeight).FutureSum();
                     xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / sampleEvents.Count());
                 }
@@ -171,18 +173,6 @@ namespace libDataAccess
         }
 
         /// <summary>
-        /// Return the meta-data for a sample
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="weightByCrossSection">True if we should weight this sample by cross section or by 1</param>
-        /// <returns></returns>
-        public static Task<IQueryable<MetaData>> GetSampleAsMetaData(SampleMetaData s, bool weightByCrossSection = true, string[] avoidPlaces = null,
-            string[] preferPlaces = null)
-        {
-            return GetSampleAsMetaData(s.Name, weightByCrossSection, avoidPlaces, preferPlaces: preferPlaces);
-        }
-
-        /// <summary>
         /// Return a sample for processing.
         /// </summary>
         /// <param name="samples"></param>
@@ -217,7 +207,7 @@ namespace libDataAccess
         {
             var metadata = await Task.WhenAll(
                 SampleMetaData.AllSamplesWithTag("mc15c", "background", "jz")
-                .Select(smd => GetSampleAsMetaData(smd.Name, preferPlaces: preferPlaces))
+                .Select(smd => GetSampleAsMetaData(smd, preferPlaces: preferPlaces))
                 );
             return metadata
                 .Aggregate((IQueryable<MetaData>)null, (s, add) => s == null ? add : s.Concat(add));
@@ -259,7 +249,7 @@ namespace libDataAccess
             // Helper function to turn a sample into a data stream
             async Task<IQueryable<T>> get_sample(SampleMetaData sample)
             {
-                return sampleConverter(await Files.GetSampleAsMetaData(sample.Name, avoidPlaces: avoidPlaces, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection, preferPlaces: preferPlaces));
+                return sampleConverter(await Files.GetSampleAsMetaData(sample, avoidPlaces: avoidPlaces, nfiles: numberOfFiles, weightByCrossSection: weightByCrossSection, preferPlaces: preferPlaces));
             }
 
             // If we are to take all samples... then this is easy.

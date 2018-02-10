@@ -45,6 +45,7 @@ namespace libDataAccess.Utils
             // If we have no restirction on number of events - then we can take everything.
             if (requestedNumberOfEvents < 0)
             {
+                throw new NotImplementedException("Don't know how to deal with second tag here yet");
                 // Put the avoid places into a argument in the Uri
                 var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
                 var placesToAvoidTag = placesToAvoid == null ? "" : $"&avoidPlaces={placesToAvoid}";
@@ -62,7 +63,7 @@ namespace libDataAccess.Utils
 
             // We have a limit on the number of events. Distribute our ask over the various samples so that we can have
             // events from early and late in the run where lumi profiles are different.
-            var dataSamples = SampleMetaData.AllSamplesWithTag(tag);
+            var dataSamples = SampleMetaData.AllSamplesWithTag(tag, "emma");
             if (useLessSamples)
             {
                 dataSamples = dataSamples.Take(20);

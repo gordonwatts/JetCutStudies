@@ -84,7 +84,7 @@ namespace libDataAccess.Utils
             switch (RequstedBackgroundSample)
             {
                 case BackgroundSampleEnum.All:
-                    return SampleMetaData.AllSamplesWithTag("mc15c", "background");
+                    return SampleMetaData.AllSamplesWithTag("mc15c", "background_p2952");
 
                 default:
                     throw new InvalidOperationException("Unknown background samples");
