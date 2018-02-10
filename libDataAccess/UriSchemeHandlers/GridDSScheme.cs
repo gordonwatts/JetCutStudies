@@ -103,9 +103,13 @@ namespace libDataAccess.UriSchemeHandlers
 
             // Put together the scope and dsname
             var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
-            var files = await GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles,
-                avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','),
-                preferPlaces: string.IsNullOrWhiteSpace(opt.preferPlaces) ? null : opt.preferPlaces.Split(','));
+            var files = string.IsNullOrWhiteSpace(opt.jobName)
+                ? await GetFileList(ds_name, nRequestedFiles: opt.nFiles,
+                    avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','),
+                    preferPlaces: string.IsNullOrWhiteSpace(opt.preferPlaces) ? null : opt.preferPlaces.Split(','))
+                : await GetFileList(ds_name, opt.jobName, opt.jobVersion, nRequestedFiles: opt.nFiles,
+                    avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','),
+                    preferPlaces: string.IsNullOrWhiteSpace(opt.preferPlaces) ? null : opt.preferPlaces.Split(','));
 
             return files;
         }
@@ -166,6 +170,41 @@ namespace libDataAccess.UriSchemeHandlers
                 return GRIDJobs.FindJobUris(jobName,
                     jobNumber,
                     dsname,
+                    nRequestedFiles,
+                    avoidPlaces: avoidPlaces,
+                    preferPlaces: preferPlaces);
+            }
+            finally
+            {
+                if (listener != null)
+                {
+                    Trace.Listeners.Remove(listener);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get a set of URI's for a dataset - no job number tranlsation.
+        /// </summary>
+        /// <param name="dsname"></param>
+        /// <param name="avoidPlaces"></param>
+        /// <param name="preferPlaces"></param>
+        /// <param name="nRequestedFiles"></param>
+        /// <param name="verbose"></param>
+        /// <returns></returns>
+        private static Task<Uri[]> GetFileList(string dsname, string[] avoidPlaces = null, string[] preferPlaces = null, int nRequestedFiles = 0, bool verbose = false)
+        {
+            TraceListener listener = null;
+
+            if (verbose)
+            {
+                listener = new TextWriterTraceListener(Console.Out);
+                Trace.Listeners.Add(listener);
+            }
+
+            try
+            {
+                return GRIDJobs.FindDatasetUris(dsname,
                     nRequestedFiles,
                     avoidPlaces: avoidPlaces,
                     preferPlaces: preferPlaces);

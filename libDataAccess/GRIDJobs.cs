@@ -112,6 +112,24 @@ namespace libDataAccess
         {
             // Get the files and the places where those files are located.
             var ds = GetDatasetForJob(jobName, jobVersionNumber, dsname);
+            return await FindDatasetUris(ds, nFiles, statusUpdate, avoidPlaces, preferPlaces);
+        }
+
+        /// <summary>
+        /// Find a set of Uri's for a particular dataset
+        /// </summary>
+        /// <param name="ds"></param>
+        /// <param name="nFiles"></param>
+        /// <param name="statusUpdate"></param>
+        /// <param name="avoidPlaces"></param>
+        /// <param name="preferPlaces"></param>
+        /// <returns></returns>
+        internal static async Task<Uri[]> FindDatasetUris(string ds, int nFiles,
+            Action<string> statusUpdate = null,
+            string[] avoidPlaces = null,
+            string[] preferPlaces = null)
+        {
+            // Get the files and the places where those files are located.
             var allFiles = (await DataSetManager.ListOfFilesInDataSetAsync(ds)).Take(nFiles == 0 ? 10000 : nFiles);
             var places = (await DataSetManager.ListOfPlacesHoldingAllFilesAsync(allFiles, maxDataTier: 60))
                 .Where(pl => avoidPlaces == null ? true : !avoidPlaces.Contains(pl))
