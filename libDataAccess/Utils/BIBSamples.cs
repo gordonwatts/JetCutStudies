@@ -46,6 +46,8 @@ namespace libDataAccess.Utils
             if (requestedNumberOfEvents < 0)
             {
                 throw new NotImplementedException("Don't know how to deal with second tag here yet");
+                // Below can be uncommented when we get to the point that we are dealing with multiple tags for this.
+#if false
                 // Put the avoid places into a argument in the Uri
                 var placesToAvoid = avoidPlaces?.Aggregate("", (acc, p) => acc + (acc.Length > 0 ? "," : "") + p);
                 var placesToAvoidTag = placesToAvoid == null ? "" : $"&avoidPlaces={placesToAvoid}";
@@ -59,6 +61,7 @@ namespace libDataAccess.Utils
                 return Files.GenerateStream(queriable, 1.0)
                     .AsBeamHaloStream(epoc)
                     .AsGoodJetStream(pTCut, maxPtCut);
+#endif
             }
 
             // We have a limit on the number of events. Distribute our ask over the various samples so that we can have
