@@ -101,8 +101,14 @@ namespace libDataAccess.UriSchemeHandlers
             // Get out options
             var opt = u.ParseOptions<Options>();
 
-            // Put together the scope and dsname
-            var ds_name = $"{u.DnsSafeHost}:{u.Segments[1]}";
+            // There only a few scopes that really work - user isn't one of them, unfortunately. So, blank it out.
+            // THis is definately a bit of a kludge to get around how we have stored some datasets by hand.
+            var scope = u.DnsSafeHost == "user"
+                ? ""
+                : $"{u.DnsSafeHost}:";
+
+            // Put together the scope and dsname so we can fetch the list of files.
+            var ds_name = $"{scope}{u.Segments[1]}";
             var files = string.IsNullOrWhiteSpace(opt.jobName)
                 ? await GetFileList(ds_name, nRequestedFiles: opt.nFiles,
                     avoidPlaces: string.IsNullOrWhiteSpace(opt.avoidPlaces) ? null : opt.avoidPlaces.Split(','),
