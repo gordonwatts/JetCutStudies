@@ -79,12 +79,12 @@ namespace libDataAccess.Utils
         /// Get the list of background samples depending on the option that was given to us.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<SampleMetaData> GetRequestedBackgroundSourceList(string[] avoidPlaces = null)
+        public static IEnumerable<SampleMetaData> GetRequestedBackgroundSourceList()
         {
             switch (RequstedBackgroundSample)
             {
                 case BackgroundSampleEnum.All:
-                    return SampleMetaData.AllSamplesWithTag("mc15c", "background_p2952");
+                    return SampleMetaData.AllSamplesWithTag("jz", "background_p2952");
 
                 default:
                     throw new InvalidOperationException("Unknown background samples");

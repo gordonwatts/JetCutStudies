@@ -164,12 +164,17 @@ namespace MVADumpTrainingTuples
             if (eventsToUseForJzTraining > 0)
             {
                 Console.WriteLine("Fetching JZ Sample");
-                var backgroundTrainingTree = BuildBackgroundTrainingTreeDataSource(eventsToUseForJzTraining,
+                var backgroundTrainingTree = await BuildBackgroundTrainingTreeDataSource(eventsToUseForJzTraining,
                 pTCut, Files.NFiles, maxPtCut: TrainingUtils.MaxJetPtForTraining,
                 preferPlaces: whereToRun);
 
+                if (backgroundTrainingTree == null)
+                {
+                    throw new InvalidOperationException("Despite requeted MJ events, we found none! This is pretty bad!");
+                }
+
                 Console.WriteLine("Writing out csv files for multijet.");
-                var backgroundTrees = FlattenTrainingTree(await backgroundTrainingTree, outputHistograms, toMakeFlat)
+                var backgroundTrees = FlattenTrainingTree(backgroundTrainingTree, outputHistograms, toMakeFlat)
                     .FutureAsCSV(new FileInfo("multijet.csv"));
                 CopyFilesOver(await backgroundTrees, "multijet");
 

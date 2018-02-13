@@ -23,7 +23,7 @@ namespace CalRatioTMVAUtilities
             bool weightByCrossSection = true, double? maxPtCut = null)
         {
             // Get the number of events in each source.
-            return await CommandLineUtils.GetRequestedBackgroundSourceList(avoidPlaces)
+            return await CommandLineUtils.GetRequestedBackgroundSourceList()
                 .TakeEventsFromSamlesEvenly(eventsToUseForTrainingAndTesting, numberOfFiles,
                     qm => qm.AsGoodJetStream(pTCut, maxPtCut).AsTrainingTree(), weightByCrossSection: weightByCrossSection,
                     avoidPlaces: avoidPlaces, preferPlaces: preferPlaces);
