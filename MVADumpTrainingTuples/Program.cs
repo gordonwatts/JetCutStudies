@@ -185,7 +185,7 @@ namespace MVADumpTrainingTuples
             string[] whereToRun, Expression<Func<TrainingTree,double>> toMakeFlat,
             FutureTDirectory outputHistograms)
         {
-            Console.WriteLine("Fetching BIB15 Sample");
+            Console.WriteLine($"Fetching {epoc.ToString()} Sample");
             var data15TrainingAndTesting = await GetBIBSamples(eventsToUse, epoc, pTCut,
                 maxPtCut: TrainingUtils.MaxJetPtForTraining, 
                 useLessSamples: !useFullDataset, preferPlaces: whereToRun);
