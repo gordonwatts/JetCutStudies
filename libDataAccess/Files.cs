@@ -127,7 +127,7 @@ namespace libDataAccess
                 {
                     var sampleInfo = SampleMetaData.LoadFromCSV(sample.Name);
                     var bkgEvents = await sampleEvents.Select(e => e.eventWeight).FutureSum();
-                    xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / sampleEvents.Count());
+                    xSectionWeight = bkgEvents == 0 ? 0 : (sampleInfo.FilterEfficiency * sampleInfo.CrossSection * Luminosity / sampleInfo.EventsGenerated);
                 }
                 catch (SampleNotFoundInListException e)
                 {
