@@ -170,6 +170,8 @@
         <VariableInfo NETName="CalibJet_cluster_lead_jetEMF_revised" TTreeName="CalibJet_cluster_lead_jetEMF_revised" />
         <VariableInfo NETName="Predicted_Lxy" TTreeName="CalibJet_Reg_Lxy" />
         <VariableInfo NETName="Predicted_Lz" TTreeName="CalibJet_Reg_Lz" />
+        <VariableInfo NETName="Predicted_Lxy_highEta" TTreeName="CalibJet_Reg_Lxy_highEta" />
+        <VariableInfo NETName="Predicted_Lxy_lowEta" TTreeName="CalibJet_Reg_Lxy_lowEta" />
       </Variables>
     </ArrayGroup>
     <ArrayGroup Name="Tracks">
