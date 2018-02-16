@@ -32,7 +32,7 @@ def load_sample(name_pattern_root):
         df = df.append(adf)
     return df
 
-def load_default_samples(job):
+def load_default_samples(job, indent='  '):
     '''Return the bib, mj, and signal samples for this job from the
     default location.
     
@@ -48,9 +48,9 @@ def load_default_samples(job):
     multijet = load_sample("../../MVARawData/{0}/multijet".format(job))
     signal = load_sample("../../MVARawData/{0}/signal".format(job))
     
-    print ("BIB: {0} events".format(len(bib.index)))
-    print ("Multijet: {0} events".format(len(multijet.index)))
-    print ("Signal: {0} events".format(len(signal.index)))
+    print ("{1}BIB: {0} events".format(len(bib.index), indent))
+    print ("{1}Multijet: {0} events".format(len(multijet.index), indent))
+    print ("{1}Signal: {0} events".format(len(signal.index), indent))
 
     return (bib, multijet, signal)
 
