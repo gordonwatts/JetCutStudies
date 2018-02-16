@@ -99,7 +99,9 @@ namespace MVADumpTrainingTuples
                     var allOut = new Task[] {WriteOutSignal(options.EventsToUseForSignalTraining, options.pTCut, options.LxyCut, options.LzCut, whereToRun, outputHistograms, toMakeFlat),
                     WriteOutMJ(options.EventsToUseForJzTraining, options.pTCut, whereToRun, outputHistograms, toMakeFlat),
                     WriteOutBIB(DataEpoc.data15, options.EventsToUseForTrainingAndTestingBIB15, options.pTCut, options.UseFullDataset, whereToRun, toMakeFlat, outputHistograms),
-                    WriteOutBIB(DataEpoc.data16, options.EventsToUseForTrainingAndTestingBIB16, options.pTCut, options.UseFullDataset, whereToRun, toMakeFlat, outputHistograms) };
+                    WriteOutBIB(DataEpoc.data16, options.EventsToUseForTrainingAndTestingBIB16, options.pTCut, options.UseFullDataset, whereToRun, toMakeFlat, outputHistograms),
+                    WriteOutIndividualSignal(options.pTCut, options.LxyCut, options.LzCut, whereToRun, toMakeFlat)
+                    };
                     
                     await Task.WhenAll(allOut);
                 } else
@@ -155,6 +157,36 @@ namespace MVADumpTrainingTuples
                     .FutureAsCSV(new FileInfo("signal.csv"));
                 CopyFilesOver(await flatSignalTrainingData, "signal");
             }
+        }
+
+        /// <summary>
+        /// Run all the signal samples as individual guys
+        /// </summary>
+        /// <param name="pTCut"></param>
+        /// <param name="LxyCut"></param>
+        /// <param name="LzCut"></param>
+        /// <param name="whereToRun"></param>
+        /// <param name="histOutput"></param>
+        /// <param name="toMakeFlat"></param>
+        /// <returns></returns>
+        private static async Task WriteOutIndividualSignal(double pTCut, double LxyCut, double LzCut,
+            string[] whereToRun,
+            Expression<Func<TrainingTree, double>> toMakeFlat)
+        {
+            // Help out with doing a single cut.
+            async Task SingleSignalSample(SampleMetaData s)
+            {
+                var stream = await Files.GetSampleAsMetaData(s, preferPlaces: whereToRun);
+                var info = stream.AsGoodJetStream(pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining)
+                    .FilterSignal(LxyCut * 1000.0, LxyCut * 1000.0);
+                var data = info.FutureAsCSV(new FileInfo($"{s.Name}.csv"));
+                CopyFilesOver(await data, s.Name);
+            }
+
+            var samplesToRun = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma", "train", "hss")
+                .Select(s => SingleSignalSample(s));
+
+            await Task.WhenAll(samplesToRun);
         }
 
         private static async Task WriteOutMJ(int eventsToUseForJzTraining, double pTCut,
