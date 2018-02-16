@@ -90,7 +90,7 @@ namespace CalRatioTMVAUtilities
             var r = source
                 .ReweightToFlat(JetPtPlotRaw, t => toFlattenBy.Invoke(t), t => t.Weight, (t, w) => new TrainingTree()
                 {
-                    Weight = w*t.Weight,
+                    Weight = w * t.Weight,
                     WeightFlatten = w,
                     WeightMCEvent = t.WeightMCEvent,
                     WeightXSection = t.WeightXSection,
@@ -117,6 +117,8 @@ namespace CalRatioTMVAUtilities
                     BIBDeltaTimingP = t.BIBDeltaTimingP,
                     PredictedLxy = t.PredictedLxy,
                     PredictedLz = t.PredictedLz,
+                    PredictedLxyHighEta = t.PredictedLxyHighEta,
+                    PredictedLxyLowEta = t.PredictedLxyLowEta,
                     InteractionsPerCrossing = t.InteractionsPerCrossing,
                     mc_Lxy = t.mc_Lxy,
                     mc_Lz = t.mc_Lz,
