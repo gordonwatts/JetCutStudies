@@ -80,8 +80,8 @@ namespace CalRatioTMVAUtilities
         public double BIBDeltaTimingP;
         public double PredictedLz;
         public double PredictedLxy;
-        public double PredictedLxyHighEta;
-        public double PredictedLxyLowEta;
+        //public double PredictedLxyHighEta;
+        //public double PredictedLxyLowEta;
         public double InteractionsPerCrossing;
     }
 
@@ -127,8 +127,8 @@ namespace CalRatioTMVAUtilities
                 BIBDeltaTimingP = PlotSpecifications.CalcBIBPlusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
                 PredictedLxy = i.JetInfo.Jet.Predicted_Lxy,
                 PredictedLz = i.JetInfo.Jet.Predicted_Lz,
-                PredictedLxyHighEta = i.JetInfo.Jet.Predicted_Lxy_highEta,
-                PredictedLxyLowEta = i.JetInfo.Jet.Predicted_Lxy_lowEta,
+                //PredictedLxyHighEta = i.JetInfo.Jet.Predicted_Lxy_highEta,
+                //PredictedLxyLowEta = i.JetInfo.Jet.Predicted_Lxy_lowEta,
                 InteractionsPerCrossing = i.InteractionsPerCrossing,
                 mc_Lxy = i.JetInfo.Jet.LLP.IsGoodIndex() ? i.JetInfo.Jet.LLP.Lxy / 1000.0 : 0.0,
                 mc_Lz = i.JetInfo.Jet.LLP.IsGoodIndex() ? i.JetInfo.Jet.LLP.Lz / 1000.0 : 0.0,
