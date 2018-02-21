@@ -167,22 +167,18 @@ namespace CalRatioTMVAUtilities
 
                 case TrainingVariableSet.DefaultAllpT:
                     result.Add(TrainingVariables.JetPt);
-                    result.Add(TrainingVariables.JetPhi);
-                    result.Add(TrainingVariables.CalRatio);
-                    result.Add(TrainingVariables.NTracks);
-                    result.Add(TrainingVariables.SumPtOfAllTracks);
-                    result.Add(TrainingVariables.MaxTrackPt);
-                    result.Add(TrainingVariables.JetWidth);
-                    result.Add(TrainingVariables.EnergyDensity);
-                    result.Add(TrainingVariables.HadronicLayer1Fraction);
-                    result.Add(TrainingVariables.JetLat);
-                    result.Add(TrainingVariables.JetLong);
                     result.Add(TrainingVariables.FirstClusterRadius);
                     result.Add(TrainingVariables.ShowerCenter);
-                    result.Add(TrainingVariables.BIBDeltaTimingMinus);
                     result.Add(TrainingVariables.BIBDeltaTimingPlus);
-                    result.Add(TrainingVariables.PredictedLz);
+                    result.Add(TrainingVariables.HadronicLayer1Fraction);
                     result.Add(TrainingVariables.PredictedLxy);
+                    result.Add(TrainingVariables.JetLat);
+                    result.Add(TrainingVariables.JetLong);
+                    result.Add(TrainingVariables.EnergyDensity);
+                    result.Add(TrainingVariables.BIBDeltaTimingMinus);
+                    result.Add(TrainingVariables.MaxTrackPt);
+                    result.Add(TrainingVariables.SumPtOfAllTracks);
+                    result.Add(TrainingVariables.PredictedLz);
                     break;
 
                 case TrainingVariableSet.Analysis2015pT:
