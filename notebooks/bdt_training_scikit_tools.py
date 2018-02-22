@@ -54,6 +54,26 @@ def load_default_samples(job, indent='  '):
 
     return (bib, multijet, signal)
 
+default_cut_Lxy = 1250
+default_cut_Lz = 3500
+eta_seperator_cut = 1.4
+def trim_sample(sample, cut_Lxy = default_cut_Lxy, cut_Lz = default_cut_Lz):
+    '''Trim lxy and lz cuts for a sample'''
+    return sample[((abs(sample.JetEta) > eta_seperator_cut) & (sample.mc_Lz*1000 > cut_Lz)) | ((abs(sample.JetEta) <= eta_seperator_cut) & (sample.mc_Lxy*1000 > cut_Lxy))]
+
+def trim_samples(all_events):
+    '''Trim default lxy and lz cuts for a tuple of (mj, bib, signal) samples'''
+    return (all_events[0], all_events[1], trim_sample(all_events[2]))
+
+def load_trimmed_sample(jobNo):
+    '''Load and trim a sample from a job, and record it in our sample archive'''
+    print ('Job {0}:'.format(jobNo))
+    all_events_all = load_default_samples(jobNo)
+    all_events = trim_samples(all_events_all)
+    print (" ", [len(e.index) for e in all_events])
+    
+    return all_events
+
 # The default variable list for training
 default_training_variable_list = ['JetPt', 'CalRatio',
        'NTracks', 'SumPtOfAllTracks', 'MaxTrackPt',
@@ -61,6 +81,21 @@ default_training_variable_list = ['JetPt', 'CalRatio',
        'HadronicLayer1Fraction', 'JetLat', 'JetLong', 'FirstClusterRadius',
        'ShowerCenter', 'BIBDeltaTimingM', 'BIBDeltaTimingP', 'PredictedLz',
        'PredictedLxy']
+
+# Newly optimized list
+default_training_variable_list = ['EnergyDensity',
+ 'BIBDeltaTimingM',
+ 'JetPt',
+ 'HadronicLayer1Fraction',
+ 'ShowerCenter',
+ 'JetLat',
+ 'FirstClusterRadius',
+ 'JetLong',
+ 'MaxTrackPt',
+ 'PredictedLxy',
+ 'BIBDeltaTimingP',
+ 'PredictedLz',
+ 'SumPtOfAllTracks']
 
 # Prep the samples for training - limit number of events, etc.
 def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_training_variable_list):

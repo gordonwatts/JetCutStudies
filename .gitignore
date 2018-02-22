@@ -243,3 +243,4 @@ JetCutStudies.VC.VC.opendb
 /plots/TMVAInputPlots/loadAllData.c
 /notebooks/__pycache__
 *.svg
+/notebooks/grad_perf_training.py
