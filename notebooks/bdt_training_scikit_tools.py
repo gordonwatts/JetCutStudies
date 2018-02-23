@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from math import sqrt
 
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
@@ -74,6 +74,60 @@ def load_trimmed_sample(jobNo):
     
     return all_events
 
+def fraction (fractionGoal):
+    '''Return a function that will take from a randomly distributed number a fraction of events.
+    Meant to be used against an EventNumber to evenly pair down the number of events.
+    
+    Args
+        fractionGoal - the fraction of events we'd like to see
+        
+    Returns
+        func - A function that will return True or False when given an event number. True, then keep the event.
+    '''
+    if (fractionGoal < 0) | (fractionGoal > 1.0):
+        raise Exception("Fraction must be between 0.0 and 1.0 (not {0})".format(fractionGoal))
+        
+    seq = ()
+    fg = fractionGoal
+    maxCount = 300
+    for i in range(1, maxCount):
+        frac = 1.0/i
+        if frac <= fg:
+            seq = seq + (i,)
+            remainingSequence = [i for i in range(maxCount) if len([j for j in seq if i%j == 0]) != 0]
+            actualFraction = len(remainingSequence)/maxCount
+            fg = fractionGoal - actualFraction
+
+    return seq
+    #return lambda x: len([i for i in seq if x%i == 0]) != 0
+    #return lambda x: x%i == 0
+    
+def calcDFFilter (df, seq):
+    '''Filter used to split off fraction of events in the get_fraction_of_events method'''
+    gf, *gfRest = [df.EventNumber%i==0 for i in seq]
+    for g in gfRest:
+        gf = gf | g
+    return gf
+
+def get_fraction_of_events(events, fractionToUse):
+    '''Return a fraction of all events as training and testing samples.
+    
+    Args
+        fractionToUse - fraction of the full datasample we should be using
+        
+    Returns
+        training - Training tripple of events (bib, mj, sig)
+        testing - Testing tripple of events (bib, mj, sig)
+    
+    '''
+    # Create the per event filter. We have to do this against each
+    # of the three input samples.
+    seq = fraction(fractionToUse)
+    fracFilters = [calcDFFilter(df, seq) for df in events]
+
+    fraction_events = [dfi[1][dfi[0]] for dfi in zip(fracFilters,events)]
+    return fraction_events
+
 # The default variable list for training
 default_training_variable_list = ['JetPt', 'CalRatio',
        'NTracks', 'SumPtOfAllTracks', 'MaxTrackPt',
@@ -131,7 +185,7 @@ def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_tr
 
     return (all_events.loc[:,training_variable_list], all_events_class, all_events.Weight, all_events.WeightMCEvent*all_events.WeightXSection)
 
-def default_training (events, events_weight, events_class, min_leaf_fraction = 0.01):
+def default_training (events, events_weight, events_class):
     '''Given samples prepared, run the default "best" training we know how to run.
     
     Args:
@@ -143,10 +197,13 @@ def default_training (events, events_weight, events_class, min_leaf_fraction = 0
     Returns
         bdt - A trained boosted decision tree
     '''
-    bdt = AdaBoostClassifier(
-        DecisionTreeClassifier(min_samples_leaf=min_leaf_fraction),
-        n_estimators=10,
-        learning_rate=1)
+    
+    bdt = GradientBoostingClassifier(max_depth=3, n_estimators=1000)
+    
+    #bdt = AdaBoostClassifier(
+    #    DecisionTreeClassifier(min_samples_leaf=min_leaf_fraction),
+    #    n_estimators=10,
+    #    learning_rate=1)
     
     bdt.fit(events, events_class.Class, sample_weight = events_weight)
     
