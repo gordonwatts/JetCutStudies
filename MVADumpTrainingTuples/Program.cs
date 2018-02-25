@@ -147,7 +147,7 @@ namespace MVADumpTrainingTuples
             {
                 // Class: LLP
                 Console.WriteLine("Fetching HSS Sample");
-                var signalInCalOnly = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma", "train", "hss")
+                var signalInCalOnly = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma2", "train", "hss")
                     .TakeEventsFromSamlesEvenly(eventsToUseForSignalTraining, Files.NFiles * 2,
                         mdQueriable => mdQueriable.AsGoodJetStream(pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining).FilterSignal(LxyCut * 1000.0, LzCut * 1000.0),
                         weightByCrossSection: false, preferPlaces: whereToRun);
@@ -183,7 +183,7 @@ namespace MVADumpTrainingTuples
                 CopyFilesOver(await data, s.Name);
             }
 
-            var samplesToRun = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma", "train", "hss")
+            var samplesToRun = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma2", "train", "hss")
                 .Select(s => SingleSignalSample(s));
 
             await Task.WhenAll(samplesToRun);

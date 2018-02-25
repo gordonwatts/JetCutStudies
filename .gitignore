@@ -244,3 +244,6 @@ JetCutStudies.VC.VC.opendb
 /notebooks/__pycache__
 *.svg
 /notebooks/grad_perf_training.py
+/notebooks/training_106_test.xml
+/notebooks/training_106_test_2.xml
+/notebooks/Untitled.ipynb

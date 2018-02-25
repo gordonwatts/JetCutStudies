@@ -107,7 +107,7 @@ namespace libDataAccess
             {
                 uriOptions["nFiles"] = nf.ToString();
             }
-            if (!sample.HasTag("emma")) {
+            if (!(sample.HasTag("emma") || sample.HasTag("emma2"))) {
                 uriOptions["jobName"] = JobName;
                 uriOptions["jobVersion"] = JobVersionNumber.ToString();
             }

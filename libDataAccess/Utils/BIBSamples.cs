@@ -66,7 +66,7 @@ namespace libDataAccess.Utils
 
             // We have a limit on the number of events. Distribute our ask over the various samples so that we can have
             // events from early and late in the run where lumi profiles are different.
-            var dataSamples = SampleMetaData.AllSamplesWithTag(tag, "emma");
+            var dataSamples = SampleMetaData.AllSamplesWithTag(tag, "emma2");
             if (useLessSamples)
             {
                 dataSamples = dataSamples.Take(20);

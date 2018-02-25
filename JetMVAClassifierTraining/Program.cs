@@ -114,7 +114,7 @@ namespace JetMVAClassifierTraining
 
             // Class: LLP
             Console.WriteLine("Fetching HSS Sample");
-            var signalInCalOnly = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma", "train", "hss")
+            var signalInCalOnly = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma2", "train", "hss")
                 .TakeEventsFromSamlesEvenly(options.EventsToUseForSignalTraining, Files.NFiles*2,
                     mdQueriable => mdQueriable
                                     .AsGoodJetStream(options.pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining)
