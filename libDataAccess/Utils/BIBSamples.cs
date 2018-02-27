@@ -60,7 +60,7 @@ namespace libDataAccess.Utils
                 var queriable = DiVertAnalysis.QueryablerecoTree.CreateQueriable(new[] { tagUri });
                 return Files.GenerateStream(queriable, 1.0)
                     .AsBeamHaloStream(epoc)
-                    .AsGoodJetStream(pTCut, maxPtCut);
+                    .AsGoodJetStream(pTCut, maxPtCut, isTriggerJet: true);
 #endif
             }
 
@@ -72,7 +72,7 @@ namespace libDataAccess.Utils
                 dataSamples = dataSamples.Take(20);
             }
             return await dataSamples.TakeEventsFromSamlesEvenly(requestedNumberOfEvents, filesToAskFor,
-                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut, maxPtCut), avoidPlaces: avoidPlaces, preferPlaces: preferPlaces, weightByCrossSection: false);
+                qm => qm.AsBeamHaloStream(epoc).AsGoodJetStream(pTCut, maxPtCut, isTriggerJet: true), avoidPlaces: avoidPlaces, preferPlaces: preferPlaces, weightByCrossSection: false);
         }
 
     }

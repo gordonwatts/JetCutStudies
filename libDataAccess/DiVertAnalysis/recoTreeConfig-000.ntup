@@ -132,7 +132,7 @@
         <VariableInfo NETName="CalibJet_BDT" TTreeName="CalibJet_BDT" />
         <VariableInfo NETName="BDT13Lxy" TTreeName="CalibJet_BDT13Lxy" />
         <VariableInfo NETName="CalibJet_BDT_rank" TTreeName="CalibJet_BDT_rank" />
-        <VariableInfo NETName="CalibJet_isCRHLTJet" TTreeName="CalibJet_isCRHLTJet" />
+        <VariableInfo NETName="isCalRatioTriggerJet" TTreeName="CalibJet_isCRHLTJet" />
         <VariableInfo NETName="LLP" TTreeName="CalibJet_indexLLP" IndexToGroup="LLPs" />
         <VariableInfo NETName="nTrk" TTreeName="CalibJet_nTrk" />
         <VariableInfo NETName="CalibJet_sumTrkpT" TTreeName="CalibJet_sumTrkpT" />

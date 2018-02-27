@@ -37,10 +37,12 @@ namespace libDataAccess.Utils
         /// Apply default cuts as well.
         /// </summary>
         /// <param name="maxPtCut">Max pt for a jet - leave null and no cut is applied.</param>
-        public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source, double pTCut = 40.0, double? maxPtCut = null)
+        /// <param name="isTriggerJet">If true, then only trigger jets will be fecthed from the event</param>
+        public static IQueryable<JetStream> AsGoodJetStream(this IQueryable<MetaData> source, double pTCut = 40.0, double? maxPtCut = null, bool isTriggerJet = false)
         {
             var rawJets = source
                 .SelectMany(e => e.Data.Jets
+                    .Where(j => !isTriggerJet || j.isCalRatioTriggerJet)
                     .Where(j => IsGoodJet.Invoke(j, pTCut))
                     .Select(j => new JetStream()
                     {
