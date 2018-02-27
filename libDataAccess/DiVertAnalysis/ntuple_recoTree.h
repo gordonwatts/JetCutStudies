@@ -148,6 +148,12 @@ public :
    TStlSimpleProxy<vector<double> >         CalibJet_cluster_lead_jetEMF_revised;
    TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lxy;
    TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lz;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lxy_highEta;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lz_highEta;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lxy_lowEta;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lz_lowEta;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lxy_fullEta;
+   TStlSimpleProxy<vector<double> >         CalibJet_Reg_Lz_fullEta;
    TStlSimpleProxy<vector<double> >         Track_pT;
    TStlSimpleProxy<vector<double> >         Track_eta;
    TStlSimpleProxy<vector<double> >         Track_phi;

@@ -115,11 +115,18 @@ namespace CalRatioTMVAUtilities
                     ShowerCenter = t.ShowerCenter,
                     BIBDeltaTimingM = t.BIBDeltaTimingM,
                     BIBDeltaTimingP = t.BIBDeltaTimingP,
+                    InteractionsPerCrossing = t.InteractionsPerCrossing,
+
                     PredictedLxy = t.PredictedLxy,
                     PredictedLz = t.PredictedLz,
-                    //PredictedLxyHighEta = t.PredictedLxyHighEta,
-                    //PredictedLxyLowEta = t.PredictedLxyLowEta,
-                    InteractionsPerCrossing = t.InteractionsPerCrossing,
+                    RPredictedLxy = t.RPredictedLxy,
+                    RPredictedLz = t.RPredictedLz,
+
+                    PredictedLxyHighEta = t.PredictedLxyHighEta,
+                    PredictedLxyLowEta = t.PredictedLxyLowEta,
+                    PredictedLzHighEta = t.PredictedLzHighEta,
+                    PredictedLzLowEta = t.PredictedLzLowEta,
+
                     mc_Lxy = t.mc_Lxy,
                     mc_Lz = t.mc_Lz,
                 });

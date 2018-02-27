@@ -168,10 +168,14 @@
         <VariableInfo NETName="CalibJet_cluster_lead_dR_tojet" TTreeName="CalibJet_cluster_lead_dR_tojet" />
         <VariableInfo NETName="CalibJet_cluster_lead_fracE_ofjet" TTreeName="CalibJet_cluster_lead_fracE_ofjet" />
         <VariableInfo NETName="CalibJet_cluster_lead_jetEMF_revised" TTreeName="CalibJet_cluster_lead_jetEMF_revised" />
-        <VariableInfo NETName="Predicted_Lxy" TTreeName="CalibJet_Reg_Lxy" />
-        <VariableInfo NETName="Predicted_Lz" TTreeName="CalibJet_Reg_Lz" />
+        <VariableInfo NETName="Rachel_Predicted_Lxy" TTreeName="CalibJet_Reg_Lxy" />
+        <VariableInfo NETName="Rachel_Predicted_Lz" TTreeName="CalibJet_Reg_Lz" />
+        <VariableInfo NETName="Predicted_Lxy" TTreeName="CalibJet_Reg_Lxy_fullEta" />
+        <VariableInfo NETName="Predicted_Lz" TTreeName="CalibJet_Reg_Lz_fullEta" />
         <VariableInfo NETName="Predicted_Lxy_highEta" TTreeName="CalibJet_Reg_Lxy_highEta" />
         <VariableInfo NETName="Predicted_Lxy_lowEta" TTreeName="CalibJet_Reg_Lxy_lowEta" />
+        <VariableInfo NETName="Predicted_Lz_highEta" TTreeName="CalibJet_Reg_Lz_highEta" />
+        <VariableInfo NETName="Predicted_Lz_lowEta" TTreeName="CalibJet_Reg_Lz_lowEta" />
       </Variables>
     </ArrayGroup>
     <ArrayGroup Name="Tracks">

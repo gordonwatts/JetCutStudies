@@ -78,11 +78,22 @@ namespace CalRatioTMVAUtilities
         public double ShowerCenter;
         public double BIBDeltaTimingM;
         public double BIBDeltaTimingP;
-        public double PredictedLz;
-        public double PredictedLxy;
-        //public double PredictedLxyHighEta;
-        //public double PredictedLxyLowEta;
         public double InteractionsPerCrossing;
+
+        // All the different versions of the MLP stuff
+        // First, Rachels MLP stuff
+        public double RPredictedLxy;
+        public double RPredictedLz;
+
+        // Felixes
+        public double PredictedLxy;
+        public double PredictedLz;
+
+        // Felixes high and low eta stuff
+        public double PredictedLxyHighEta;
+        public double PredictedLxyLowEta;
+        public double PredictedLzHighEta;
+        public double PredictedLzLowEta;
     }
 
     /// <summary>
@@ -125,11 +136,18 @@ namespace CalRatioTMVAUtilities
                 HadronicLayer1Fraction = i.JetInfo.Jet.EHL1frac,
                 BIBDeltaTimingM = PlotSpecifications.CalcBIBMinusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
                 BIBDeltaTimingP = PlotSpecifications.CalcBIBPlusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
+                InteractionsPerCrossing = i.InteractionsPerCrossing,
+
                 PredictedLxy = i.JetInfo.Jet.Predicted_Lxy,
                 PredictedLz = i.JetInfo.Jet.Predicted_Lz,
-                //PredictedLxyHighEta = i.JetInfo.Jet.Predicted_Lxy_highEta,
-                //PredictedLxyLowEta = i.JetInfo.Jet.Predicted_Lxy_lowEta,
-                InteractionsPerCrossing = i.InteractionsPerCrossing,
+                RPredictedLxy = i.JetInfo.Jet.Rachel_Predicted_Lxy,
+                RPredictedLz = i.JetInfo.Jet.Rachel_Predicted_Lz,
+
+                PredictedLxyHighEta = i.JetInfo.Jet.Predicted_Lxy_highEta,
+                PredictedLxyLowEta = i.JetInfo.Jet.Predicted_Lxy_lowEta,
+                PredictedLzHighEta = i.JetInfo.Jet.Predicted_Lz_highEta,
+                PredictedLzLowEta = i.JetInfo.Jet.Predicted_Lz_lowEta,
+
                 mc_Lxy = i.JetInfo.Jet.LLP.IsGoodIndex() ? i.JetInfo.Jet.LLP.Lxy / 1000.0 : 0.0,
                 mc_Lz = i.JetInfo.Jet.LLP.IsGoodIndex() ? i.JetInfo.Jet.LLP.Lz / 1000.0 : 0.0,
             };
@@ -141,9 +159,7 @@ namespace CalRatioTMVAUtilities
         /// <returns></returns>
         public static IQueryable<TrainingTree> FilterNonTrainingEvents (this IQueryable<TrainingTree> source)
         {
-            return source == null
-                ? null
-                : source.Where(t => t.EventNumber % 2 == 0);
+            return source?.Where(t => t.EventNumber % 2 == 0);
         }
 
         /// <summary>
@@ -169,10 +185,7 @@ namespace CalRatioTMVAUtilities
         /// <returns></returns>
         public static IQueryable<TrainingTree> AsTrainingTree(this IQueryable<JetStream> source)
         {
-            return source == null
-                ? null
-                : source
-                .Where(j => j.JetInfo.Jet.pT < MaxJetPtForTraining)
+            return source?.Where(j => j.JetInfo.Jet.pT < MaxJetPtForTraining)
                 .Select(i => TrainingTreeConverter.Invoke(i));
         }
 

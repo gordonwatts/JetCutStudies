@@ -105,10 +105,14 @@
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_dR_tojet" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_fracE_ofjet" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_cluster_lead_jetEMF_revised" NotAPointer="false" />
-        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lxy" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lxy_highEta" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lxy_lowEta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lz_highEta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lz_lowEta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lxy" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lz" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lxy_fullEta" NotAPointer="false" />
+        <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="CalibJet_Reg_Lz_fullEta" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_pT" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_eta" NotAPointer="false" />
         <IClassItem xsi:type="ItemVector" ItemType="double[]" Name="Track_phi" NotAPointer="false" />
