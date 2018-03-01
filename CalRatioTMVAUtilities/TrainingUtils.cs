@@ -75,9 +75,12 @@ namespace CalRatioTMVAUtilities
         public double JetLat;
         public double JetLong;
         public double FirstClusterRadius;
+        public double NumberOfClusters;
         public double ShowerCenter;
         public double BIBDeltaTimingM;
         public double BIBDeltaTimingP;
+        public double FirstCellTiming;
+
         public double InteractionsPerCrossing;
 
         // All the different versions of the MLP stuff
@@ -131,11 +134,13 @@ namespace CalRatioTMVAUtilities
                 JetLat = i.JetInfo.Jet.FirstClusterLateral,
                 JetLong = i.JetInfo.Jet.FirstClusterLongitudinal,
                 FirstClusterRadius = i.JetInfo.Jet.FirstClusterR,
+                NumberOfClusters = i.JetInfo.Jet.CalibJet_cluster_nClusters,
                 ShowerCenter = i.JetInfo.Jet.FirstClusterLambda,
                 EnergyDensity = i.JetInfo.Jet.FirstClusterEnergyDensity,
                 HadronicLayer1Fraction = i.JetInfo.Jet.EHL1frac,
                 BIBDeltaTimingM = PlotSpecifications.CalcBIBMinusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
                 BIBDeltaTimingP = PlotSpecifications.CalcBIBPlusDeltaPlotTiming.Invoke(i.JetInfo.Jet),
+                FirstCellTiming = i.JetInfo.Jet.time,
                 InteractionsPerCrossing = i.InteractionsPerCrossing,
 
                 PredictedLxy = i.JetInfo.Jet.Predicted_Lxy,
