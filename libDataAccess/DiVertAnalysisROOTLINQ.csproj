@@ -252,8 +252,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DiVertAnalysis\junk_macro_parsettree_recoTree.C" />
-    <Content Include="DiVertAnalysis\ntuple_recoTree.h" />
     <Content Include="Sample Meta Data.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -262,12 +260,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <TTreeGroupSpec Include="DiVertAnalysis\EventLoop_FileExecutedConfig-000.ntup" />
-    <TTreeGroupSpec Include="DiVertAnalysis\recoTreeConfig-000.ntup" />
+    <TTreeGroupSpec Include="DiVertAnalysis\recoTreeConfig-000.ntup">
+      <SubType>Designer</SubType>
+    </TTreeGroupSpec>
   </ItemGroup>
   <ItemGroup>
-    <ROOTFileDataModel Include="DiVertAnalysis\user.gwatts.8747115._000001.hist-output.ntupom">
+    <ROOTFileDataModel Include="DiVertAnalysis\data16_bib_newtag__6_addFullEtaMLP.ntupom">
       <Namespace>DiVertAnalysis</Namespace>
+      <SubType>Designer</SubType>
     </ROOTFileDataModel>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

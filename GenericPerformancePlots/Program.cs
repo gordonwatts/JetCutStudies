@@ -310,20 +310,6 @@ namespace GenericPerformancePlots
                 dir,
                 "Ntrk");
 
-            var sigBackSumPt = CalcSignalToBackgroundSeries(
-                signalGoodJets,
-                backgroundGoodJets,
-                SumTrackPtPlot,
-                dir,
-                "SumPt");
-
-            var sigBackMaxPt = CalcSignalToBackgroundSeries(
-                signalGoodJets,
-                backgroundGoodJets,
-                MaxTrackPtPlot,
-                dir,
-                "MaxPt");
-
             // Look to see what it would take to get constant efficiency
             var result = new List<IFutureValue<string>>();
 #if false

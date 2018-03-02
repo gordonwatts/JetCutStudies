@@ -116,39 +116,7 @@ namespace GenericPerformancePlots
             // TODO: Running this loop takes waaay too long. What are we doing
             // wrong (if anything)?
             jets
-                .FuturePlot(SumTrackPtPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(MaxTrackPtPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
                 .FuturePlot(JetExtraCalRVsPtPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetExtraNTrackVsPtPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetExtraCalRVsNTrackPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetExtraCalRVsMaxPtPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetExtraCalRVsSumPtPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetSumPtVsPtPlot, nameAddition)
-                .Save(saveDir);
-
-            jets
-                .FuturePlot(JetMaxPtVsPtPlot, nameAddition)
                 .Save(saveDir);
 
             jets

@@ -203,6 +203,7 @@ namespace JetMVATraining
                 // the Jenkins artifacts to pick up only what we are producing this round.
                 trainingResult.CopyToJobName(jobName);
 
+#if false
                 // And, finally, generate some efficiency plots.
                 // First, get the list of cuts we are going to use. Start with the boring Run 1.
                 var cuts = new List<CutInfo>()
@@ -284,6 +285,7 @@ namespace JetMVATraining
 
                 // Done. Dump all output.
                 Console.Out.DumpFutureLines();
+#endif
             }
 
         }

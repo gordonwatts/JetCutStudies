@@ -51,8 +51,8 @@ namespace libDataAccess.Utils
                         WeightFlatten = 1.0,
                         WeightMCEvent = e.Data.eventWeight,
                         WeightXSection = e.xSectionWeight,
-                        EventNumber = e.Data.eventNumber,
-                        RunNumber = e.Data.runNumber,
+                        EventNumber = (int) e.Data.eventNumber,
+                        RunNumber = (int) e.Data.runNumber,
                         InteractionsPerCrossing = e.Data.actualIntPerCrossing,
                         MHTOverHT = e.Data.event_HTMiss / e.Data.event_HT,
                     }));
@@ -85,8 +85,8 @@ namespace libDataAccess.Utils
             switch (epoc)
             {
                 case DataEpoc.data15:
-                    return source
-                        .Where(s => s.Data.event_passCalRatio_TAU60_noiso && !s.Data.event_passCalRatio_TAU60);
+                    throw new NotImplementedException();
+
                 case DataEpoc.data16:
                     return source
                         .Where(s => s.Data.event_passCalRatio_cleanLLP_TAU60_noiso && !s.Data.event_passCalRatio_cleanLLP_TAU60);
@@ -109,14 +109,13 @@ namespace libDataAccess.Utils
                     WeightFlatten = 1.0,
                     WeightXSection = e.xSectionWeight,
                     WeightMCEvent = e.Data.eventWeight,
-                    EventNumber = e.Data.eventNumber,
-                    RunNumber = e.Data.runNumber,
+                    EventNumber = (int) e.Data.eventNumber,
+                    RunNumber = (int) e.Data.runNumber,
                     InteractionsPerCrossing = e.Data.actualIntPerCrossing,
                     MHTOverHT = e.Data.event_HTMiss / e.Data.event_HT,
                 })
                 .Where(j => j.JetInfo.Jet.pT > pTCut && Abs(j.JetInfo.Jet.eta) < JetEtaLimit)
                 ;
-
         }
 
         /// <summary>

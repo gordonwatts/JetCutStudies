@@ -154,16 +154,10 @@ namespace SimpleJetCutTraining
 
             // Fill our training data that will eventually be turned into the training tree.
             var trainingDataSet = from j in trainingDataSetJets
-                                  let trkList = from t in j.Event.Tracks
-                                                where DeltaR2(t.eta, t.phi, j.Jet.eta, j.Jet.phi) < 0.04
-                                                orderby t.pT ascending
-                                                select t
-                                  where trkList.Any()
                                   select new TrainingData()
                                   {
                                       logR = j.Jet.logRatio,
                                       nTracks = (int)j.Jet.nTrk,
-                                      lowestPtTrack = trkList.First().pT,
                                   };
             return trainingDataSet;
         }
