@@ -180,8 +180,8 @@ namespace MVADumpTrainingTuples
                 var info = stream.AsGoodJetStream(pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining)
                     .FilterSignal(LxyCut * 1000.0, LxyCut * 1000.0)
                     .AsTrainingTree();
-                var data = info.FutureAsCSV(new FileInfo($"individual-{s.Name}.csv"));
-                CopyFilesOver(await data, $"individual-{s.Name}");
+                var data = info.FutureAsCSV(new FileInfo($"individual-{s.NickName}.csv"));
+                CopyFilesOver(await data, $"individual-{s.NickName}");
             }
 
             var samplesToRun = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma2", "train", "hss")
