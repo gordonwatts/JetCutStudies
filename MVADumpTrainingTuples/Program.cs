@@ -179,8 +179,8 @@ namespace MVADumpTrainingTuples
                 var stream = await Files.GetSampleAsMetaData(s, preferPlaces: whereToRun);
                 var info = stream.AsGoodJetStream(pTCut, maxPtCut: TrainingUtils.MaxJetPtForTraining)
                     .FilterSignal(LxyCut * 1000.0, LxyCut * 1000.0);
-                var data = info.FutureAsCSV(new FileInfo($"{s.Name}.csv"));
-                CopyFilesOver(await data, s.Name);
+                var data = info.FutureAsCSV(new FileInfo($"individual-{s.Name}.csv"));
+                CopyFilesOver(await data, $"individual-{s.Name}");
             }
 
             var samplesToRun = SampleMetaData.AllSamplesWithTag("signal_p2952", "emma2", "train", "hss")
