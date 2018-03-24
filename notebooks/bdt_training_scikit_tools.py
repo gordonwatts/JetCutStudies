@@ -185,20 +185,20 @@ def prep_samples (bib, mj, sig, nEvents = 0, training_variable_list = default_tr
 
     return (all_events.loc[:,training_variable_list], all_events_class, all_events.Weight, all_events.WeightMCEvent*all_events.WeightXSection)
 
-def default_training (events, events_weight, events_class):
+def default_training (events, events_weight, events_class, estimators = 1000):
     '''Given samples prepared, run the default "best" training we know how to run.
     
     Args:
         events - A DF with an entry for every event, with all columns to be trained on
         events_weight - weight assigned to each event (None if no weight is to be used)
         events_class - the training class (0, 1, 2 for bib, mj, and signal)
-        min_leaf_fraction - fraction of sample that can be in each leaf. Defaults to 1%
+        estimators - The number of boosts to run
         
     Returns
         bdt - A trained boosted decision tree
     '''
     
-    bdt = GradientBoostingClassifier(max_depth=3, n_estimators=1000)
+    bdt = GradientBoostingClassifier(max_depth=3, n_estimators=estimators)
     
     #bdt = AdaBoostClassifier(
     #    DecisionTreeClassifier(min_samples_leaf=min_leaf_fraction),
