@@ -113,17 +113,23 @@ def get_fraction_of_events(events, fractionToUse):
     '''Return a fraction of all events as training and testing samples.
     
     Args
-        fractionToUse - fraction of the full datasample we should be using
+        fractionToUse - If less than 1 then the fraction of each sample to use.
+                        If > 1, then the total number of events
         
     Returns
         training - Training tripple of events (bib, mj, sig)
         testing - Testing tripple of events (bib, mj, sig)
     
     '''
+    # Parse out the first parameter.
+    fracsUC = (fractionToUse, fractionToUse, fractionToUse) if fractionToUse <= 1.0 else \
+                (fractionToUse/len(e.index) for e in events)
+    fracs = (f if f <= 1.0 else 1.0 for f in fracsUC)
+    
     # Create the per event filter. We have to do this against each
     # of the three input samples.
-    seq = fraction(fractionToUse)
-    fracFilters = [calcDFFilter(df, seq) for df in events]
+    seqs = (fraction(f) for f in fracs)
+    fracFilters = [calcDFFilter(df, seq) for df, seq in zip(events, seqs)]
 
     fraction_events = [dfi[1][dfi[0]] for dfi in zip(fracFilters,events)]
     return fraction_events
