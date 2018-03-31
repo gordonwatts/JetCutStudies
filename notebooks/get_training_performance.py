@@ -15,7 +15,7 @@ def get_training_performance (all_events, training_list):
     all_events, all_events_class, training_weight, evaluation_weight = prep_samples(train[0], train[1], train[2], training_variable_list=training_list)
     
     # Run training
-    bdt = default_training(all_events, training_weight, all_events_class, estimators=200)
+    bdt = default_training(all_events, training_weight, all_events_class, estimators=400)
     
     # Create a thing of all the results
     return {tuple(training_list): calc_performance(bdt, test, training_variables = training_list)}
